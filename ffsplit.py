@@ -90,7 +90,6 @@ def split_by_seconds(filename, split_length, vcodec="copy", acodec="copy",
     if split_length and split_length <= 0:
         print("Split length can't be 0")
         raise SystemExit
-    filename = filename.split("/")[-1]
     output = subprocess.Popen("ffmpeg -i '"+filename+"' 2>&1 | grep 'Duration'",
                             shell = True,
                             stdout = subprocess.PIPE
@@ -113,7 +112,9 @@ def split_by_seconds(filename, split_length, vcodec="copy", acodec="copy",
     split_cmd = "ffmpeg -i '%s' -vcodec %s -acodec %s %s" % (filename, vcodec,
                                                            acodec, extra)
     try:
-        filebase = ".".join(filename.split(".")[:-1])
+        # get the filename without the file ext
+        filebase = filename.split("/")[-1]
+        filebase = ".".join(filebase.split(".")[:-1])
         fileext = filename.split(".")[-1]
     except IndexError as e:
         raise IndexError("No . in filename. Error: " + str(e))

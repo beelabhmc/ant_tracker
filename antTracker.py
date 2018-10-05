@@ -10,27 +10,41 @@ from track import *
 from vid_meta_data import *
 
 def getBBox(ROI_fileName):
+    """
+        read ROI labels from txt into a dictionary
+        dict keys will be tuples containing
+            1) the path to the frame that was used
+            2) the ROI label name
+        dict values will be lists containing the coords of the box
+    """
     bboxes={}
     file = open(DIRECTORY+ROI_fileName, 'r')
+    # get the ROI label names (separated by tabs)
     names = file.readline().strip().split("\t")[1:]
     names = [re.sub("_1", "", x) for x in names]
     c=0
     for line in file:
+        # get ROI coords and path to frame
         line = line.strip().split("\t")
         filePath = line[0].split('.')[0]
         numbers = line[1:]
         numbers = [int(x) if x else None for x in numbers]
         for i in range(0, len(numbers), 4):
             if numbers[i]:
+                # save filepath and ROI name as keys for the ROI coords
                 bboxes[(filePath, names[i])] = numbers[i:(i+4)]
     file.close()
     return bboxes
 
 def cropTimeAndSpace(BBoxDict):
-    for vidName in glob.glob(DIRECTORY + "*.mp4"):
+    # get paths to videos
+    for vidName in glob.glob(VID_DIR + "*.mp4"):
+        # create VideoCapture object
         vidcap = cv2.VideoCapture(vidName)
+        # get colony ID
         vidName_pre = vidName.split("-")[0]
         boxNames = BBoxDict.keys()
+        # split videos into 600 sec segments each
         split_by_seconds(vidName, 600, extra = '-threads 8')
     for splitVid in glob.glob(DIRECTORY+ SPLIT_DIR +"*.mp4"):
         for boxNm in boxNames:
