@@ -109,7 +109,8 @@ def split_by_seconds(filename, split_length, vcodec="copy", acodec="copy",
         print("Video length is less then the target split length.")
         raise SystemExit
 
-    split_cmd = "ffmpeg -i '%s' -vcodec %s -acodec %s %s" % (filename, vcodec,
+    # we use -y to force overwrites of output files
+    split_cmd = "ffmpeg -y -i '%s' -vcodec %s -acodec %s %s" % (filename, vcodec,
                                                            acodec, extra)
     try:
         # get the filename without the file ext

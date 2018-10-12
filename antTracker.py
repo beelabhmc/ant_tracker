@@ -37,28 +37,38 @@ def getBBox(ROI_fileName):
     return bboxes
 
 def cropTimeAndSpace(BBoxDict):
+    # warn if user input is invalid
+    if len(glob.glob(VID_DIR + "*.mp4")) == 0:
+        warnings.warn("couldn't find any video files for processing. do your videos have a .mp4 extension? have you set VID_DIR in constants.py?")
     # get paths to videos
+    # to split videos by time
     for vidName in glob.glob(VID_DIR + "*.mp4"):
         # create VideoCapture object
         vidcap = cv2.VideoCapture(vidName)
-        # get colony ID
+        # get colony ID (ex: C1D)
         vidName_pre = vidName.split("-")[0]
         boxNames = BBoxDict.keys()
         # split videos into 600 sec segments each
         split_by_seconds(vidName, 600, extra = '-threads 8')
+    # crop each video
     for splitVid in glob.glob(DIRECTORY+ SPLIT_DIR +"*.mp4"):
+        # boxNm should be a tuple containing the path to the frame that was used, as well as the ROI label name
         for boxNm in boxNames:
+            # if splitVid has the same colony ID as boxNm
             if (boxNm[0].split('/')[-1]).split("-")[0] == (splitVid.split('/')[-1]).split("-")[0]:
-                print((boxNm[0].split('/')[-1]).split("-")[0])
-                print((splitVid.split('/')[-1]).split("-")[0])
+                # get the coords for this box
                 boxCoord = BBoxDict[boxNm]
                 x = float(boxCoord[0])
                 y = float(boxCoord[1])
                 w = boxCoord[2]
                 h = boxCoord[3]
+                # call ffmpeg with the coords to actually do the work of cropping the video
                 rectangle = str(w) +':' + str(h) +':' + str(x) +':'+ str(y) 
                 cropName = DIRECTORY + CROP_DIR + (splitVid.split("/")[-1]).split(".")[0]+ "-" + str(boxNm[-1]) +".mp4"
-                command = 'ffmpeg -i ' + splitVid +' -vf "crop=' + rectangle + '" '+ cropName
+                print("Attempting to create cropped output", cropName)
+                # this uses a simple filtergraph to crop the video (type "man ffmpeg" in the terminal for more info)
+                # we use the -y option to force overwrites of output files
+                command = 'ffmpeg -y -i ' + splitVid +' -vf "crop=' + rectangle + '" '+ cropName+ ' >>' + DIRECTORY + 'log.txt' +' 2>&1'
                 os.system(command)
 
 
@@ -103,6 +113,9 @@ def main():
     else:
         export = True
     
+    # clear the log file
+    os.system("echo '' >"+DIRECTORY+'log.txt')
+
     BBoxDict = getBBox(ROIFile)
     cropTimeAndSpace(BBoxDict)
 
