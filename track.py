@@ -7,9 +7,16 @@ import numpy as np
 
 def trackOneClip(vidPath, cushion, W, H, minBlob, vidExport, result_path):
     eng = matlab.engine.start_matlab()
+    # call the ant_tracking.m script and get the resulting dataframe
+    # inputs:
+    #   vidExport - boolean, whether we should export the result video
+    #   minBlob - int, minimum blob area in pixels
+    #   vidPath - string, absolute path to cropped vid
+    #   result_path - string, path to the directory in which to store result videos
     df = eng.ant_tracking(vidExport, minBlob, vidPath, result_path)
     if df:
         track_result = np.array([["fName", "X", "Y"]])
+        # convert the dataframe to a np array
         df = np.array(df)
         idL = set(df[:, 4])
         for idnum in idL:
