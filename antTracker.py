@@ -37,6 +37,10 @@ def getBBox(ROI_fileName):
     return bboxes
 
 def cropTimeAndSpace(BBoxDict):
+    """
+        split videos into 10 min segments then crop into boxes
+        according to the coordinates provided in ROI_fileName
+    """
     # warn if user input is invalid
     if len(glob.glob(VID_DIR + "*.mp4")) == 0:
         warnings.warn("couldn't find any video files for processing. do your videos have a .mp4 extension? have you set VID_DIR in constants.py?")
@@ -119,15 +123,20 @@ def main():
     BBoxDict = getBBox(ROIFile)
     cropTimeAndSpace(BBoxDict)
 
+    # track ants in each of the cropped videos
     result_array = np.array([["fName", "X", "Y"]])
     for cropVid in glob.glob(DIRECTORY+ CROP_DIR +"*.mp4"):
-        print cropVid
+        print("Tracking ants in", cropVid)
+        # get heigh and width of video
         H, W = findVideoMetada(cropVid)
         result_path = DIRECTORY + RESULT_VID_DIR
+        # call matlab to track ants in a single cropped video
         track_result = trackOneClip(cropVid, cushion, W, H, minBlob, export, result_path)
-        if track_result !=[]:
+        # keep track of the tracking results in a np array
+        if track_result != []:
             result_array = np.concatenate((result_array, track_result), axis=0)
     print(result_array)
+    # save the tracking results to both a txt and csv
     np.savetxt(DIRECTORY+"tracking_results.txt", result_array, delimiter= ',',  fmt='%s')
     np.savetxt(DIRECTORY+"tracking_results.csv", result_array, delimiter= ',', fmt='%s')
 
