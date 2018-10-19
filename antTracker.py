@@ -17,6 +17,7 @@ def getBBox(ROI_fileName):
             2) the ROI label name
         dict values will be lists containing the coords of the box
     """
+    print "Reading boxes from "+ROI_fileName
     bboxes={}
     file = open(DIRECTORY+ROI_fileName, 'r')
     # get the ROI label names (separated by tabs)
@@ -47,6 +48,7 @@ def cropTimeAndSpace(BBoxDict):
     # get paths to videos
     # to split videos by time
     for vidName in glob.glob(VID_DIR + "*.mp4"):
+        print "Splitting "+vidName
         # create VideoCapture object
         vidcap = cv2.VideoCapture(vidName)
         # get colony ID (ex: C1D)
@@ -69,7 +71,7 @@ def cropTimeAndSpace(BBoxDict):
                 # call ffmpeg with the coords to actually do the work of cropping the video
                 rectangle = str(w) +':' + str(h) +':' + str(x) +':'+ str(y) 
                 cropName = DIRECTORY + CROP_DIR + (splitVid.split("/")[-1]).split(".")[0]+ "-" + str(boxNm[-1]) +".mp4"
-                print("Attempting to create cropped output", cropName)
+                print "Attempting to create cropped output: " + cropName
                 # this uses a simple filtergraph to crop the video (type "man ffmpeg" in the terminal for more info)
                 # we use the -y option to force overwrites of output files
                 command = 'ffmpeg -y -i ' + splitVid +' -vf "crop=' + rectangle + '" '+ cropName+ ' >>' + DIRECTORY + 'log.txt' +' 2>&1'
@@ -126,7 +128,7 @@ def main():
     # track ants in each of the cropped videos
     result_array = np.array([["fName", "X", "Y"]])
     for cropVid in glob.glob(DIRECTORY+ CROP_DIR +"*.mp4"):
-        print("Tracking ants in", cropVid)
+        print "Tracking ants in " + cropVid
         # get heigh and width of video
         H, W = findVideoMetada(cropVid)
         result_path = DIRECTORY + RESULT_VID_DIR
