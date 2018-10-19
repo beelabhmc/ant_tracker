@@ -3,6 +3,7 @@ function ants = ant_tracking(vidOut, blobSize, videoName, outputVidDir)
 % blobSize - int, minimum blob area in pixels
 % videoName - string, absolute path to cropped vid
 % outputVidDir - string, path to the directory in which to store result videos
+% ants - array, the output of the function
 ants =[];
 if vidOut
     % split videoName into array containing path and extension
@@ -259,8 +260,6 @@ function displayTrackingResults()
         if ~isempty(reliableTracks)
             % Get bounding boxes.
             bboxes = cat(1, reliableTracks.bbox);
-            
-            
 
             % Get ids.
             ids = int32([reliableTracks(:).id]);

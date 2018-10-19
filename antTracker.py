@@ -136,8 +136,7 @@ def main():
         if track_result != []:
             result_array = np.concatenate((result_array, track_result), axis=0)
     print(result_array)
-    # save the tracking results to both a txt and csv
-    np.savetxt(DIRECTORY+"tracking_results.txt", result_array, delimiter= ',',  fmt='%s')
+    # save the tracking results to disk
     np.savetxt(DIRECTORY+"tracking_results.csv", result_array, delimiter= ',', fmt='%s')
 
 
