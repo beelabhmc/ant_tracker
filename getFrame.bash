@@ -10,12 +10,12 @@
 
 # make output directory if it doesn't exist
 mkdir -p "$3"
-# get video filename
+# extract video filename from full path
 fname="${1##*/}"
 # execute ffmpeg
 # when creating output path,
 #	remove any trailing slashes from specificed output directory
 #	and remove video extension
-# note that we use the -y option to overwrite files if they exist already
-# also use the loglevel option to disable any ffmpeg output that isn't an error/warning
+# note that we use the -y option to overwrite the file if it already exists
+# 	also the loglevel option to disable any ffmpeg output that isn't an error/warning
 ffmpeg -y -loglevel warning -i "$1" -ss "$2" -vframes 1 "${3%/}/${fname%.*}".png
