@@ -40,7 +40,7 @@ def split_by_manifest(filename, manifest, vcodec="copy", acodec="copy",
             print("Format not supported. File must be a csv or json file")
             raise SystemExit
 
-        split_cmd = "ffmpeg -i '%s' -vcodec %s -acodec %s -y %s" % (filename,
+        split_cmd = "ffmpeg -loglevel warning -i '%s' -vcodec %s -acodec %s -y %s" % (filename,
                                                                   vcodec,
                                                                   acodec,
                                                                   extra)
@@ -110,7 +110,7 @@ def split_by_seconds(filename, split_length, vcodec="copy", acodec="copy",
         raise SystemExit
 
     # we use -y to force overwrites of output files
-    split_cmd = "ffmpeg -y -i '%s' -vcodec %s -acodec %s %s" % (filename, vcodec,
+    split_cmd = "ffmpeg -loglevel warning -y -i '%s' -vcodec %s -acodec %s %s" % (filename, vcodec,
                                                            acodec, extra)
     try:
         # get the filename without the file ext
