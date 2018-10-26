@@ -17,7 +17,8 @@ def trackOneClip(vidPath, cushion, W, H, minBlob, vidExport, result_path):
     if df:
         track_result = np.array([["fName", "X", "Y"]])
         # convert the dataframe to a np array
-        # it should have five columns
+        # it should have five columns:
+        #   x_pos, y_pos, width, height, ant_id
         df = np.array(df)
         # get ant IDs as the unique values of the last column of the df
         idL = set(df[:, 4])
