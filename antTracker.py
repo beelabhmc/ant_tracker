@@ -19,12 +19,12 @@ def getBBox(ROI_fileName):
     """
     print "Reading boxes from "+ROI_fileName
     bboxes={}
-    file = open(DIRECTORY+ROI_fileName, 'r')
+    f = open(DIRECTORY+ROI_fileName, 'r')
     # get the ROI label names (separated by tabs)
-    names = file.readline().strip().split("\t")[1:]
+    names = f.readline().strip().split("\t")[1:]
     names = [re.sub("_1", "", x) for x in names]
     c=0
-    for line in file:
+    for line in f:
         # get ROI coords and path to frame
         line = line.strip().split("\t")
         filePath = line[0].split('.')[0]
@@ -34,7 +34,7 @@ def getBBox(ROI_fileName):
             if numbers[i]:
                 # save filepath and ROI name as keys for the ROI coords
                 bboxes[(filePath, names[i])] = numbers[i:(i+4)]
-    file.close()
+    f.close()
     return bboxes
 
 def cropTimeAndSpace(BBoxDict):
@@ -58,7 +58,7 @@ def cropTimeAndSpace(BBoxDict):
         split_by_seconds(vidName, 600, extra = '-threads 8')
     # crop each video
     for splitVid in glob.glob(DIRECTORY+ SPLIT_DIR +"*.mp4"):
-        # boxNm should be a tuple containing the path to the frame that was used, as well as the ROI label name
+        # boxNm should be a tuple containing the absolute path to the frame that was used, as well as the ROI label name
         for boxNm in boxNames:
             # if splitVid has the same colony ID as boxNm
             if (boxNm[0].split('/')[-1]).split("-")[0] == (splitVid.split('/')[-1]).split("-")[0]:
