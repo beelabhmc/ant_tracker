@@ -135,7 +135,7 @@ def main():
         # call matlab to track ants in a single cropped video
         track_result = trackOneClip(cropVid, cushion, W, H, minBlob, export, result_path)
         # keep track of the tracking results in a np array
-        if track_result:
+        if track_result.size:
             result_array = np.concatenate((result_array, track_result), axis=0)
     print(result_array)
     # save the tracking results to disk
