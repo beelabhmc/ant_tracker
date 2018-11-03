@@ -3,6 +3,8 @@ import math
 from constants import *
 import matlab.engine
 import numpy as np
+from vid_meta_data import *
+import argparse
 
 
 def trackOneClip(vidPath, cushion, W, H, minBlob, vidExport, result_path):
@@ -55,7 +57,54 @@ def trackOneClip(vidPath, cushion, W, H, minBlob, vidExport, result_path):
             track_result = np.append(track_result,  [[vidPath, directionX, directionY]], axis=0)
         # return the data without its header
         return track_result[1:,]
-    return []
+    return np.array([])
 
+def main():
+    arg_parser = argparse.ArgumentParser()
+    arg_parser.add_argument('--i',
+                            dest = 'cropVid',
+                            required = True,
+                            type=str,
+                            help='path to a video to track')
+    arg_parser.add_argument('--o',
+                            dest = 'result_path',
+                            required = True,
+                            type=str,
+                            help='path to a directory in which to dump result videos')
+    arg_parser.add_argument('--r',
+                            dest = 'result',
+                            required = True,
+                            type=str,
+                            help='path of array of results to output')
+    arg_parser.add_argument('--c',
+                            dest = 'cushion',
+                            type=int,
+                            default=10,
+                            help='number of pixels as padding (default = 10)')
+    arg_parser.add_argument('--m',
+                            dest = 'minBlob',
+                            type=int,
+                            default=35,
+                            help='minimum blob area in pixels (default = 35)')
+    arg_parser.add_argument('--e',
+                            dest = 'export',
+                            type=bool,
+                            default=False,
+                            help='do we export result video (default = False)')
+    args = arg_parser.parse_args()
 
+    # track ants in each of the cropped videos
+    result_array = np.array([["fName", "X", "Y"]])
+    print "Tracking ants in " + args.cropVid
+    # get heigh and width of video
+    H, W = findVideoMetada(args.cropVid)
+    # call matlab to track ants in a single cropped video
+    track_result = trackOneClip(args.cropVid, args.cushion, W, H, args.minBlob, args.export, args.result_path)
+    # keep track of the tracking results in a np array
+    if track_result.size:
+        result_array = np.concatenate((result_array, track_result), axis=0)
+    # save the tracking results to disk
+    np.savetxt(args.result, result_array, delimiter= ',', fmt='%s')
 
+if __name__== "__main__":
+    main()
