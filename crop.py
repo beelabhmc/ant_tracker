@@ -74,8 +74,9 @@ def main():
         print "Attempting to create cropped output: " + args.outVid
         # this uses a simple filtergraph to crop the video (type "man ffmpeg" in the terminal for more info)
         # we use the -y option to force overwrites of output files
-        command = 'ffmpeg -y -i ' + splitVid +' -vf "crop=' + rectangle + '" '+ args.outVid+ ' >>' + args.logFile + ' 2>&1'
-        print(command)
+        # we use the max_muxing_queue_size to resolve "Too many packets buffered for output stream" errors
+        # also the loglevel option to disable any ffmpeg output that isn't an error/warning
+        command = 'ffmpeg -y -loglevel warning -i ' + splitVid +' -vf "crop=' + rectangle + '" -max_muxing_queue_size 10000 '+ args.outVid+ ' >>' + args.logFile + ' 2>&1'
         os.system(command)
 
 if __name__== "__main__":
