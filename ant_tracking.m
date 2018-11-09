@@ -1,6 +1,7 @@
 function ants = ant_tracking(vidOut, blobSize, videoName, outputVidDir)
 % vidOut - boolean, whether we should export the result video
 % blobSize - int, minimum blob area in pixels
+maxBlobSize = 75
 % videoName - string, absolute path to cropped vid
 % outputVidDir - string, path to the directory in which to store result videos
 % ants - array, the output of the function
@@ -77,7 +78,7 @@ function obj = setupSystemObjects()
 
         obj.blobAnalyser = vision.BlobAnalysis('BoundingBoxOutputPort', true, ...
             'AreaOutputPort', true, 'CentroidOutputPort', true, ...
-            'MinimumBlobArea', blobSize); %make a parameter
+            'MinimumBlobArea', blobSize, 'MaximumBlobArea', maxBlobSize); %make a parameter
 end
  
 
@@ -145,7 +146,7 @@ function [assignments, unassignedTracks, unassignedDetections] = ...
     end
 
     % Solve the assignment problem.
-    costOfNonAssignment = 20;
+    costOfNonAssignment = 30;
     [assignments, unassignedTracks, unassignedDetections] = ...
         assignDetectionsToTracks(cost, costOfNonAssignment);
 end
@@ -192,8 +193,8 @@ function deleteLostTracks()
         return;
     end
 
-    invisibleForTooLong = 20;
-    ageThreshold = 8;
+    invisibleForTooLong = 50;
+    ageThreshold = 50;
 
     % Compute the fraction of the track's age for which it was visible.
     ages = [tracks(:).age];
