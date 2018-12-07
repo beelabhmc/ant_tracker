@@ -6,6 +6,7 @@ out_test/
 storage_test/
 
 *.pyc
+.ipynb_checkpoints/
 
 **/.DS_Store
 **/._.DS_Store
