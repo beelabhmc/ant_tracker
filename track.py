@@ -76,6 +76,11 @@ def main():
                             required = True,
                             type=str,
                             help='path of array of results to output')
+    arg_parser.add_argument('--r',
+                            dest = 'result',
+                            required = True,
+                            type=str,
+                            help='path of array of results to output')
     arg_parser.add_argument('--c',
                             dest = 'cushion',
                             type=int,
@@ -96,7 +101,7 @@ def main():
     # track ants in each of the cropped videos
     result_array = np.array([["fName", "X", "Y"]])
     print "Tracking ants in " + args.cropVid
-    # get heigh and width of video
+    # get height and width of video
     H, W = findVideoMetada(args.cropVid)
     # call matlab to track ants in a single cropped video
     track_result = trackOneClip(args.cropVid, args.cushion, W, H, args.minBlob, args.export, args.result_path)
