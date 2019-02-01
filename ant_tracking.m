@@ -220,8 +220,14 @@ function createNewTracks()
         bbox = bboxes(i, :);
 
         % Create a Kalman filter object.
+        % parameters are:
+        %    MotionModel - assumed model by which the ants move: ConstantVelocity or ConstantAcceleration
+        %    InitialLocation - a vector representing the location of the object
+        %    InitialEsimateError - the variance of the initial estimates of location, velocity, and acceleration of the tracked object
+        %    MotionNoise - deviation of selected (ie ConstantVelocity) model from actual model, as a 2 element vector
+        %    MeasurementNoise - tolerance for noise in detections; larger value makes Kalman Filter less tolerant
         kalmanFilter = configureKalmanFilter('ConstantVelocity', ...
-            centroid, [200, 50], [100, 25], 100);
+            centroid, [200, 50], [100, 25], 15);
 
         % Create a new track.
         newTrack = struct(...

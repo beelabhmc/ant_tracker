@@ -76,11 +76,6 @@ def main():
                             required = True,
                             type=str,
                             help='path of array of results to output')
-    arg_parser.add_argument('--r',
-                            dest = 'result',
-                            required = True,
-                            type=str,
-                            help='path of array of results to output')
     arg_parser.add_argument('--c',
                             dest = 'cushion',
                             type=int,
