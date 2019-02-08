@@ -9,6 +9,11 @@ def main():
                             required = True,
                             type=str,
                             help='a txt file of the bounding boxes for ROI')
+    arg_parser.add_argument('--r',
+                            dest = 'label',
+                            required = True,
+                            type=str,
+                            help='the name of the roi_label you\'d like to crop')
     arg_parser.add_argument('--i',
                             dest = 'splitVid',
                             required = True,
@@ -38,7 +43,7 @@ def main():
     f = open(args.ROI, 'r')
     # get the ROI label names (separated by tabs)
     names = f.readline().strip().split("\t")[1:]
-    names = [re.sub("_1", "", x) for x in names]
+    names = [re.sub("_1$", "", x) for x in names]
     c=0
     for line in f:
         # get ROI coords and path to frame
@@ -61,7 +66,8 @@ def main():
     splitVid = os.path.abspath(args.splitVid)
     # crop each video
     # boxNm should be a tuple containing the absolute path to the frame that was used, as well as the ROI label name
-    boxNames = filter(lambda boxNm: os.path.basename(boxNm[0]) == os.path.splitext(os.path.basename(splitVid))[0], bboxes.keys())
+    # filter just the box we want
+    boxNames = filter(lambda boxNm: os.path.basename(boxNm[0]) == os.path.splitext(os.path.basename(splitVid))[0] and boxNm[1] == args.label, bboxes.keys())
     for boxNm in boxNames:
         # get the coords for this box
         boxCoord = bboxes[boxNm]

@@ -3,6 +3,7 @@ out/
 archive/
 
 out_test/
+out_test2
 storage_test/
 
 *.pyc
