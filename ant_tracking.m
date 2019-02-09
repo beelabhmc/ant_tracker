@@ -68,7 +68,7 @@ function obj = setupSystemObjects()
         % of 1 corresponds to the foreground and the value of 0 corresponds
         % to the background.
 
-        obj.detector = vision.ForegroundDetector('NumGaussians', 5, ...
+        obj.detector = vision.ForegroundDetector('NumGaussians', 3, ...
             'NumTrainingFrames', 40, 'MinimumBackgroundRatio', 0.75);
 
         % Connected groups of foreground pixels are likely to correspond to moving
@@ -223,7 +223,7 @@ function createNewTracks()
         % parameters are:
         %    MotionModel - assumed model by which the ants move: ConstantVelocity or ConstantAcceleration
         %    InitialLocation - a vector representing the location of the object
-        %    InitialEsimateError - the variance of the initial estimates of location, velocity, and acceleration of the tracked object
+        %    InitialEsimateError - the variance of the initial estimates of location and velocity of the tracked object
         %    MotionNoise - deviation of selected (ie ConstantVelocity) model from actual model, as a 2 element vector
         %    MeasurementNoise - tolerance for noise in detections; larger value makes Kalman Filter less tolerant
         kalmanFilter = configureKalmanFilter('ConstantVelocity', ...
