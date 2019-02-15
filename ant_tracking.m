@@ -110,6 +110,10 @@ function [centroids, bboxes, mask] = detectObjects(frame)
     mask = obj.detector.step(frame);
 
     % Apply morphological operations to remove noise and fill in holes.
+    % mask is a binary image
+    % strel() returns a morpholigical structuring element (ie a collective region of 1's in a sea of 0's)
+    % the second argument to strel() specifies the shape (see matlab documentation)
+    % docs: https://www.mathworks.com/help/images/morphological-dilation-and-erosion.html
     mask = imopen(mask, strel('rectangle', [3,3]));
     mask = imclose(mask, strel('rectangle', [15, 15]));
     mask = imfill(mask, 'holes');
