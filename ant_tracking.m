@@ -1,7 +1,6 @@
 function ants = ant_tracking(vidOut, blobSize, videoName, outputVidDir)
 % vidOut - boolean, whether we should export the result video
 % blobSize - int, minimum blob area in pixels
-maxBlobSize = 75
 % videoName - string, absolute path to cropped vid
 % outputVidDir - string, path to the directory in which to store result videos
 % ants - array, the output of the function
@@ -68,7 +67,7 @@ function obj = setupSystemObjects()
         % of 1 corresponds to the foreground and the value of 0 corresponds
         % to the background.
 
-        obj.detector = vision.ForegroundDetector('NumGaussians', 3, ...
+        obj.detector = vision.ForegroundDetector('NumGaussians', 5, ...
             'NumTrainingFrames', 40, 'MinimumBackgroundRatio', 0.75);
 
         % Connected groups of foreground pixels are likely to correspond to moving
@@ -78,7 +77,7 @@ function obj = setupSystemObjects()
 
         obj.blobAnalyser = vision.BlobAnalysis('BoundingBoxOutputPort', true, ...
             'AreaOutputPort', true, 'CentroidOutputPort', true, ...
-            'MinimumBlobArea', blobSize, 'MaximumBlobArea', maxBlobSize); %make a parameter
+            'MinimumBlobArea', blobSize); %make a parameter
 end
  
 
@@ -146,7 +145,7 @@ function [assignments, unassignedTracks, unassignedDetections] = ...
     end
 
     % Solve the assignment problem.
-    costOfNonAssignment = 30;
+    costOfNonAssignment = 20;
     [assignments, unassignedTracks, unassignedDetections] = ...
         assignDetectionsToTracks(cost, costOfNonAssignment);
 end
@@ -193,8 +192,8 @@ function deleteLostTracks()
         return;
     end
 
-    invisibleForTooLong = 50;
-    ageThreshold = 50;
+    invisibleForTooLong = 20;
+    ageThreshold = 8;
 
     % Compute the fraction of the track's age for which it was visible.
     ages = [tracks(:).age];
@@ -227,7 +226,7 @@ function createNewTracks()
         %    MotionNoise - deviation of selected (ie ConstantVelocity) model from actual model, as a 2 element vector
         %    MeasurementNoise - tolerance for noise in detections; larger value makes Kalman Filter less tolerant
         kalmanFilter = configureKalmanFilter('ConstantVelocity', ...
-            centroid, [200, 50], [100, 25], 15);
+            centroid, [200, 50], [100, 25], 100);
 
         % Create a new track.
         newTrack = struct(...
@@ -236,7 +235,7 @@ function createNewTracks()
             'kalmanFilter', kalmanFilter, ...
             'age', 1, ...
             'totalVisibleCount', 1, ...
-            'consecutiveInvisibleCount', 10);
+            'consecutiveInvisibleCount', 0);
 
         % Add it to the array of tracks.
         tracks(end + 1) = newTrack;
