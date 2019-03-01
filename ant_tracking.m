@@ -114,8 +114,9 @@ function [centroids, bboxes, mask] = detectObjects(frame)
     % strel() returns a morpholigical structuring element (ie a collective region of 1's in a sea of 0's)
     % the second argument to strel() specifies the shape (see matlab documentation)
     % docs: https://www.mathworks.com/help/images/morphological-dilation-and-erosion.html
-    mask = imopen(mask, strel('rectangle', [3,3]));
-    mask = imclose(mask, strel('rectangle', [15, 15]));
+    
+    % mask = imopen(mask, strel('rectangle', [2,2]));
+    % mask = imclose(mask, strel('rectangle', [3, 3]));
     mask = imfill(mask, 'holes');
 
     % Perform blob analysis to find connected components.
