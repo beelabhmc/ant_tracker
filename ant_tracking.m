@@ -115,7 +115,9 @@ function [centroids, bboxes, mask] = detectObjects(frame)
     % the second argument to strel() specifies the shape (see matlab documentation)
     % docs: https://www.mathworks.com/help/images/morphological-dilation-and-erosion.html
     
-    % mask = imopen(mask, strel('rectangle', [2,2]));
+    mask = imerode(mask, strel('rectangle', [4,4]));
+    mask = imdilate(mask, strel('rectangle', [2, 2]));
+    % mask = imopen(mask, strel('rectangle', [3,3]));
     % mask = imclose(mask, strel('rectangle', [3, 3]));
     mask = imfill(mask, 'holes');
 
@@ -284,16 +286,19 @@ function displayTrackingResults()
             predictedTrackInds = ...
                 [reliableTracks(:).consecutiveInvisibleCount] > 0;
             isPredicted = cell(size(labels));
-            isPredicted(predictedTrackInds) = {' predicted'};
+            isPredicted(predictedTrackInds) = {'p'};
             labels = strcat(labels, isPredicted);
+
+            % remove labels
+            % labels = cellstr(strings(size(ids')));
 
             % Draw the objects on the frame.
             frame = insertObjectAnnotation(frame, 'rectangle', ...
-                bboxes, labels);
+                bboxes, labels, 'TextBoxOpacity', 0, 'FontSize', 8, 'TextColor', 'red');
 
             % Draw the objects on the mask.
             mask = insertObjectAnnotation(mask, 'rectangle', ...
-                bboxes, labels);
+                bboxes, labels, 'TextBoxOpacity', 0, 'FontSize', 8, 'TextColor', 'red');
         end
     end
     if vidOut
