@@ -116,7 +116,7 @@ function [centroids, bboxes, mask] = detectObjects(frame)
     % docs: https://www.mathworks.com/help/images/morphological-dilation-and-erosion.html
     
     mask = imerode(mask, strel('rectangle', [4,4]));
-    mask = imdilate(mask, strel('rectangle', [2, 2]));
+    % mask = imdilate(mask, strel('rectangle', [1, 1]));
     % mask = imopen(mask, strel('rectangle', [3,3]));
     % mask = imclose(mask, strel('rectangle', [3, 3]));
     mask = imfill(mask, 'holes');
@@ -230,10 +230,10 @@ function createNewTracks()
         %    MotionModel - assumed model by which the ants move: ConstantVelocity or ConstantAcceleration
         %    InitialLocation - a vector representing the location of the object
         %    InitialEsimateError - the variance of the initial estimates of location and velocity of the tracked object
-        %    MotionNoise - deviation of selected (ie ConstantVelocity) model from actual model, as a 2 element vector
+        %    MotionNoise - deviation of selected (ie ConstantVelocity) model from actual model, as a 2 element vector; increase makes Kalman filter more tolerant
         %    MeasurementNoise - tolerance for noise in detections; larger value makes Kalman Filter less tolerant
         kalmanFilter = configureKalmanFilter('ConstantVelocity', ...
-            centroid, [200, 50], [100, 25], 100);
+            centroid, [200, 50], [1500, 50], 50);
 
         % Create a new track.
         newTrack = struct(...
@@ -294,11 +294,11 @@ function displayTrackingResults()
 
             % Draw the objects on the frame.
             frame = insertObjectAnnotation(frame, 'rectangle', ...
-                bboxes, labels, 'TextBoxOpacity', 0, 'FontSize', 8, 'TextColor', 'red');
+                bboxes, labels, 'TextBoxOpacity', 0, 'FontSize', 10, 'TextColor', 'red');
 
             % Draw the objects on the mask.
             mask = insertObjectAnnotation(mask, 'rectangle', ...
-                bboxes, labels, 'TextBoxOpacity', 0, 'FontSize', 8, 'TextColor', 'red');
+                bboxes, labels, 'TextBoxOpacity', 0, 'FontSize', 10, 'TextColor', 'red');
         end
     end
     if vidOut
