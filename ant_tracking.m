@@ -76,7 +76,7 @@ function obj = setupSystemObjects()
         % characteristics, such as area, centroid, and the bounding box.
 
         obj.blobAnalyser = vision.BlobAnalysis('BoundingBoxOutputPort', true, ...
-            'AreaOutputPort', true, 'CentroidOutputPort', true); %make a parameter
+            'AreaOutputPort', true, 'CentroidOutputPort', true, 'MinimumBlobArea', blobSize); %make a parameter
 end
  
 
@@ -232,7 +232,7 @@ function createNewTracks()
         %    MotionNoise - deviation of selected (ie ConstantVelocity) model from actual model, as a 2 element vector; increase makes Kalman filter more tolerant
         %    MeasurementNoise - tolerance for noise in detections; larger value makes Kalman Filter less tolerant
         kalmanFilter = configureKalmanFilter('ConstantVelocity', ...
-            centroid, [200, 50], [1500, 50], 50);
+            centroid, [200, 50], [150, 50], 50);
 
         % Create a new track.
         newTrack = struct(...

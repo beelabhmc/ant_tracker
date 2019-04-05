@@ -84,7 +84,7 @@ def main():
     arg_parser.add_argument('--m',
                             dest = 'minBlob',
                             type=int,
-                            default=35,
+                            default=3,
                             help='minimum blob area in pixels (default = 35)')
     arg_parser.add_argument('--e',
                             dest = 'export',
