@@ -76,8 +76,7 @@ function obj = setupSystemObjects()
         % characteristics, such as area, centroid, and the bounding box.
 
         obj.blobAnalyser = vision.BlobAnalysis('BoundingBoxOutputPort', true, ...
-            'AreaOutputPort', true, 'CentroidOutputPort', true, ...
-            'MinimumBlobArea', blobSize); %make a parameter
+            'AreaOutputPort', true, 'CentroidOutputPort', true); %make a parameter
 end
  
 
