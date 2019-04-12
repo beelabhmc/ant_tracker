@@ -7,7 +7,7 @@ from vid_meta_data import *
 import argparse
 
 
-def trackOneClip(vidPath, cushion, W, H, minBlob, vidExport, result_path):
+def trackOneClip(vidPath, W, H, minBlob, vidExport, result_path):
     eng = matlab.engine.start_matlab()
     # call the ant_tracking.m script and get the resulting dataframe
     # inputs:
@@ -17,7 +17,7 @@ def trackOneClip(vidPath, cushion, W, H, minBlob, vidExport, result_path):
     #   result_path - string, path to the directory in which to store result videos
     df = eng.ant_tracking(vidExport, minBlob, vidPath, result_path)
     if df:
-        track_result = np.array([["fName", "X", "Y"]])
+        track_result = np.array([["fName", "id", "X", "Y"]])
         # convert the dataframe to a np array
         # it should have five columns:
         #   x_pos, y_pos, width, height, ant_id
@@ -28,36 +28,18 @@ def trackOneClip(vidPath, cushion, W, H, minBlob, vidExport, result_path):
         for idnum in idL:
             # get tracks for this ant
             antTrack = df[df[:, 4] == idnum]
-            # get first position
-            begin = antTrack[0,:]
-            # get last position
-            end = antTrack[-1,:]
-            # get start and end coordinates
-            # and width and height of the bounding boxes
-            x0 = begin[0]
-            y0 = begin[1]
-            x1 = end[0]
-            y1 = end[1]
-            width0 = begin[2]
-            height0 = begin[3]
-            width1 = end[2]
-            height1 = end[3]
-            # attempt to determine X and Y directions
-            directionX = "NA"
-            directionY = "NA"
-            if x0 <= cushion and x1+width1>=(W-cushion):
-                directionX = "LR"
-            elif (x0 + width0) >= (W-cushion) and x1 <= cushion:
-                directionX = "RL"
-            if  y0 <= cushion and (y1+height1)>= (H-cushion):
-                directionY = "TB"
-            elif  (y0+height0) >= (H-cushion) and y1<= cushion:
-                directionY = "BT"
+            # NOTE: x and y coords can be negative if kalman filter is predicting the ant after it passes out of frame
+            x0 = antTrack[1:,0]
+            x1 = antTrack[:-1,0]
+            directionX = sum(x0-x1)
+            y0 = antTrack[1:,1]
+            y1 = antTrack[:-1,1]
+            directionY = sum(y0-y1)
             # save results in np array so that we can return them soon
-            track_result = np.append(track_result,  [[vidPath, directionX, directionY]], axis=0)
+            track_result = np.append(track_result, [[vidPath, idnum, directionX, directionY]], axis=0)
         # return the data without its header
-        return track_result[1:,]
-    return np.array([])
+        return track_result[1:,], df
+    return np.array([]), np.array([])
 
 def main():
     arg_parser = argparse.ArgumentParser()
@@ -76,11 +58,11 @@ def main():
                             required = True,
                             type=str,
                             help='path of array of results to output')
-    arg_parser.add_argument('--c',
-                            dest = 'cushion',
-                            type=int,
-                            default=10,
-                            help='number of pixels as padding (default = 10)')
+    arg_parser.add_argument('--rr',
+                            dest = 'raw_results',
+                            type=str,
+                            default=None,
+                            help='path of array of raw results to output (default = None)')
     arg_parser.add_argument('--m',
                             dest = 'minBlob',
                             type=int,
@@ -91,20 +73,24 @@ def main():
                             type=bool,
                             default=False,
                             help='do we export result video (default = False)')
+
     args = arg_parser.parse_args()
 
     # track ants in each of the cropped videos
-    result_array = np.array([["fName", "X", "Y"]])
+    result_array = np.array([["fName", "id", "X", "Y"]])
     print "Tracking ants in " + args.cropVid
     # get height and width of video
     H, W = findVideoMetada(args.cropVid)
     # call matlab to track ants in a single cropped video
-    track_result = trackOneClip(args.cropVid, args.cushion, W, H, args.minBlob, args.export, args.result_path)
+    track_result, raw_results = trackOneClip(args.cropVid, W, H, args.minBlob, args.export, args.result_path)
     # keep track of the tracking results in a np array
     if track_result.size:
         result_array = np.concatenate((result_array, track_result), axis=0)
     # save the tracking results to disk
     np.savetxt(args.result, result_array, delimiter= ',', fmt='%s')
+    # save the raw results to disk
+    if args.raw_results is not None:
+        np.savetxt(args.raw_results, raw_results, delimiter=',', fmt='%s')
 
 if __name__== "__main__":
     main()
