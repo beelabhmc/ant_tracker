@@ -29,12 +29,12 @@ def trackOneClip(vidPath, W, H, minBlob, vidExport, result_path):
             # get tracks for this ant
             antTrack = df[df[:, 4] == idnum]
             # NOTE: x and y coords can be negative if kalman filter is predicting the ant after it passes out of frame
-            x0 = antTrack[1:,0]
-            x1 = antTrack[:-1,0]
-            directionX = sum(x0-x1)
-            y0 = antTrack[1:,1]
-            y1 = antTrack[:-1,1]
-            directionY = sum(y0-y1)
+            x0 = antTrack[-1,0]
+            x1 = antTrack[0,0]
+            directionX = x0-x1
+            y0 = antTrack[-1,1]
+            y1 = antTrack[0,1]
+            directionY = y0-y1
             # save results in np array so that we can return them soon
             track_result = np.append(track_result, [[vidPath, idnum, directionX, directionY]], axis=0)
         # return the data without its header
