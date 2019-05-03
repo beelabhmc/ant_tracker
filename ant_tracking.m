@@ -198,8 +198,12 @@ function deleteLostTracks()
         return;
     end
 
+    % how many frames a track must be consecutively invisible for it to be considered lost
     invisibleForTooLong = 4;
+    % threshold beyond which track is considered old
+    % old tracks are immune from being deleted by the visibilityThreshold
     ageThreshold = 8;
+    % the min fraction of overall frames for which a track must be visible
     visibilityThreshold = 0.6;
 
     % Compute the fraction of the track's age for which it was visible.
@@ -258,7 +262,7 @@ function displayTrackingResults()
     frame = im2uint8(frame);
     mask = uint8(repmat(mask, [1, 1, 3])) .* 255;
 
-    minVisibleCount = 8;
+    minVisibleCount = 3;
     if ~isempty(tracks)
 
         % Noisy detections tend to result in short-lived tracks.
