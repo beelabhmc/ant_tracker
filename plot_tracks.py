@@ -2,6 +2,13 @@ import numpy as np
 import matplotlib.pyplot as plt
 import argparse
 
+"""
+BEWARE:
+    An easy pitfall of interpreting these plots is to think the x-axis represents time.
+    It doesn't! Each row in the raw_results is an appearance of an ant in a frame, so moments
+    when there aren't any ants on the screen are not represented in the plots!
+"""
+
 def main():
     arg_parser = argparse.ArgumentParser()
     arg_parser.add_argument('--i',
@@ -25,6 +32,8 @@ def main():
         plt.plot(antTrack_idx, antTrack[:,[0]], label=str(idnum))
     plt.axhline(linestyle='--')
     plt.legend()
+    plt.ylabel("Distance")
+    plt.xlabel("Frame")
     plt.title("Distance from Left")
     plt.show()
 
@@ -36,6 +45,8 @@ def main():
         plt.plot(antTrack_idx, antTrack[:,[1]], label=str(idnum))
     plt.axhline(linestyle='--')
     plt.legend()
+    plt.ylabel("Distance")
+    plt.xlabel("Frame")
     plt.title("Distance from Top")
     plt.show()
 
