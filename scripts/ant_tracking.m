@@ -68,7 +68,7 @@ function obj = setupSystemObjects()
         % to the background.
 
         obj.detector = vision.ForegroundDetector('NumGaussians', 5, ...
-            'NumTrainingFrames', 40, 'MinimumBackgroundRatio', 0.75);
+            'NumTrainingFrames', 40, 'MinimumBackgroundRatio', 0.70);
 
         % Connected groups of foreground pixels are likely to correspond to moving
         % objects.  The blob analysis System object is used to find such groups
@@ -151,7 +151,7 @@ function [assignments, unassignedTracks, unassignedDetections] = ...
     end
 
     % Solve the assignment problem.
-    costOfNonAssignment = 20;
+    costOfNonAssignment = 15;
     [assignments, unassignedTracks, unassignedDetections] = ...
         assignDetectionsToTracks(cost, costOfNonAssignment);
 end
@@ -233,11 +233,11 @@ function createNewTracks()
         % parameters are:
         %    MotionModel - assumed model by which the ants move: ConstantVelocity or ConstantAcceleration
         %    InitialLocation - a vector representing the location of the object
-        %    InitialEsimateError - the variance of the initial estimates of location and velocity of the tracked object
+        %    InitialEstimateError - the variance of the initial estimates of location and velocity of the tracked object
         %    MotionNoise - deviation of selected (ie ConstantVelocity) model from actual model, as a 2 element vector; increase makes Kalman filter more tolerant
         %    MeasurementNoise - tolerance for noise in detections; larger value makes Kalman Filter less tolerant
         kalmanFilter = configureKalmanFilter('ConstantVelocity', ...
-            centroid, [200, 50], [150, 50], 50);
+            centroid, [200, 50], [100, 15], 100);
 
         % Create a new track.
         newTrack = struct(...
