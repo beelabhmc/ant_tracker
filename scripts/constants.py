@@ -1,3 +1,4 @@
+import matlab
 # absolute path pointing to video files
 #
 # NOTE: all dir paths should have trailing slashes
@@ -29,7 +30,7 @@ NUM_TRAINING_FRAMES = 40        # The number of frames from which to learn the
 MINIMUM_BACKGROUND_RATIO = 0.70 # The portion of training footage which should
                                 # be considered to match the background
 
-COST_OF_NONASSIGNMENT = 15      # The cost of not assigning a detection to a
+COST_OF_NONASSIGNMENT = 15.0    # The cost of not assigning a detection to a
                                 # track or a track to a detection.
                                 # Decreasing this makes it more likely to detect
                                 # two ants as belonging to one track
@@ -45,13 +46,15 @@ VISIBILITY_THRESHOLD = 0.6      # If an ant is visible in less than this
                                 # proportion of frames, then assume that isn't
                                 # real
 
-KALMAN_INITIAL_ERROR = [200, 50]# The margin of error in the initial position
+KALMAN_INITIAL_ERROR = matlab.double([200, 50])
+                                # The margin of error in the initial position
                                 # and velocity for the Kalman filter
 
-KALMAN_MOTION_NOISE = [100, 15] # The exactitude with which the Kalman filter
+KALMAN_MOTION_NOISE = matlab.double([100, 15])
+                                # The exactitude with which the Kalman filter
                                 # insists on its expectations
 
-KALMAN_MEASUREMENT_NOISE = 100  # The expected margin of error in the
+KALMAN_MEASUREMENT_NOISE = 100. # The expected margin of error in the
                                 # observations from the footage.
 
 MIN_VISIBLE_COUNT = 3           # The minimum number of frames for which an ant

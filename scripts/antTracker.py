@@ -1,9 +1,12 @@
+from __future__ import division
 import math
-import glob, os
+import glob
+import os
 import argparse
 import re
 import numpy as np
 import cv2
+import subprocess
 
 import constants
 import split
@@ -17,7 +20,6 @@ def getBBox(ROI_fileName):
         2) the ROI label name
     dict values will be lists containing the coords of the box
     """
-    print("Reading boxes from "+ROI_fileName)
     bboxes={}
     f = open(constants.DIRECTORY+ROI_fileName, 'r')
     # get the ROI label names (separated by tabs)
@@ -27,19 +29,24 @@ def getBBox(ROI_fileName):
     for line in f:
         # get ROI coords and path to frame
         line = line.strip().split("\t")
+        print(line)
         filePath = line[0].split('.')[0]
         numbers = line[1:]
         numbers = [int(x) if x else None for x in numbers]
-        for i in range(0, len(numbers), 4):
-            if numbers[i]:
+        nums = len(numbers)
+        for i in range(0, nums//4):
+            #if numbers[i]:
                 # save filepath and ROI name as keys for the ROI coords
-                bboxes[(filePath, names[i])] = numbers[i:(i+4)]
+                bboxes[(filePath, names[i])] = numbers[i:nums:nums//4]
     f.close()
     return bboxes
 
-def cropTimeAndSpace(BBoxDict):
+def cropTimeAndSpace(BBoxDict, split_unused=False):
     """split videos into 10 min segments then crop into boxes
     according to the coordinates provided in ROI_fileName
+
+    if split_unused is set to True, then it will split all videos;
+    otherwise, only videos in BBoxDict will be split
     """
     # warn if user input is invalid
     if len(glob.glob(constants.VID_DIR + "*.mp4")) == 0:
@@ -48,16 +55,26 @@ def cropTimeAndSpace(BBoxDict):
                       "constants.py?")
     # get paths to videos
     # to split videos by time
+    print('Clearing split directory')
+    subprocess.call(['rm', '-r', constants.DIRECTORY+constants.SPLIT_DIR])
+    subprocess.call(['mkdir', constants.DIRECTORY+constants.SPLIT_DIR])
+    vids = set(key[0].split('/')[-1] for key in BBoxDict.keys())
+    boxNames = BBoxDict.keys()
     for vidName in glob.glob(constants.VID_DIR + "*.mp4"):
-        print("Splitting "+vidName)
+        if not split_unused and vidName.split('/')[-1].split('.')[0]not in vids:
+            print("Skipping %s" % vidName)
+            continue
+        print("Splitting %s" % vidName)
         # create VideoCapture object
         vidcap = cv2.VideoCapture(vidName)
         # get colony ID (ex: C1D)
         vidName_pre = vidName.split("-")[0]
-        boxNames = BBoxDict.keys()
         # split videos into 600 sec segments each
         split.by_seconds(vidName, 600, extra = '-threads 8')
     # crop each video
+    print('Clearing crop directory')
+    subprocess.call(['rm', '-r', constants.DIRECTORY+constants.CROP_DIR])
+    subprocess.call(['mkdir', constants.DIRECTORY+constants.CROP_DIR])
     for splitVid in glob.glob(constants.DIRECTORY+constants.SPLIT_DIR +"*.mp4"):
         # boxNm should be a tuple containing the absolute path to the
         # frame that was used, as well as the ROI label name
@@ -76,20 +93,20 @@ def cropTimeAndSpace(BBoxDict):
                 rectangle = str(w) +':' + str(h) +':' + str(x) +':'+ str(y) 
                 cropName = constants.DIRECTORY + constants.CROP_DIR \
                            + (splitVid.split("/")[-1]).split(".")[0] + "-" \
-                           + str(boxNm[-1]) +".mp4"
+                           + str(boxNm[-1]).replace(' ', '') +".mp4"
                 print("Attempting to create cropped output: " + cropName)
                 # this uses a simple filtergraph to crop the video (type
                 # "man ffmpeg" in the terminal for more info)
                 # we use the -y option to force overwrites of output files
                 command = 'ffmpeg -y -i ' + splitVid +' -vf "crop='+rectangle \
-                + '" '+ cropName+' >>'+constants.DIRECTORY + 'log.txt' +' 2>&1'
+                          + '" '+ cropName+' >>'+constants.DIRECTORY + \
+                          'log.txt 2>&1'
                 os.system(command)
 
 
 def main():
     arg_parser = argparse.ArgumentParser()
-    arg_parser.add_argument('--f',
-                            dest = 'ROI',
+    arg_parser.add_argument('ROI',
                             type=str,
                             default="",
                             help='a txt file of the bounding boxes for ROI')
@@ -136,7 +153,7 @@ def main():
     cropTimeAndSpace(BBoxDict)
 
     # track ants in each of the cropped videos
-    result_array = np.array([["fName", "X", "Y"]])
+    result_array = np.array([['fName', 'id', 'X', 'Y']])
     for cropVid in glob.glob(constants.DIRECTORY+ constants.CROP_DIR +"*.mp4"):
         print("Tracking ants in " + cropVid)
         # get heigh and width of video
@@ -145,8 +162,9 @@ def main():
         # call matlab to track ants in a single cropped video
         track_result = trackOneClip(cropVid, W, H, export, result_path, minBlob)
         # keep track of the tracking results in a np array
-        if track_result.size:
-            result_array = np.concatenate((result_array, track_result), axis=0)
+        if track_result:
+            result_array = np.concatenate((result_array, track_result[0]),
+                                          axis=0)
     print(result_array)
     # save the tracking results to disk
     np.savetxt(constants.DIRECTORY+"tracking_results.csv", result_array,

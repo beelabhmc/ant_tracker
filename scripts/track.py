@@ -18,7 +18,7 @@ def trackOneClip(vidPath, W, H, vidExport, result_path,
         visibility_threshold=constants.VISIBILITY_THRESHOLD,
         kalman_initial_error=constants.KALMAN_INITIAL_ERROR,
         kalman_motion_noise=constants.KALMAN_MOTION_NOISE,
-        kalman_measurement_noise=constants.KALMAN_MOTION_NOISE,
+        kalman_measurement_noise=constants.KALMAN_MEASUREMENT_NOISE,
         min_visible_count=constants.MIN_VISIBLE_COUNT):
     eng = matlab.engine.start_matlab()
     # call the ant_tracking.m script and get the resulting dataframe
@@ -28,6 +28,7 @@ def trackOneClip(vidPath, W, H, vidExport, result_path,
     #   result_path - string, path to the directory in which to store
     #                 result videos
     #   minBlob - int, minimum blob area in pixels
+    eng.addpath('scripts')
     df = eng.ant_tracking(vidPath, vidExport, result_path, minBlob, 
                           num_gaussians, num_training_frames,
                           minimum_background_ratio, cost_of_nonassignment,

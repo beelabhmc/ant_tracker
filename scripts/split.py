@@ -61,9 +61,7 @@ def by_manifest(filename, manifest, vcodec="copy", acodec="copy",
                     filebase = ".".join(filebase.split(".")[:-1])
 
                 split_str += " -ss " + str(split_start) + " -t " + \
-                    str(split_length) + \
-                    " '"+ filebase + "." + fileext + \
-                    "'"
+                    str(split_length) + " '"+ filebase + "." + fileext + "'"
                 print("#######################################################")
                 print("About to run: "+split_cmd+split_str)
                 print("#######################################################")
@@ -111,7 +109,7 @@ def by_seconds(filename, split_length, vcodec="copy", acodec="copy",
         raise SystemExit
 
     # we use -y to force overwrites of output files
-    split_cmd = "ffmpeg -loglevel warning -y -i '%s' -vcodec %s -acodec" \
+    split_cmd = "ffmpeg -loglevel warning -y -i '%s' -vcodec %s -acodec " \
                 "%s %s" % (filename, vcodec, acodec, extra)
     try:
         # get the filename without the file ext
@@ -126,8 +124,8 @@ def by_seconds(filename, split_length, vcodec="copy", acodec="copy",
             split_start = 0
         else:
             split_start = split_length * n
-
-        split_str += " -ss "+str(split_start)+" -t "+str(split_length) \
+        split_end = split_start + split_length
+        split_str += " -ss "+str(split_start)+" -t "+str(split_end) \
                 + " '"+ constants.DIRECTORY+constants.SPLIT_DIR +filebase \
                 + "-" + str(n) + "." + fileext + "'"
         print("About to run: "+split_cmd+split_str)
