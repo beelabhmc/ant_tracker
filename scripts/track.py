@@ -3,7 +3,7 @@ import matlab.engine
 import numpy as np
 import argparse
 
-from vid_meta_data import *
+import vid_meta_data as metadata
 from ffsplit import *
 import constants
 
@@ -106,7 +106,7 @@ def main():
     result_array = np.array([["fName", "id", "X", "Y"]])
     print("Tracking ants in " + args.cropVid)
     # get height and width of video
-    H, W = findVideoMetada(args.cropVid)
+    H, W = metdata.get_video_dimensions(args.cropVid)
     # call matlab to track ants in a single cropped video
     track_result, raw_results = trackOneClip(args.cropVid, W, H, args.minBlob,
                                              args.export, args.result_path)

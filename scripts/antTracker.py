@@ -8,7 +8,7 @@ import cv2
 import constants
 from ffsplit import *
 from track import *
-from vid_meta_data import *
+import vid_meta_data as metadata
 
 def getBBox(ROI_fileName):
     """read ROI labels from txt into a dictionary dict keys will be
@@ -140,7 +140,7 @@ def main():
     for cropVid in glob.glob(constants.DIRECTORY+ constants.CROP_DIR +"*.mp4"):
         print("Tracking ants in " + cropVid)
         # get heigh and width of video
-        H, W = findVideoMetada(cropVid)
+        H, W = metadata.get_video_dimensions(cropVid)
         result_path = constants.DIRECTORY + constants.RESULT_VID_DIR
         # call matlab to track ants in a single cropped video
         track_result = trackOneClip(cropVid, W, H, export, result_path, minBlob)
