@@ -1,4 +1,10 @@
-function ants = ant_tracking(vidOut, blobSize, videoName, outputVidDir)
+function ants = ant_tracking(videoName, vidOut, outputVidDir, blobSize, ...
+                             numGaussians, numTrainingFrames, ...
+                             minimumBackgroundRatio, costOfNonAssignment, ...
+                             invisibleForTooLong, oldAgeThreshold, ...
+                             visibilityThreshold, kalmanInitialError, ...
+                             kalmanMotionNoise, kalmanMeasurementNoise, ...
+                             minVisibleCount)
 % vidOut - boolean, whether we should export the result video
 % blobSize - int, minimum blob area in pixels
 % videoName - string, absolute path to cropped vid
@@ -67,8 +73,9 @@ function obj = setupSystemObjects()
         % of 1 corresponds to the foreground and the value of 0 corresponds
         % to the background.
 
-        obj.detector = vision.ForegroundDetector('NumGaussians', 5, ...
-            'NumTrainingFrames', 40, 'MinimumBackgroundRatio', 0.70);
+        obj.detector = vision.ForegroundDetector('NumGaussians', numGaussians, ...
+            'NumTrainingFrames', numTrainingFrames, ...
+            'MinimumBackgroundRatio', minimumBackgroundRatio);
 
         % Connected groups of foreground pixels are likely to correspond to moving
         % objects.  The blob analysis System object is used to find such groups
@@ -76,7 +83,8 @@ function obj = setupSystemObjects()
         % characteristics, such as area, centroid, and the bounding box.
 
         obj.blobAnalyser = vision.BlobAnalysis('BoundingBoxOutputPort', true, ...
-            'AreaOutputPort', true, 'CentroidOutputPort', true, 'MinimumBlobArea', blobSize); %make a parameter
+            'AreaOutputPort', true, 'CentroidOutputPort', true, ...
+            'MinimumBlobArea', blobSize); %make a parameter
 end
  
 
@@ -86,8 +94,10 @@ function tracks = initializeTracks()
     % bbox : the current bounding box of the object; used for display
     % kalmanFilter : a Kalman filter object used for motion-based tracking
     % age : the number of frames since the track was first detected
-    % totalVisibleCount : the total number of frames in which the track was detected (visible)
-    % consecutiveInvisibleCount : the number of consecutive frames for which the track was not detected (invisible)
+    % totalVisibleCount : the total number of frames in which the track was
+    %                     detected (visible)
+    % consecutiveInvisibleCount : the number of consecutive frames for
+    %                             which the track was not detected (invisible)
     tracks = struct(...
         'id', {}, ...
         'bbox', {}, ...
@@ -110,9 +120,11 @@ function [centroids, bboxes, mask] = detectObjects(frame)
 
     % Apply morphological operations to remove noise and fill in holes.
     % mask is a binary image
-    % strel() returns a morpholigical structuring element (ie a collective region of 1's in a sea of 0's)
+    % strel() returns a morpholigical structuring element (ie a collective region
+    % of 1's in a sea of 0's)
     % the second argument to strel() specifies the shape (see matlab documentation)
-    % docs: https://www.mathworks.com/help/images/morphological-dilation-and-erosion.html
+    % docs: https://www.mathworks.com/help/images/morphological-dilation-and-
+    % erosion.html
     
     mask = imerode(mask, strel('rectangle', [4,4]));
     % mask = imdilate(mask, strel('rectangle', [1, 1]));
@@ -151,7 +163,6 @@ function [assignments, unassignedTracks, unassignedDetections] = ...
     end
 
     % Solve the assignment problem.
-    costOfNonAssignment = 15;
     [assignments, unassignedTracks, unassignedDetections] = ...
         assignDetectionsToTracks(cost, costOfNonAssignment);
 end
@@ -198,14 +209,6 @@ function deleteLostTracks()
         return;
     end
 
-    % how many frames a track must be consecutively invisible for it to be considered lost
-    invisibleForTooLong = 4;
-    % threshold beyond which track is considered old
-    % old tracks are immune from being deleted by the visibilityThreshold
-    ageThreshold = 8;
-    % the min fraction of overall frames for which a track must be visible
-    visibilityThreshold = 0.6;
-
     % Compute the fraction of the track's age for which it was visible.
     ages = [tracks(:).age];
     totalVisibleCounts = [tracks(:).totalVisibleCount];
@@ -237,7 +240,8 @@ function createNewTracks()
         %    MotionNoise - deviation of selected (ie ConstantVelocity) model from actual model, as a 2 element vector; increase makes Kalman filter more tolerant
         %    MeasurementNoise - tolerance for noise in detections; larger value makes Kalman Filter less tolerant
         kalmanFilter = configureKalmanFilter('ConstantVelocity', ...
-            centroid, [200, 50], [100, 15], 100);
+            centroid, kalmanInitialError, kalmanMotionNoise, ...
+            kalmanMeasurementNoise);
 
         % Create a new track.
         newTrack = struct(...
@@ -262,7 +266,6 @@ function displayTrackingResults()
     frame = im2uint8(frame);
     mask = uint8(repmat(mask, [1, 1, 3])) .* 255;
 
-    minVisibleCount = 3;
     if ~isempty(tracks)
 
         % Noisy detections tend to result in short-lived tracks.
@@ -320,3 +323,4 @@ if vidOut
 end
 return
 end
+

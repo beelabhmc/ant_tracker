@@ -38,7 +38,7 @@ def main():
             2) the ROI label name
         dict values will be lists containing the coords of the box
     """
-    print "Reading boxes from "+args.ROI
+    print("Reading boxes from "+args.ROI)
     bboxes={}
     f = open(args.ROI, 'r')
     # get the ROI label names (separated by tabs)
@@ -65,9 +65,12 @@ def main():
     # get path to video
     splitVid = os.path.abspath(args.splitVid)
     # crop each video
-    # boxNm should be a tuple containing the absolute path to the frame that was used, as well as the ROI label name
+    # boxNm should be a tuple containing the absolute path to the frame
+    #     that was used, as well as the ROI label name
     # filter just the box we want
-    boxNames = filter(lambda boxNm: os.path.basename(boxNm[0]) == os.path.splitext(os.path.basename(splitVid))[0] and boxNm[1] == args.label, bboxes.keys())
+    boxNames = filter(lambda boxNm: os.path.basename(boxNm[0]) \
+                          == os.path.splitext(os.path.basename(splitVid))[0] \
+                          and boxNm[1] == args.label, bboxes.keys())
     for boxNm in boxNames:
         # get the coords for this box
         boxCoord = bboxes[boxNm]
@@ -77,12 +80,17 @@ def main():
         h = boxCoord[3]
         # call ffmpeg with the coords to actually do the work of cropping the video
         rectangle = str(w) +':' + str(h) +':' + str(x) +':'+ str(y)
-        print "Attempting to create cropped output: " + args.outVid
-        # this uses a simple filtergraph to crop the video (type "man ffmpeg" in the terminal for more info)
+        print("Attempting to create cropped output: " + args.outVid)
+        # this uses a simple filtergraph to crop the video (type "man
+        # ffmpeg" in the terminal for more info)
         # we use the -y option to force overwrites of output files
-        # we use the max_muxing_queue_size to resolve "Too many packets buffered for output stream" errors
-        # also the loglevel option to disable any ffmpeg output that isn't an error/warning
-        command = 'ffmpeg -y -loglevel warning -i ' + splitVid +' -vf "crop=' + rectangle + '" -max_muxing_queue_size 10000 '+ args.outVid+ ' >>' + args.logFile + ' 2>&1'
+        # we use the max_muxing_queue_size to resolve "Too many packets
+        # buffered for output stream" errors
+        # also the loglevel option to disable any ffmpeg output that
+        # isn't an error/warning
+        command = 'ffmpeg -y -loglevel warning -i ' + splitVid +' -vf "crop=' \
+                  + rectangle + '" -max_muxing_queue_size 10000 '+ args.outVid \
+                  + ' >>' + args.logFile + ' 2>&1'
         os.system(command)
 
 if __name__== "__main__":

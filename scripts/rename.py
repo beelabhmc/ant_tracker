@@ -1,12 +1,13 @@
 from matplotlib import pyplot as plt
 import matplotlib.image as mpimg
-from ffsplit import *
 import math
 import glob, os
-from constants import *
 import argparse
 import matplotlib.patches as patches
 import re
+
+from ffsplit import *
+from constants import *
 
 def reNameAll(VID_DIR, colonyNum, boxRegion):
     c=0

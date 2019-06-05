@@ -1,21 +1,41 @@
-from ffsplit import *
 import math
-from constants import *
 import matlab.engine
 import numpy as np
-from vid_meta_data import *
 import argparse
 
+from vid_meta_data import *
+from ffsplit import *
+import constants
 
-def trackOneClip(vidPath, W, H, minBlob, vidExport, result_path):
+
+def trackOneClip(vidPath, W, H, vidExport, result_path,
+        minBlob=constants.MIN_BLOB,
+        num_gaussians=constants.NUM_GAUSSIANS,
+        num_training_frames=constants.NUM_TRAINING_FRAMES,
+        minimum_background_ratio=constants.MINIMUM_BACKGROUND_RATIO,
+        cost_of_nonassignment=constants.COST_OF_NONASSIGNMENT,
+        invisible_for_too_long=constants.INVISIBLE_FOR_TOO_LONG,
+        old_age_threshold=constants.OLD_AGE_THRESHOLD,
+        visibility_threshold=constants.VISIBILITY_THRESHOLD,
+        kalman_initial_error=constants.KALMAN_INITIAL_ERROR,
+        kalman_motion_noise=constants.KALMAN_MOTION_NOISE,
+        kalman_measurement_noise=constants.KALMAN_MOTION_NOISE,
+        min_visible_count=constants.MIN_VISIBLE_COUNT):
     eng = matlab.engine.start_matlab()
     # call the ant_tracking.m script and get the resulting dataframe
     # inputs:
-    #   vidExport - boolean, whether we should export the result video
-    #   minBlob - int, minimum blob area in pixels
     #   vidPath - string, absolute path to cropped vid
-    #   result_path - string, path to the directory in which to store result videos
-    df = eng.ant_tracking(vidExport, minBlob, vidPath, result_path)
+    #   vidExport - boolean, whether we should export the result video
+    #   result_path - string, path to the directory in which to store
+    #                 result videos
+    #   minBlob - int, minimum blob area in pixels
+    df = eng.ant_tracking(vidPath, vidExport, result_path, minBlob, 
+                          num_gaussians, num_training_frames,
+                          minimum_background_ratio, cost_of_nonassignment,
+                          invisible_for_too_long, old_age_threshold,
+                          visibility_threshold, kalman_initial_error,
+                          kalman_motion_noise, kalman_measurement_noise,
+                          min_visible_count)
     if df:
         track_result = np.array([["fName", "id", "X", "Y"]])
         # convert the dataframe to a np array
@@ -28,7 +48,8 @@ def trackOneClip(vidPath, W, H, minBlob, vidExport, result_path):
         for idnum in idL:
             # get tracks for this ant
             antTrack = df[df[:, 4] == idnum]
-            # NOTE: x and y coords can be negative if kalman filter is predicting the ant after it passes out of frame
+            # NOTE: x and y coords can be negative if kalman filter is
+            #       predicting the ant after it passes out of frame
             x0 = antTrack[-1,0]
             x1 = antTrack[0,0]
             directionX = x0-x1
@@ -36,7 +57,9 @@ def trackOneClip(vidPath, W, H, minBlob, vidExport, result_path):
             y1 = antTrack[0,1]
             directionY = y0-y1
             # save results in np array so that we can return them soon
-            track_result = np.append(track_result, [[vidPath, idnum, directionX, directionY]], axis=0)
+            track_result = np.append(track_result, [[vidPath, idnum, directionX,
+                                                     directionY]],
+                                     axis=0)
         # return the data without its header
         return track_result[1:,], df
     return np.array([]), np.array([])
@@ -52,7 +75,8 @@ def main():
                             dest = 'result_path',
                             required = True,
                             type=str,
-                            help='path to a directory in which to dump result videos')
+                            help='path to a directory in which to dump'
+                                 'result videos')
     arg_parser.add_argument('--r',
                             dest = 'result',
                             required = True,
@@ -62,12 +86,14 @@ def main():
                             dest = 'raw_results',
                             type=str,
                             default=None,
-                            help='path of array of raw results to output (default = None)')
+                            help='path of array of raw results to output'
+                                 '(default = None)')
     arg_parser.add_argument('--m',
                             dest = 'minBlob',
                             type=int,
-                            default=5,
-                            help='minimum blob area in pixels (default = 5)')
+                            default=constants.DEFAULT_MIN_BLOB,
+                            help='minimum blob area in pixels (default = '
+                            '%d)' % constants.DEFAULT_MIN_BLOB)
     arg_parser.add_argument('--e',
                             dest = 'export',
                             type=bool,
@@ -78,11 +104,12 @@ def main():
 
     # track ants in each of the cropped videos
     result_array = np.array([["fName", "id", "X", "Y"]])
-    print "Tracking ants in " + args.cropVid
+    print("Tracking ants in " + args.cropVid)
     # get height and width of video
     H, W = findVideoMetada(args.cropVid)
     # call matlab to track ants in a single cropped video
-    track_result, raw_results = trackOneClip(args.cropVid, W, H, args.minBlob, args.export, args.result_path)
+    track_result, raw_results = trackOneClip(args.cropVid, W, H, args.minBlob,
+                                             args.export, args.result_path)
     # keep track of the tracking results in a np array
     if track_result.size:
         result_array = np.concatenate((result_array, track_result), axis=0)
@@ -94,3 +121,4 @@ def main():
 
 if __name__== "__main__":
     main()
+
