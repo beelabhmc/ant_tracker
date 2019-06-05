@@ -12,7 +12,9 @@ RESULT_VID_DIR = "result/"
 
 
 # Parameters used by the python code that can be tweaked for better performance
-PADDING = 10 # 
+PADDING = 10 # This constant was buried in the antTracker.py file when I got
+             # it for the first time, but I can't find out where or if it is
+             # ever used by the code.
 
 MIN_BLOB = 5 # The smallest size of blob which is interpreted as an ant
 
