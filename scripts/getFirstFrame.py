@@ -1,15 +1,16 @@
 import cv2
 import math
 import glob, os
-from constants import *
 import argparse
 import re
 
+import constants
+
 def saveFirstFrame(vidName):
-    vidcap = cv2.VideoCapture(DIRECTORY+vidName)
+    vidcap = cv2.VideoCapture(constants.DIRECTORY+vidName)
     success,image = vidcap.read()
     vidNameShort = vidName.split(".")[0]
-    cv2.imwrite(DIRECTORY+vidNameShort+".jpg", image) 
+    cv2.imwrite(constants.DIRECTORY+vidNameShort+".jpg", image) 
 
 
 

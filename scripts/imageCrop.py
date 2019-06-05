@@ -1,10 +1,12 @@
 import csv
 import cv2
 from matplotlib import pyplot as plt
-from ffsplit import *
 import math
-import glob, os
-from constants import *
+import glob
+import os
+
+import constants
+import split
 
 
 os.chdir(os.getcwd())
@@ -20,7 +22,7 @@ for vidName in glob.glob("*.mp4"):
     with open('cropped_coordinates.csv', 'a') as csvfile:
         writer = csv.writer(csvfile, delimiter=' ')
         writer.writerow([vidName] + coord)
-    split_by_seconds(vidName, 600, extra = '-threads 8')
+    split.by_seconds(vidName, 600, extra = '-threads 8')
     os.chdir('split')
     for splitVid in glob.glob("*.mp4"):
         c=0

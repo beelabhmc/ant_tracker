@@ -4,7 +4,6 @@ import numpy as np
 import argparse
 
 import vid_meta_data as metadata
-from ffsplit import *
 import constants
 
 

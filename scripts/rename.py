@@ -6,16 +6,16 @@ import argparse
 import matplotlib.patches as patches
 import re
 
-from ffsplit import *
-from constants import *
+import constants
 
 def reNameAll(VID_DIR, colonyNum, boxRegion):
     c=0
-    vids = glob.glob(DIRECTORY + VID_DIR + "*.mp4")
+    vids = glob.glob(constants.DIRECTORY + VID_DIR + "*.mp4")
     vids.sort()
     
     for vidName in vids:
-        command = "mv "+ vidName + " "+ DIRECTORY + "C"+colonyNum + boxRegion+"-seg"+str(c)+".mp4"
+        command = "mv "+ vidName + " "+ constants.DIRECTORY + "C"+colonyNum \
+                  + boxRegion+"-seg"+str(c)+".mp4"
         c+=1
         os.system(command)
 
@@ -26,7 +26,8 @@ def main():
                             dest = 'vid_dir',
                             type=str,
                             default="",
-                            help='directory of the video files (colony1/,colony2/,colony3/)')
+                            help='directory of the video files '
+                                 '(colony1/,colony2/,colony3/)')
     arg_parser.add_argument('--c',
                             dest = 'colony_number',
                             type=str,
@@ -45,12 +46,15 @@ def main():
     if args.colony_number:
         colonyNum = args.colony_number.split(',')
     else:
-        raise Exception('requires the colony number corresponding to the video directory')
+        raise Exception('requires the colony number corresponding to '
+                        'the video directory')
     if args.box_region:
         boxRegion = args.box_region.split(',')
     else:
-        raise Exception('requires the box region corresponding to the video directory')
-    if len(boxRegion) != len(VID_DIR) or len(boxRegion) != len(colonyNum)  or len(colonyNum) != len(VID_DIR):
+        raise Exception('requires the box region corresponding to the '
+                        'video directory')
+    if len(boxRegion) != len(VID_DIR) or len(boxRegion) != len(colonyNum) \
+            or len(colonyNum) != len(VID_DIR):
         raise Exception('all parameters must be the same length')
     for i in range(len(VID_DIR)):
         reNameAll(VID_DIR[i], colonyNum[i], boxRegion[i])

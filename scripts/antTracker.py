@@ -6,7 +6,7 @@ import numpy as np
 import cv2
 
 import constants
-from ffsplit import *
+import split
 from track import *
 import vid_meta_data as metadata
 
@@ -56,7 +56,7 @@ def cropTimeAndSpace(BBoxDict):
         vidName_pre = vidName.split("-")[0]
         boxNames = BBoxDict.keys()
         # split videos into 600 sec segments each
-        split_by_seconds(vidName, 600, extra = '-threads 8')
+        split.by_seconds(vidName, 600, extra = '-threads 8')
     # crop each video
     for splitVid in glob.glob(constants.DIRECTORY+constants.SPLIT_DIR +"*.mp4"):
         # boxNm should be a tuple containing the absolute path to the
