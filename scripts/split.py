@@ -1,30 +1,33 @@
 #!/usr/bin/env python
+from __future__ import division
 import csv
 import subprocess
 import re
 import math
 import json
 import os
-from optparse import OptionParser
+import argparse
 
 import constants
 
 # ie "split/"
 
-length_regexp = 'Duration: (\d{2}):(\d{2}):(\d{2})\.\d+,'
-re_length = re.compile(length_regexp)
+re_length = re.compile('Duration: (\d{2}):(\d{2}):(\d{2})\.\d+,')
 
-def by_manifest(filename, manifest, vcodec="copy", acodec="copy",
+def by_manifest(filename, destination, manifest, vcodec="copy", acodec="copy",
                       extra="", **kwargs):
     """ Split video into segments based on the given manifest file.
 
     Arguments:
         filename (str)      - Location of the video.
+        destination (str)   - Location to place the output videos
+                              (doesn't actually work because I don't know how
+                               the manifest works --Jarred)
         manifest (str)      - Location of the manifest file.
         vcodec (str)        - Controls the video codec for the ffmpeg video
-                            output.
+                              output.
         acodec (str)        - Controls the audio codec for the ffmpeg video
-                            output.
+                              output.
         extra (str)         - Extra options for ffmpeg.
     """
     if not os.path.exists(manifest):
@@ -84,8 +87,8 @@ def by_manifest(filename, manifest, vcodec="copy", acodec="copy",
 
 
 
-def by_seconds(filename, split_length, vcodec="copy", acodec="copy",
-                     extra="", **kwargs):
+def by_seconds(filename, destination, split_length, vcodec="copy",
+               acodec="copy", extra="", **kwargs):
     if split_length and split_length <= 0:
         print("Split length can't be 0")
         raise SystemExit
@@ -96,14 +99,14 @@ def by_seconds(filename, split_length, vcodec="copy", acodec="copy",
     print(output)
     matches = re_length.search(output)
     if matches:
-        video_length = int(matches.group(1)) * 3600 + \
-                        int(matches.group(2)) * 60 + \
-                        int(matches.group(3))
+        video_length = int(matches.group(1)) * 3600 \
+                       + int(matches.group(2)) * 60  \
+                       + int(matches.group(3))
         print("Video length in seconds: "+str(video_length))
     else:
         print("Can't determine video length.")
         raise SystemExit
-    split_count = int(math.ceil(video_length/float(split_length)))
+    split_count = int(math.ceil(video_length / split_length))
     if(split_count == 1):
         print("Video length is less then the target split length.")
         raise SystemExit
@@ -126,7 +129,7 @@ def by_seconds(filename, split_length, vcodec="copy", acodec="copy",
             split_start = split_length * n
         split_end = split_start + split_length
         split_str += " -ss "+str(split_start)+" -t "+str(split_end) \
-                + " '"+ constants.DIRECTORY+constants.SPLIT_DIR +filebase \
+                + " '"+ destination + filebase \
                 + "-" + str(n) + "." + fileext + "'"
         print("About to run: "+split_cmd+split_str)
         output = subprocess.Popen(split_cmd+split_str, shell = True, stdout =
@@ -134,53 +137,54 @@ def by_seconds(filename, split_length, vcodec="copy", acodec="copy",
 
 
 def main():
-    parser = OptionParser()
+    parser = argparse.ArgumentParser()
 
-    parser.add_option("-f", "--file",
-                        dest = "filename",
-                        help = "File to split, for example sample.avi",
-                        type = "string",
-                        action = "store"
-                        )
-    parser.add_option("-s", "--split-size",
-                        dest = "split_length",
-                        help = "Split or chunk size in seconds, for example 10",
-                        type = "int",
-                        action = "store"
-                        )
-    parser.add_option("-m", "--manifest",
-                      dest = "manifest",
-                      help = "Split video based on a json manifest file. ",
-                      type = "string",
-                      action = "store"
-                     )
-    parser.add_option("-v", "--vcodec",
-                      dest = "vcodec",
-                      help = "Video codec to use. ",
-                      type = "string",
-                      default = "copy",
-                      action = "store"
-                     )
-    parser.add_option("-a", "--acodec",
-                      dest = "acodec",
-                      help = "Audio codec to use. ",
-                      type = "string",
-                      default = "copy",
-                      action = "store"
-                     )
-    parser.add_option("-e", "--extra",
-                      dest = "extra",
-                      help = "Extra options for ffmpeg, e.g. '-e -threads 8'. ",
-                      type = "string",
-                      default = "",
-                      action = "store"
-                     )
-    (options, args) = parser.parse_args()
+    parser.add_argument('filename',
+                        help='The name of the file to split',
+                        type=str,
+                       )
+    parser.add_argument('destination',
+                        help='The directory in which to save the split videos.',
+                        type=str,
+                       )
+    parser.add_argument('-s', '--split-size',
+                        dest='split_length',
+                        help='Split or chunk size in seconds, for example 10',
+                        type=int,
+                       )
+    parser.add_argument('-m', '--manifest',
+                        dest='manifest',
+                        help='Split video based on a json manifest file. ',
+                        type=str,
+                       )
+    parser.add_argument('-v', '--vcodec',
+                        dest='vcodec',
+                        help='Video codec to use. If unspecified, it defaults '
+                             'to the one in the source video.',
+                        type=str,
+                        default='copy',
+                       )
+    parser.add_argument('-a', '--acodec',
+                        dest='acodec',
+                        help='Audio codec to use. If unspecified, it defaults '
+                             'to the one in the source video',
+                        type=str,
+                        default='copy',
+                       )
+    parser.add_argument('-e', '--extra',
+                        dest='extra',
+                        help='Extra options for ffmpeg, e.g. "-e -threads 8". ',
+                        type=str,
+                        default='',
+                       )
+    args = parser.parse_args()
+    if args.destination[-1] != '/':
+        args.destination += '/'
 
-    if options.filename and options.manifest:
-        split_by_manifest(**(options.__dict__))
-    elif options.filename and options.split_length:
-        split_by_seconds(**(options.__dict__))
+    if args.filename and args.manifest:
+        by_manifest(**(args.__dict__))
+    elif args.filename and args.split_length:
+        by_seconds(**(args.__dict__))
     else:
         parser.print_help()
         raise SystemExit

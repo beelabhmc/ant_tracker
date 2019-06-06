@@ -1,4 +1,3 @@
-import matlab
 # absolute path pointing to video files
 #
 # NOTE: all dir paths should have trailing slashes
@@ -46,12 +45,10 @@ VISIBILITY_THRESHOLD = 0.6      # If an ant is visible in less than this
                                 # proportion of frames, then assume that isn't
                                 # real
 
-KALMAN_INITIAL_ERROR = matlab.double([200, 50])
-                                # The margin of error in the initial position
+KALMAN_INITIAL_ERROR = [200, 50]# The margin of error in the initial position
                                 # and velocity for the Kalman filter
 
-KALMAN_MOTION_NOISE = matlab.double([100, 15])
-                                # The exactitude with which the Kalman filter
+KALMAN_MOTION_NOISE = [100, 15] # The exactitude with which the Kalman filter
                                 # insists on its expectations
 
 KALMAN_MEASUREMENT_NOISE = 100. # The expected margin of error in the

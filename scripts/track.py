@@ -33,11 +33,12 @@ def trackOneClip(vidPath, W, H, vidExport, result_path,
                           num_gaussians, num_training_frames,
                           minimum_background_ratio, cost_of_nonassignment,
                           invisible_for_too_long, old_age_threshold,
-                          visibility_threshold, kalman_initial_error,
-                          kalman_motion_noise, kalman_measurement_noise,
-                          min_visible_count)
+                          visibility_threshold,
+                          matlab.double(kalman_initial_error),
+                          matlab.double(kalman_motion_noise),
+                          kalman_measurement_noise, min_visible_count)
     if df:
-        track_result = np.array([["fName", "id", "X", "Y"]])
+        track_result = np.array([["filename", "id", "X", "Y"]])
         # convert the dataframe to a np array
         # it should have five columns:
         #   x_pos, y_pos, width, height, ant_id
@@ -66,55 +67,51 @@ def trackOneClip(vidPath, W, H, vidExport, result_path,
 
 def main():
     arg_parser = argparse.ArgumentParser()
-    arg_parser.add_argument('--i',
-                            dest = 'cropVid',
-                            required = True,
-                            type=str,
-                            help='path to a video to track')
-    arg_parser.add_argument('--o',
-                            dest = 'result_path',
-                            required = True,
-                            type=str,
-                            help='path to a directory in which to dump'
-                                 'result videos')
-    arg_parser.add_argument('--r',
-                            dest = 'result',
-                            required = True,
-                            type=str,
-                            help='path of array of results to output')
-    arg_parser.add_argument('--rr',
-                            dest = 'raw_results',
-                            type=str,
-                            default=None,
-                            help='path of array of raw results to output'
-                                 '(default = None)')
     arg_parser.add_argument('--m',
                             dest = 'minBlob',
                             type=int,
-                            default=constants.DEFAULT_MIN_BLOB,
+                            default=constants.MIN_BLOB,
                             help='minimum blob area in pixels (default = '
-                            '%d)' % constants.DEFAULT_MIN_BLOB)
-    arg_parser.add_argument('--e',
-                            dest = 'export',
-                            type=bool,
-                            default=False,
-                            help='do we export result video (default = False)')
+                            '%d)' % constants.MIN_BLOB)
+    arg_parser.add_argument('source',
+                            type=str,
+                            help='The path to a video file in which we want to '
+                                 'track the ants.')
+    arg_parser.add_argument('result_path',
+                            type=str,
+                            help='The path to a directory in which to save the '
+                                 'results of tracking ants.')
+    arg_parser.add_argument('video_path',
+                            type=str,
+                            nargs='?',
+                            default=None,
+                            help='The path to a directory in which to dump'
+                                 'result videos. If no path is given, then it '
+                                 'does not export videos.')
+    arg_parser.add_argument('raw_results',
+                            type=str,
+                            default=None,
+                            nargs='?',
+                            help='Path of array of raw results to output. '
+                                 'If no path is given, then it does not save '
+                                 'the raw results.')
 
     args = arg_parser.parse_args()
 
     # track ants in each of the cropped videos
     result_array = np.array([["fName", "id", "X", "Y"]])
-    print("Tracking ants in " + args.cropVid)
+    print("Tracking ants in " + args.source)
     # get height and width of video
-    H, W = metdata.get_video_dimensions(args.cropVid)
+    H, W = metadata.get_video_dimensions(args.source)
     # call matlab to track ants in a single cropped video
-    track_result, raw_results = trackOneClip(args.cropVid, W, H, args.minBlob,
-                                             args.export, args.result_path)
+    export = args.video_path is not None
+    track_result, raw_results = trackOneClip(args.source, W, H, export,
+                                             args.video_path or '/dev/null')
     # keep track of the tracking results in a np array
     if track_result.size:
         result_array = np.concatenate((result_array, track_result), axis=0)
     # save the tracking results to disk
-    np.savetxt(args.result, result_array, delimiter= ',', fmt='%s')
+    np.savetxt(args.result_path, result_array, delimiter= ',', fmt='%s')
     # save the raw results to disk
     if args.raw_results is not None:
         np.savetxt(args.raw_results, raw_results, delimiter=',', fmt='%s')
