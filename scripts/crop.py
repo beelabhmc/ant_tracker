@@ -1,98 +1,74 @@
-import argparse
+from __future__ import division
 import os
-import re
+import argparse
+
+def read_bbox(boxfile, video):
+    """Read the ROI labels from the given file into a dictionary mapping
+    names of the boxes to the coordinates and dimensions, for the video
+    given.
+    """
+    bboxes = {}
+    f = open(boxfile)
+    names = f.readline().strip().split('\t')[1:]
+    for line in f:
+        line = line.strip().split('\t')
+        if video in line[0]:
+            nums = list(map(int, line[1:]))
+            for i in range(0, len(nums)//4):
+                bboxes[names[i].replace(' ', '')] = \
+                        nums[i:len(nums):len(nums)//4]
+    f.close()
+    return bboxes
+
+def crop_video(video, out_dir, boxes, logfile='/dev/null'):
+    """Crops the given video, according to boxes, and saves the results
+    in out_dir.
+
+    Boxes should be either a string, in which case it is a path to the
+    file from which to read the boxes, or a dict, in which case it is
+    the boxes.
+
+    The dict should have keys consisting of the name of the ROI and
+    values consisting of a list of coords of the box, formatted as
+    [x_upper_left_corner, y_upper_left_corner, x_width, y_width]
+
+    If logfile is given, then the logs of ffmpeg gets stored in that
+    file. Otherwise, the logs from ffmpeg are ignored.
+    """
+    if out_dir[-1] != '/':
+        out_dir += '/'
+    video_name = '.'.join(video.split('/')[-1].split('.')[:-1])
+    par_name = '-'.join(video_name.split('-')[:-1]) # BBox was made for parent
+    if type(boxes) is str:
+        boxes = read_bbox(boxes, par_name)
+    for box in boxes.keys():
+        x, y, w, h = boxes[box]
+        rect = '%d:%d:%d:%d' % (w, h, x, y)
+        crop_name = '%s%s-%s.mp4' % (out_dir, video_name, box)
+        command = 'ffmpeg -y -i %s -vf crop=%s %s >> %s' \
+                  % (video, rect, crop_name, logfile)
+        os.system(command)
+    return boxes
 
 def main():
     arg_parser = argparse.ArgumentParser()
-    arg_parser.add_argument('--f',
-                            dest = 'ROI',
-                            required = True,
+    arg_parser.add_argument('video',
                             type=str,
-                            help='a txt file of the bounding boxes for ROI')
-    arg_parser.add_argument('--r',
-                            dest = 'label',
-                            required = True,
+                            help='The video to be cropped',
+                           )
+    arg_parser.add_argument('out_dir',
                             type=str,
-                            help='the name of the roi_label you\'d like to crop')
-    arg_parser.add_argument('--i',
-                            dest = 'splitVid',
-                            required = True,
+                            help='The directory in which to save the '
+                                 'videos made.',
+                           )
+    arg_parser.add_argument('boxes',
                             type=str,
-                            help='path to a video to crop')
-    arg_parser.add_argument('--o',
-                            dest = 'outVid',
-                            required = True,
-                            type=str,
-                            help='path of video to output')
-    arg_parser.add_argument('--l',
-                            dest = 'logFile',
-                            type=str,
-                            default="/dev/null",
-                            help='path to log file')
+                            help='A text file from which to load the '
+                                 'boxes to crop.',
+                           )
     args = arg_parser.parse_args()
+    crop_video(args.video, args.out_dir, args.boxes)
 
-    """
-        read ROI labels from txt into a dictionary
-        dict keys will be tuples containing
-            1) the path to the frame that was used
-            2) the ROI label name
-        dict values will be lists containing the coords of the box
-    """
-    print("Reading boxes from "+args.ROI)
-    bboxes={}
-    f = open(args.ROI, 'r')
-    # get the ROI label names (separated by tabs)
-    names = f.readline().strip().split("\t")[1:]
-    names = [re.sub("_1$", "", x) for x in names]
-    c=0
-    for line in f:
-        # get ROI coords and path to frame
-        line = line.strip().split("\t")
-        filePath = os.path.abspath(os.path.splitext(line[0])[0])
-        numbers = line[1:]
-        numbers = [int(x) if x else None for x in numbers]
-        for i in range(0, len(numbers), 4):
-            if numbers[i]:
-                # save filepath and ROI name as keys for the ROI coords
-                bboxes[(filePath, names[i])] = numbers[i:(i+4)]
-    f.close()
-
-
-    """
-        split videos into 10 min segments then crop into boxes
-        according to the coordinates provided in ROI
-    """
-    # get path to video
-    splitVid = os.path.abspath(args.splitVid)
-    # crop each video
-    # boxNm should be a tuple containing the absolute path to the frame
-    #     that was used, as well as the ROI label name
-    # filter just the box we want
-    boxNames = filter(lambda boxNm: os.path.basename(boxNm[0]) \
-                          == os.path.splitext(os.path.basename(splitVid))[0] \
-                          and boxNm[1] == args.label, bboxes.keys())
-    for boxNm in boxNames:
-        # get the coords for this box
-        boxCoord = bboxes[boxNm]
-        x = float(boxCoord[0])
-        y = float(boxCoord[1])
-        w = boxCoord[2]
-        h = boxCoord[3]
-        # call ffmpeg with the coords to actually do the work of cropping the video
-        rectangle = str(w) +':' + str(h) +':' + str(x) +':'+ str(y)
-        print("Attempting to create cropped output: " + args.outVid)
-        # this uses a simple filtergraph to crop the video (type "man
-        # ffmpeg" in the terminal for more info)
-        # we use the -y option to force overwrites of output files
-        # we use the max_muxing_queue_size to resolve "Too many packets
-        # buffered for output stream" errors
-        # also the loglevel option to disable any ffmpeg output that
-        # isn't an error/warning
-        command = 'ffmpeg -y -loglevel warning -i ' + splitVid +' -vf "crop=' \
-                  + rectangle + '" -max_muxing_queue_size 10000 '+ args.outVid \
-                  + ' >>' + args.logFile + ' 2>&1'
-        os.system(command)
-
-if __name__== "__main__":
+if __name__ == '__main__':
     main()
 
