@@ -120,6 +120,7 @@ def by_seconds(filename, destination, split_length, vcodec="copy",
         filebase = ".".join(filebase.split(".")[:-1])
         fileext = filename.split(".")[-1]
     except IndexError as e:
+        # This won't actually be run, because the above code won't error
         raise IndexError("No . in filename. Error: " + str(e))
     for n in range(0, split_count):
         split_str = ""
@@ -127,8 +128,7 @@ def by_seconds(filename, destination, split_length, vcodec="copy",
             split_start = 0
         else:
             split_start = split_length * n
-        split_end = split_start + split_length
-        split_str += " -ss "+str(split_start)+" -t "+str(split_end) \
+        split_str += " -ss "+str(split_start)+" -t "+str(split_length) \
                 + " '"+ destination + filebase \
                 + "-" + str(n) + "." + fileext + "'"
         print("About to run: "+split_cmd+split_str)

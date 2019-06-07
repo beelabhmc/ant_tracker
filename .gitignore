@@ -1,8 +1,8 @@
 storage/
 out/
 archive/
-input/+
-intermediate/+
+input/*
+intermediate/*
 
 out_test/
 out_test2

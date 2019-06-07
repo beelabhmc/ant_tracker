@@ -1,5 +1,5 @@
 from __future__ import division
-import os
+import subprocess
 import argparse
 
 def read_bbox(boxfile, video):
@@ -20,7 +20,7 @@ def read_bbox(boxfile, video):
     f.close()
     return bboxes
 
-def crop_video(video, out_dir, boxes, logfile='/dev/null'):
+def crop_video(video, out_dir, boxes, logfile=None):
     """Crops the given video, according to boxes, and saves the results
     in out_dir.
 
@@ -47,7 +47,11 @@ def crop_video(video, out_dir, boxes, logfile='/dev/null'):
         crop_name = '%s%s-%s.mp4' % (out_dir, video_name, box)
         command = 'ffmpeg -y -i %s -vf crop=%s %s >> %s' \
                   % (video, rect, crop_name, logfile)
-        os.system(command)
+        print('About to run: %s' % command)
+        output = subprocess.call(command, shell=True, stdout=subprocess.PIPE,
+                                 stderr=subprocess.PIPE).stdout.read()
+        if logfile:
+            open(logfile, 'w').write(output)
     return boxes
 
 def main():
