@@ -1,6 +1,8 @@
 import cv2
 import matplotlib.pyplot as plt
 import numpy as np
+import os.path
+import itertools
 
 import constants
 
@@ -58,5 +60,33 @@ def pair_rects(rects):
         rects = rects[1:near[0]]+rects[near[0]+1:]
     return out
 
-rects = find_rects(smooth_regions(find_red(cv2.imread('../input/red-bridge.png'))))
+def get_roi_from_rect_pair(rect_pair):
+    """Take a pair of rectangles (in the format from find_rects) and
+    returns an roi for the rectangle pair, formatted as [x, y, w, h].
+    
+    This method does not yet support rotated ROIs.
+    """
+    pts = np.concatenate(map(cv2.boxPoints, rect_pair))
+    xs, ys = map(list, zip(*pts))
+    x, y = map(lambda x: int(round(x)), (min(xs), min(ys)))
+    w, h = map(lambda x: int(round(x)), (max(xs) - x, max(ys)-y))
+    return [x, y, w, h]
+
+def save_rois(rois, outfile, imagename, append=True):
+    if os.path.exists(outfile) and append:
+        f = open(outfile, 'a')
+    else:
+        f = open(outfile, 'w')
+    f.write('%s\t%s\n' % (imagename,
+                '\t'.join(map(lambda x: '%d,%d,%d,%d' % tuple(x), rois))))
+    f.close()
+
+
+if __name__ == '__main__':
+    image = os.path.abspath('../input/red-bridge-1.png')
+    mask = smooth_regions(find_red(cv2.imread(image)))
+    rects = find_rects(mask)
+    pairs = pair_rects(rects)
+    rois = list(map(get_roi_from_rect_pair, pairs))
+    save_rois(rois, '../input/rois.txt', image)
 

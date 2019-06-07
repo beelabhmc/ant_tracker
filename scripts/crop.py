@@ -8,16 +8,14 @@ def read_bbox(boxfile, video):
     given.
     """
     bboxes = {}
-    f = open(boxfile)
-    names = f.readline().strip().split('\t')[1:]
-    for line in f:
+    for line in open(boxfile):
         line = line.strip().split('\t')
         if video in line[0]:
-            nums = list(map(int, line[1:]))
-            for i in range(0, len(nums)//4):
-                bboxes[names[i].replace(' ', '')] = \
-                        nums[i:len(nums):len(nums)//4]
-    f.close()
+            boxes = line[1:]
+            for i in range(len(boxes)):
+                bboxes['ROI_%d' % i] = map(int, boxes[i].split(','))
+    from pprint import pprint
+    pprint(bboxes)
     return bboxes
 
 def crop_video(video, out_dir, boxes, logfile='/dev/null'):
