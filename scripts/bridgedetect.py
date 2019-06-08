@@ -1,8 +1,8 @@
 import cv2
-import matplotlib.pyplot as plt
 import numpy as np
 import os.path
 import itertools
+import argparse
 
 import constants
 
@@ -48,16 +48,16 @@ def find_rects(mask):
 def pair_rects(rects):
     """Takes a list of rectangles and pairs them by centroid position."""
     out = []
-    while rects:
-        pos = sum(cv2.boxPoints(rects[0]))/8
-        near = (len(rects), 1e100)
-        for i in range(1, len(rects)):
-            dist = np.sqrt(np.sum((sum(cv2.boxPoints(rects[i]))/8 - pos)**2))
-            if dist < near[1]:
-                near = i, dist
-        # print(near, rects)
-        out.append((rects[0], rects[near[0]]))
-        rects = rects[1:near[0]]+rects[near[0]+1:]
+    while len(rects) >= 2:
+        best_pair = (-1, -1, 1e1000)
+        for i in range(len(rects)):
+            for j in range(len(rects)):
+                if i == j:
+                    continue
+                dist = np.sqrt(np.sum((sum(cv2.boxPoints(rects[i]))//8 \
+                                       - sum(cv2.boxPoints(rects[j])))**2))
+    if rects:
+        print('Warning: not all lines were paired.')
     return out
 
 def get_roi_from_rect_pair(rect_pair):
@@ -77,16 +77,47 @@ def save_rois(rois, outfile, imagename, append=True):
         f = open(outfile, 'a')
     else:
         f = open(outfile, 'w')
-    f.write('%s\t%s\n' % (imagename,
+    f.write('%s\t%s\n' % (os.path.abspath(imagename),
                 '\t'.join(map(lambda x: '%d,%d,%d,%d' % tuple(x), rois))))
     f.close()
 
+def main():
+    arg_parser = argparse.ArgumentParser()
+    arg_parser.add_argument('video',
+                            type=str,
+                            help='The path to a video with ROIs to detect.',
+                           )
+    arg_parser.add_argument('outfile',
+                            type=str,
+                            help='The path to a file in which to write the '
+                                 'detected ROIs.',
+                           )
+    arg_parser.add_argument('-o', '--override',
+                            dest='override',
+                            action='store_const', const=False,
+                            default=True,
+                            help='Override the outfile if it already exists '
+                                 '(default=append to the file)',
+                           )
+    arg_parser.add_argument('-f', '--frame',
+                            dest='frame',
+                            type=int,
+                            default=1,
+                            help='The frame number in the video to use for '
+                                 'ROI detection (default=1)',
+                           )
+    args = arg_parser.parse_args()
+    video = cv2.VideoCapture(args.video)
+    for i in range(args.frame-1):
+        if not video.read()[0]:
+            arg_parser.error('The video only has %d frames.' % i)
+    exists, frame = video.read()
+    if not exists:
+        arg_parser.error('The video only has %d frames.' % (args.frame-1))
+    mask = smooth_regions(find_red(frame))
+    rois = list(map(get_roi_from_rect_pair, pair_rects(find_rects(mask))))
+    save_rois(rois, args.outfile, args.video, append=args.override)
 
 if __name__ == '__main__':
-    image = os.path.abspath('../input/red-bridge-1.png')
-    mask = smooth_regions(find_red(cv2.imread(image)))
-    rects = find_rects(mask)
-    pairs = pair_rects(rects)
-    rois = list(map(get_roi_from_rect_pair, pairs))
-    save_rois(rois, '../input/rois.txt', image)
+    main()
 
