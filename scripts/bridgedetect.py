@@ -45,19 +45,35 @@ def find_rects(mask):
     contours, _ = cv2.findContours(mask, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
     return list(map(cv2.minAreaRect, contours))
 
-def pair_rects(rects):
-    """Takes a list of rectangles and pairs them by centroid position."""
+def pair_rects(rects, max_dist=250):
+    """Takes a list of rectangles and pairs them by centroid position.
+    
+    The algorithm will pair rectangles based on the closest centroids.
+    Once there are no rectangles left within max_dist of each other,
+    the algrithm stops.
+
+    If max_dist is None, it will pair, regardless of the distance.
+    """
     out = []
     while len(rects) >= 2:
         best_pair = (-1, -1, 1e1000)
         for i in range(len(rects)):
-            for j in range(len(rects)):
-                if i == j:
-                    continue
-                dist = np.sqrt(np.sum((sum(cv2.boxPoints(rects[i]))//8 \
-                                       - sum(cv2.boxPoints(rects[j])))**2))
+            for j in range(i+1, len(rects)):
+                dist = np.sqrt(np.sum((sum(cv2.boxPoints(rects[i]))/8 \
+                                       - sum(cv2.boxPoints(rects[j]))/8)**2))
+                if dist < best_pair[2]:
+                    best_pair = (i, j, dist)
+        if max_dist is not None and best_pair[2] > max_dist:
+            print('Exceeded maximum distance: %d > %d' % (best_pair[2], max_dist))
+            break
+        out.append((rects[best_pair[0]], rects[best_pair[1]]))
+        rects = rects[:best_pair[0]] + rects[best_pair[0]+1:best_pair[1]] \
+                + rects[best_pair[1]+1:]
     if rects:
         print('Warning: not all lines were paired.')
+        print('Unpaired lines:')
+        from pprint import pprint
+        pprint(rects)
     return out
 
 def get_roi_from_rect_pair(rect_pair):
@@ -66,7 +82,7 @@ def get_roi_from_rect_pair(rect_pair):
     
     This method does not yet support rotated ROIs.
     """
-    pts = np.concatenate(map(cv2.boxPoints, rect_pair))
+    pts = np.concatenate(list(map(cv2.boxPoints, rect_pair)))
     xs, ys = map(list, zip(*pts))
     x, y = map(lambda x: int(round(x)), (min(xs), min(ys)))
     w, h = map(lambda x: int(round(x)), (max(xs) - x, max(ys)-y))
