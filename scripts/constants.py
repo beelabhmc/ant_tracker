@@ -57,16 +57,3 @@ KALMAN_MEASUREMENT_NOISE = 100. # The expected margin of error in the
 MIN_VISIBLE_COUNT = 3           # The minimum number of frames for which an ant
                                 # must be spotted for its track to be displayed
 
-
-# Parameters used in detecting bridges automatically via looking for red
-# For more information on the HSV color model, go to
-# https://en.wikipedia.org/wiki/HSL_and_HSV
-HSV_HUE_TOLERANCE = 60  # How close the hue must be to red to be detected
-                        # A measure of which color the pixel is
-
-HSV_SAT_MINIMUM = 70    # The smallest saturation for the red to be detected
-                        # A measure of how strongly colored the pixel is
-
-HSV_VALUE_MINIMUM = 100  # The smallest value for the red to be detected
-                        # A measure of how bright the pixel is
-
