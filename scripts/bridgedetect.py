@@ -51,11 +51,14 @@ def pair_rects(rects):
     while len(rects) >= 2:
         best_pair = (-1, -1, 1e1000)
         for i in range(len(rects)):
-            for j in range(len(rects)):
-                if i == j:
-                    continue
+            for j in range(i+1, len(rects)):
                 dist = np.sqrt(np.sum((sum(cv2.boxPoints(rects[i]))//8 \
                                        - sum(cv2.boxPoints(rects[j])))**2))
+                if dist < best_pair[2]:
+                    best_pair = (i, j, dist)
+        out.append((rects[best_pair[0]], rects[best_pair[1]]))
+        rects = rects[:best_pair[0]] + rects[best_pair[0]+1:best_pair[1]] \
+                + rects[best_pair[1]+1:]
     if rects:
         print('Warning: not all lines were paired.')
     return out
@@ -66,7 +69,7 @@ def get_roi_from_rect_pair(rect_pair):
     
     This method does not yet support rotated ROIs.
     """
-    pts = np.concatenate(map(cv2.boxPoints, rect_pair))
+    pts = np.concatenate(list(map(cv2.boxPoints, rect_pair)))
     xs, ys = map(list, zip(*pts))
     x, y = map(lambda x: int(round(x)), (min(xs), min(ys)))
     w, h = map(lambda x: int(round(x)), (max(xs) - x, max(ys)-y))
