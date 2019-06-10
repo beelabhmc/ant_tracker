@@ -1,7 +1,3 @@
-rule all:
-    input:
-        'out/tracks.csv'
-
 rule split:
     input:
         'input/{video}.mp4'
@@ -13,17 +9,17 @@ rule split:
 rule crop:
     input:
         'intermediate/split/{video}-{split}.mp4',
-        'input/roi_labels.txt'
+        'intermediate/roi_labels.txt'
     output:
-        'intermediate/crop/{video}-{split}-{roi}.mp4'
+        'intermediate/crop/{video}-{split}-ROI_{roi}.mp4'
     script:
         'python scripts/crop.py {input[0]} intermediate/crop {input[1]}'
 
 rule track:
     input:
-        'intermediate/crop/{video}-{split}-{roi}.mp4'
+        'intermediate/crop/{video}-{split}-ROI_{roi}.mp4'
     output:
-        'intermediate/track/{video}-{split}-{roi}.csv'
+        'intermediate/track/{video}-{split}-ROI_{roi}.csv'
     script:
-        'python scripts/track.py {input} {output}
+        'python scripts/track.py {input} {output}'
 
