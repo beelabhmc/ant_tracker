@@ -89,12 +89,14 @@ def get_roi_from_rect_pair(rect_pair):
     return [x, y, w, h]
 
 def save_rois(rois, outfile, imagename, append=True):
-    if os.path.exists(outfile) and append:
-        f = open(outfile, 'a')
+    if append:
+        data = [line.strip() for line in open(outfile) if imagename not in line]
     else:
-        f = open(outfile, 'w')
-    f.write('%s\t%s\n' % (os.path.abspath(imagename),
-                '\t'.join(map(lambda x: '%d,%d,%d,%d' % tuple(x), rois))))
+        data = []
+    data.append('%s\t%s' % (os.path.abspath(imagename),
+                      '\t'.join(map(lambda x: '%d,%d,%d,%d' % tuple(x), rois))))
+    f = open(outfile, 'w')
+    f.write('\n'.join(data)+'\n')
     f.close()
 
 def main():
