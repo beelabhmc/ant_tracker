@@ -24,7 +24,9 @@ def find_red(rgb, hue_diff=constants.HSV_HUE_TOLERANCE,
                             np.array([180, 255, 255]))
     return mask // 255
 
-def smooth_regions(mask, open=3, dilate=5, close=9):
+def smooth_regions(mask, open=constants.SMOOTH_OPEN_SIZE,
+                         dilate=constants.SMOOTH_DILATE_SIZE,
+                         close=constants.SMOOTH_CLOSE_SIZE):
     """Removes random dots that get made, dilates existing regions, then
     mergers together regions which are very near each other
     """
@@ -40,10 +42,10 @@ def smooth_regions(mask, open=3, dilate=5, close=9):
                             cv2.MORPH_CLOSE, close_kernel
                            )
 
-def find_polygons(mask):
+def find_polygons(mask, epsilon=constants.POLYGON_EPSILON):
     """Takes the given mask and finds a polygon that fits it well."""
     contours, _ = cv2.findContours(mask, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
-    polys = [cv2.approxPolyDP(cnt, cv2.arcLength(cnt, True)*0.05, True)
+    polys = [cv2.approxPolyDP(cnt, cv2.arcLength(cnt, True)*epsilon, True)
              for cnt in contours]
     return polys
 
