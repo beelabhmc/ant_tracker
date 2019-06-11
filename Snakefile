@@ -3,8 +3,8 @@ rule split:
         'input/{video}.mp4'
     output:
         'intermediate/split/{video}-{split}.mp4'
-    script:
-        'python scripts/split.py -s 600 {input} intermediate/split'
+    shell:
+        'python3.7 scripts/split.py -s 600 {input} intermediate/split'
 
 rule crop:
     input:
@@ -12,14 +12,14 @@ rule crop:
         'intermediate/roi_labels.txt'
     output:
         'intermediate/crop/{video}-{split}-ROI_{roi}.mp4'
-    script:
-        'python scripts/crop.py {input[0]} intermediate/crop {input[1]}'
+    shell:
+        'python3.7 scripts/crop.py {input[0]} intermediate/crop {input[1]}'
 
 rule track:
     input:
         'intermediate/crop/{video}-{split}-ROI_{roi}.mp4'
     output:
         'intermediate/track/{video}-{split}-ROI_{roi}.csv'
-    script:
-        'python scripts/track.py {input} {output}'
+    shell:
+        'python3.7 scripts/track.py {input} {output}'
 

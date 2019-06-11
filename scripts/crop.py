@@ -46,8 +46,8 @@ def crop_video(video, out_dir, boxes, logfile=None):
         command = 'ffmpeg -y -i %s -vf crop=%s %s >> %s' \
                   % (video, rect, crop_name, logfile)
         print('About to run: %s' % command)
-        output = subprocess.call(command, shell=True, stdout=subprocess.PIPE,
-                                 stderr=subprocess.PIPE).stdout.read()
+        output = subprocess.run(command, shell=True, stdout=subprocess.PIPE,
+                                stderr=subprocess.DEVNULL).stdout.decode()
         if logfile:
             open(logfile, 'w').write(output)
     return boxes

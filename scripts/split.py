@@ -95,7 +95,7 @@ def by_seconds(filename, destination, split_length, vcodec="copy",
     output = subprocess.Popen("ffmpeg -i '"+filename+"' 2>&1 | grep 'Duration'",
                             shell = True,
                             stdout = subprocess.PIPE
-                            ).stdout.read()
+                            ).stdout.read().decode()
     print(output)
     matches = re_length.search(output)
     if matches:
