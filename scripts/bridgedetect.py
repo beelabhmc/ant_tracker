@@ -40,53 +40,22 @@ def smooth_regions(mask, open=3, dilate=5, close=9):
                             cv2.MORPH_CLOSE, close_kernel
                            )
 
-def find_rects(mask):
-    """Takes a mask and returns bounding rectangles on the white areas."""
+def find_polygons(mask):
+    """Takes the given mask and finds a polygon that fits it well."""
     contours, _ = cv2.findContours(mask, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
-    return list(map(cv2.minAreaRect, contours))
+    polys = [cv2.approxPolyDP(cnt, cv2.arcLength(cnt, True)*0.05, True)
+             for cnt in contours]
+    return polys
 
-def pair_rects(rects, max_dist=250):
-    """Takes a list of rectangles and pairs them by centroid position.
-    
-    The algorithm will pair rectangles based on the closest centroids.
-    Once there are no rectangles left within max_dist of each other,
-    the algrithm stops.
+def convert_polygon_to_roi(poly):
+    """Takes a polygon and outputs an ROI of it.
 
-    If max_dist is None, it will pair, regardless of the distance.
+    This presently just takes the smallest straight bounding rectangle.
+    Doing more complicated things will come later.
     """
-    out = []
-    while len(rects) >= 2:
-        best_pair = (-1, -1, 1e1000)
-        for i in range(len(rects)):
-            for j in range(i+1, len(rects)):
-                dist = np.sqrt(np.sum((sum(cv2.boxPoints(rects[i]))/8 \
-                                       - sum(cv2.boxPoints(rects[j]))/8)**2))
-                if dist < best_pair[2]:
-                    best_pair = (i, j, dist)
-        if max_dist is not None and best_pair[2] > max_dist:
-            print('Exceeded maximum distance: %d > %d' % (best_pair[2], max_dist))
-            break
-        out.append((rects[best_pair[0]], rects[best_pair[1]]))
-        rects = rects[:best_pair[0]] + rects[best_pair[0]+1:best_pair[1]] \
-                + rects[best_pair[1]+1:]
-    if rects:
-        print('Warning: not all lines were paired.')
-        print('Unpaired lines:')
-        from pprint import pprint
-        pprint(rects)
-    return out
-
-def get_roi_from_rect_pair(rect_pair):
-    """Take a pair of rectangles (in the format from find_rects) and
-    returns an roi for the rectangle pair, formatted as [x, y, w, h].
-    
-    This method does not yet support rotated ROIs.
-    """
-    pts = np.concatenate(list(map(cv2.boxPoints, rect_pair)))
-    xs, ys = map(list, zip(*pts))
-    x, y = map(lambda x: int(round(x)), (min(xs), min(ys)))
-    w, h = map(lambda x: int(round(x)), (max(xs) - x, max(ys)-y))
-    return [x, y, w, h]
+    x_left, y_top = map(min, zip(*map(lambda x: x[0], poly)))
+    x_right, y_bottom = map(max, zip(*map(lambda x: x[0], poly)))
+    return [x_right-x_left, y_bottom-y_top, x_left, y_top]
 
 def save_rois(rois, outfile, imagename, append=True):
     if os.path.exists(outfile) and append:
