@@ -90,7 +90,7 @@ def main():
                                  'does not export videos.')
     arg_parser.add_argument('raw_results',
                             type=str,
-                            default=None,
+                            default='',
                             nargs='?',
                             help='Path of array of raw results to output. '
                                  'If no path is given, then it does not save '
@@ -113,7 +113,7 @@ def main():
     # save the tracking results to disk
     np.savetxt(args.result_path, result_array, delimiter= ',', fmt='%s')
     # save the raw results to disk
-    if args.raw_results is not None:
+    if args.raw_results:
         np.savetxt(args.raw_results, raw_results, delimiter=',', fmt='%s')
 
 if __name__== "__main__":
