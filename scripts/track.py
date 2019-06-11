@@ -2,6 +2,7 @@ import math
 import matlab.engine
 import numpy as np
 import argparse
+from os.path import abspath
 
 import vid_meta_data as metadata
 import constants
@@ -29,8 +30,8 @@ def trackOneClip(vidPath, W, H, vidExport, result_path,
     #                 result videos
     #   minBlob - int, minimum blob area in pixels
     eng.addpath('scripts')
-    df = eng.ant_tracking(vidPath, vidExport, result_path, minBlob, 
-                          num_gaussians, num_training_frames,
+    df = eng.ant_tracking(abspath(vidPath), vidExport, abspath(result_path),
+                          minBlob, num_gaussians, num_training_frames,
                           minimum_background_ratio, cost_of_nonassignment,
                           invisible_for_too_long, old_age_threshold,
                           visibility_threshold,
