@@ -50,14 +50,17 @@ def find_polygons(mask, epsilon=constants.POLYGON_EPSILON):
     return polys
 
 def convert_polygon_to_roi(poly):
-    """Takes a polygon and outputs an ROI of it.
+    """Takes a polygon and outputs an ROI of it. The ROI forma consists
+    of the first four elements, which specify the horizontal bounding
+    rectangle, and then the rest of the list 
 
     This presently just takes the smallest straight bounding rectangle.
     Doing more complicated things will come later.
     """
     x_left, y_top = map(min, zip(*map(lambda x: x[0], poly)))
     x_right, y_bottom = map(max, zip(*map(lambda x: x[0], poly)))
-    return [x_right-x_left, y_bottom-y_top, x_left, y_top]
+    return [x_right-x_left, y_bottom-y_top, x_left, y_top] \
+            + list(poly.reshape((-1,)))
 
 def save_rois(rois, outfile, imagename, append=True):
     if os.path.exists(outfile) and append:
@@ -65,7 +68,7 @@ def save_rois(rois, outfile, imagename, append=True):
     else:
         f = open(outfile, 'w')
     f.write('%s\t%s\n' % (os.path.abspath(imagename),
-                '\t'.join(map(lambda x: '%d,%d,%d,%d' % tuple(x), rois))))
+        '\t'.join(map(lambda x: ','.join(map(str, x)), rois))))
     f.close()
 
 def main():
@@ -102,7 +105,7 @@ def main():
     if not exists:
         arg_parser.error('The video only has %d frames.' % (args.frame-1))
     mask = smooth_regions(find_red(frame))
-    rois = list(map(get_roi_from_rect_pair, pair_rects(find_rects(mask))))
+    rois = list(map(convert_polygon_to_roi, find_polygons(mask)))
     save_rois(rois, args.outfile, args.video, append=args.override)
 
 if __name__ == '__main__':

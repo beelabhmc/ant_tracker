@@ -13,9 +13,13 @@ def read_bbox(boxfile, video):
         if video in line[0]:
             boxes = line[1:]
             for i in range(len(boxes)):
-                bboxes['ROI_%d' % i] = map(int, boxes[i].split(','))
-    from pprint import pprint
-    pprint(bboxes)
+                bboxes['ROI_%d' % i] = list(map(int, boxes[i].split(',')))[:4]
+                # For now, I am ignoring the found points and only paying
+                # attention to the bounding rectangle.
+                # The first thing to do would be to handle rotations in the
+                # region.
+    #from pprint import pprint
+    #pprint(bboxes)
     return bboxes
 
 def crop_video(video, out_dir, boxes, logfile=None):
