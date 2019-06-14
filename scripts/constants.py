@@ -78,7 +78,7 @@ SMOOTH_DILATE_SIZE = 5  # The amount by which to expand the mask after opening
 SMOOTH_CLOSE_SIZE = 9   # The amount by which to close the mask after dilating
                         # (fills in holes and combines adjacent figures).
 
-POLYGON_EPSILON = 0.05  # The amount of deviation from the found shape which
+POLYGON_EPSILON = 0.03  # The amount of deviation from the found shape which
                         # the program tolerates in the final result.
                         # If the output has too many sides, increase it. If the
                         # output has too few, descrease it.

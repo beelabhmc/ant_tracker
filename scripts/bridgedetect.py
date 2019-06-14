@@ -3,6 +3,7 @@ import numpy as np
 import os.path
 import itertools
 import argparse
+from math import sin, cos, pi
 
 import constants
 
@@ -42,33 +43,65 @@ def smooth_regions(mask, open=constants.SMOOTH_OPEN_SIZE,
                             cv2.MORPH_CLOSE, close_kernel
                            )
 
-def find_polygons(mask, epsilon=constants.POLYGON_EPSILON):
-    """Takes the given mask and finds a polygon that fits it well."""
-    contours, _ = cv2.findContours(mask, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
-    polys = [cv2.approxPolyDP(cnt, cv2.arcLength(cnt, True)*epsilon, True)
-             for cnt in contours]
+def find_polygons(mask, top_level=True, epsilon=constants.POLYGON_EPSILON):
+    """Takes the given mask and finds a polygon that fits it well.
+    
+    If top_level is  specified and falsy, then it will return all
+    polygons in the image. Otherwise, it will return only the polygons
+    which are "top-level", which is to say, not contained inside of
+    another polygon.
+    Because of the way contour detection works, if
+    top_level is set to false, then any hollow polygons appear twice:
+    once on their external perimeter and once in their internal.
+
+    epsilon is a parameter specifying how loosely the polygon is allowed
+    to fit the mask. The greater the value of epsilon, the fewer sides
+    the resulting polygons will have.
+    """
+    contours, h = cv2.findContours(mask, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+    polys = [cv2.approxPolyDP(contours[i], cv2.arcLength(contours[i], True) \
+             * epsilon, True)
+             for i in range(len(contours)) if not top_level or h[0][i][3] < 0]
     return polys
 
 def convert_polygon_to_roi(poly):
-    """Takes a polygon and outputs an ROI of it. The ROI forma consists
-    of the first four elements, which specify the horizontal bounding
-    rectangle, and then the rest of the list 
-
-    This presently just takes the smallest straight bounding rectangle.
-    Doing more complicated things will come later.
+    """Takes a polygon and outputs it in ROI format. This consists of a
+    list in which the first item is a tuple with the x,y coordinates of
+    the upper-left corner of the bounding rectangle, the second is a
+    tuple specifying its length and width, and the third is its angle to
+    the vertical in radians, between 0 and π/2, measured in radians. The
+    fourth item is the polygon which was passed in.
     """
-    x_left, y_top = map(min, zip(*map(lambda x: x[0], poly)))
-    x_right, y_bottom = map(max, zip(*map(lambda x: x[0], poly)))
-    return [x_right-x_left, y_bottom-y_top, x_left, y_top] \
-            + list(poly.reshape((-1,)))
+    (x, y), (w, h), angle = cv2.minAreaRect(poly)
+    angle = pi/180 * (90+angle)  # Convert to quadrant 1 radians
+    w, h = h, w  # swap width and height because angle is changed
+    print(((x, y), (w, h), angle))
+    x += -cos(angle)*w/2 + sin(angle)*h/2
+    y += -sin(angle)*w/2 - cos(angle)*h/2
+    x, y, w, h, angle = map(lambda x: round(x, 2), [x, y, w, h, angle])
+    print(((x, y), (w, h), angle))
+    return [(x, y), (w, h), angle, poly]
+
+def flatten(lst):
+    """Flattens a list by taking any iterable element of the list and
+    expanding it to be a list of its own.
+    """
+    out = []
+    for item in lst:
+        try:
+            iter(item)
+            out += flatten(item)
+        except TypeError:
+            out.append(item)
+    return out
 
 def save_rois(rois, outfile, imagename, append=True):
     if os.path.exists(outfile) and append:
         f = open(outfile, 'a')
     else:
         f = open(outfile, 'w')
-    f.write('%s\t%s\n' % (os.path.abspath(imagename),
-        '\t'.join(map(lambda x: ','.join(map(str, x)), rois))))
+    rois = [','.join(map(str, flatten(roi))) for roi in rois]
+    f.write('%s %s\n' % (imagename, ' '.join(rois)))
     f.close()
 
 def main():
