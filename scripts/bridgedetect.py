@@ -3,6 +3,7 @@ import numpy as np
 import os.path
 import itertools
 import argparse
+from math import sin, cos, pi
 
 import constants
 
@@ -24,7 +25,9 @@ def find_red(rgb, hue_diff=constants.HSV_HUE_TOLERANCE,
                             np.array([180, 255, 255]))
     return mask // 255
 
-def smooth_regions(mask, open=3, dilate=5, close=9):
+def smooth_regions(mask, open=constants.SMOOTH_OPEN_SIZE,
+                         dilate=constants.SMOOTH_DILATE_SIZE,
+                         close=constants.SMOOTH_CLOSE_SIZE):
     """Removes random dots that get made, dilates existing regions, then
     mergers together regions which are very near each other
     """
@@ -40,61 +43,65 @@ def smooth_regions(mask, open=3, dilate=5, close=9):
                             cv2.MORPH_CLOSE, close_kernel
                            )
 
-def find_rects(mask):
-    """Takes a mask and returns bounding rectangles on the white areas."""
-    contours, _ = cv2.findContours(mask, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
-    return list(map(cv2.minAreaRect, contours))
-
-def pair_rects(rects, max_dist=250):
-    """Takes a list of rectangles and pairs them by centroid position.
+def find_polygons(mask, top_level=True, epsilon=constants.POLYGON_EPSILON):
+    """Takes the given mask and finds a polygon that fits it well.
     
-    The algorithm will pair rectangles based on the closest centroids.
-    Once there are no rectangles left within max_dist of each other,
-    the algrithm stops.
+    If top_level is  specified and falsy, then it will return all
+    polygons in the image. Otherwise, it will return only the polygons
+    which are "top-level", which is to say, not contained inside of
+    another polygon.
+    Because of the way contour detection works, if
+    top_level is set to false, then any hollow polygons appear twice:
+    once on their external perimeter and once in their internal.
 
-    If max_dist is None, it will pair, regardless of the distance.
+    epsilon is a parameter specifying how loosely the polygon is allowed
+    to fit the mask. The greater the value of epsilon, the fewer sides
+    the resulting polygons will have.
+    """
+    contours, h = cv2.findContours(mask, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+    polys = [cv2.approxPolyDP(contours[i], cv2.arcLength(contours[i], True) \
+             * epsilon, True)
+             for i in range(len(contours)) if not top_level or h[0][i][3] < 0]
+    return polys
+
+def convert_polygon_to_roi(poly):
+    """Takes a polygon and outputs it in ROI format. This consists of a
+    list in which the first item is a tuple with the x,y coordinates of
+    the upper-left corner of the bounding rectangle, the second is a
+    tuple specifying its length and width, and the third is its angle to
+    the vertical in radians, between 0 and π/2, measured in radians. The
+    fourth item is the polygon which was passed in.
+    """
+    (x, y), (w, h), angle = cv2.minAreaRect(poly)
+    angle = pi/180 * (90+angle)  # Convert to quadrant 1 radians
+    w, h = h, w  # swap width and height because angle is changed
+    x += -cos(angle)*w/2 + sin(angle)*h/2
+    y += -sin(angle)*w/2 - cos(angle)*h/2
+    x, y, w, h, angle = map(lambda x: round(x, 2), [x, y, w, h, angle])
+    return [(x, y), (w, h), angle, poly]
+
+def flatten(lst):
+    """Flattens a list by taking any iterable element of the list and
+    expanding it to be a list of its own.
     """
     out = []
-    while len(rects) >= 2:
-        best_pair = (-1, -1, 1e1000)
-        for i in range(len(rects)):
-            for j in range(i+1, len(rects)):
-                dist = np.sqrt(np.sum((sum(cv2.boxPoints(rects[i]))/8 \
-                                       - sum(cv2.boxPoints(rects[j]))/8)**2))
-                if dist < best_pair[2]:
-                    best_pair = (i, j, dist)
-        if max_dist is not None and best_pair[2] > max_dist:
-            print('Exceeded maximum distance: %d > %d' % (best_pair[2], max_dist))
-            break
-        out.append((rects[best_pair[0]], rects[best_pair[1]]))
-        rects = rects[:best_pair[0]] + rects[best_pair[0]+1:best_pair[1]] \
-                + rects[best_pair[1]+1:]
-    if rects:
-        print('Warning: not all lines were paired.')
-        print('Unpaired lines:')
-        from pprint import pprint
-        pprint(rects)
+    for item in lst:
+        try:
+            iter(item)
+            out += flatten(item)
+        except TypeError:
+            out.append(item)
     return out
-
-def get_roi_from_rect_pair(rect_pair):
-    """Take a pair of rectangles (in the format from find_rects) and
-    returns an roi for the rectangle pair, formatted as [x, y, w, h].
-    
-    This method does not yet support rotated ROIs.
-    """
-    pts = np.concatenate(list(map(cv2.boxPoints, rect_pair)))
-    xs, ys = map(list, zip(*pts))
-    x, y = map(lambda x: int(round(x)), (min(xs), min(ys)))
-    w, h = map(lambda x: int(round(x)), (max(xs) - x, max(ys)-y))
-    return [x, y, w, h]
 
 def save_rois(rois, outfile, imagename, append=True):
     if append:
-        data = [line.strip() for line in open(outfile) if imagename not in line]
+        data = [line.strip()
+                for line in open(outfile)
+                if imagename not in line and line != '\n']
     else:
         data = []
-    data.append('%s\t%s' % (os.path.abspath(imagename),
-                      '\t'.join(map(lambda x: '%d,%d,%d,%d' % tuple(x), rois))))
+    rois = [','.join(map(str, flatten(roi))) for roi in rois]
+    data.append('%s %s' % (imagename, ' '.join(rois)))
     f = open(outfile, 'w')
     f.write('\n'.join(data)+'\n')
     f.close()
@@ -133,7 +140,7 @@ def main():
     if not exists:
         arg_parser.error('The video only has %d frames.' % (args.frame-1))
     mask = smooth_regions(find_red(frame))
-    rois = list(map(get_roi_from_rect_pair, pair_rects(find_rects(mask))))
+    rois = list(map(convert_polygon_to_roi, find_polygons(mask)))
     save_rois(rois, args.outfile, args.video, append=args.override)
 
 if __name__ == '__main__':
