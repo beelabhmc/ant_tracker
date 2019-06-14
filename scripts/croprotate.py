@@ -34,18 +34,17 @@ def crop_video(video, out_dir, boxes, logfile=None):
     to the end, where %d is the number of the ROI in the boxes list.
     """
     command = 'ffmpeg -y -i {0} -vf "rotate=-{1}:ow=ceil(rotw(-{1})/2)*2:' \
-              'oh=ceil(roth(-{1})/2)*2, drawbox=w={2}:h={3}:x={4}:y={5}' \
-              '" {6}'
+              'oh=ceil(roth(-{1})/2)*2, crop={2}:{3}:{4}:{5}" {6}'
     # Format argument order: input video, rotation angle, width, height,
     #     upper-left x after rotation, upper-left y after rotation, output video
-    video_name = '.'.join(video.split('.')[:-1])
+    video_name = '.'.join(video.split('/')[-1].split('.')[:-1])
     H, W = get_video_dimensions(video)
     for i in range(len(boxes)):
         (ulx, uly), (width, height), angle = boxes[i]
         x, y = ulx*cos(angle)+uly*sin(angle), (W-ulx)*sin(angle)+uly*cos(angle)
         x, y, = map(round, (x, y))
         width, height = map(lambda x: 2*ceil(x/2), (width, height))
-        outvideo = '%s-ROI_%d.mp4' % (video_name, i)
+        outvideo = '%s/%s-ROI_%d.mp4' % (out_dir, video_name, i)
         cmd = command.format(video, angle, width, height, x, y, outvideo)
         print('About to run:\n%s' % cmd)
         subprocess.run(cmd, shell=True, stdout=subprocess.PIPE,
