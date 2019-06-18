@@ -47,8 +47,8 @@ def crop_video(video, out_dir, boxes, logfile=None):
         outvideo = '%s/%s-ROI_%d.mp4' % (out_dir, video_name, i)
         cmd = command.format(video, angle, width, height, x, y, outvideo)
         print('About to run:\n%s' % cmd)
-        subprocess.run(cmd, shell=True, stdout=subprocess.PIPE,
-                       stderr=subprocess.STDOUT).stdout.decode()
+        output = subprocess.run(cmd, shell=True, stdout=subprocess.PIPE,
+                                stderr=subprocess.STDOUT).stdout.decode()
         if logfile is not None:
             open(logfile, 'w').write(output)
 

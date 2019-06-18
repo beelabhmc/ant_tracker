@@ -39,7 +39,9 @@ def trackOneClip(vidPath, W, H, vidExport, result_path,
                           matlab.double(kalman_motion_noise),
                           kalman_measurement_noise, min_visible_count)
     if df:
-        track_result = np.array([["filename", "id", "X", "Y"]])
+        track_result = np.array([['filename', 'id', 'x0', 'y0', 't0',
+                                  'x1', 'y1', 't1']])
+        print(df[:10])
         # convert the dataframe to a np array
         # it should have five columns:
         #   x_pos, y_pos, width, height, ant_id
@@ -52,15 +54,18 @@ def trackOneClip(vidPath, W, H, vidExport, result_path,
             antTrack = df[df[:, 4] == idnum]
             # NOTE: x and y coords can be negative if kalman filter is
             #       predicting the ant after it passes out of frame
-            x0 = antTrack[-1,0]
-            x1 = antTrack[0,0]
-            directionX = x0-x1
-            y0 = antTrack[-1,1]
-            y1 = antTrack[0,1]
-            directionY = y0-y1
+            x0 = antTrack[0,0]
+            x1 = antTrack[-1,0]
+            y0 = antTrack[0,1]
+            y1 = antTrack[-1,1]
+            t0 = antTrack[0,5]
+            t1 = antTrack[-1,5]
+            if (x1-x0)**2 + (y1-y0)**2 < 100:
+                # Skip "ants" who don't move, as these tracks are likely fake
+                continue
             # save results in np array so that we can return them soon
-            track_result = np.append(track_result, [[vidPath, idnum, directionX,
-                                                     directionY]],
+            track_result = np.append(track_result, [[vidPath, idnum, x0, y0, t0,
+                                                     x1, y1, t1]],
                                      axis=0)
         # return the data without its header
         return track_result[1:,], df
@@ -100,7 +105,8 @@ def main():
     args = arg_parser.parse_args()
 
     # track ants in each of the cropped videos
-    result_array = np.array([["fName", "id", "X", "Y"]])
+    result_array = np.array([['fName', 'id', 'x0', 'y0', 't0',
+                              'x1', 'y1', 't1']])
     print("Tracking ants in " + args.source)
     # get height and width of video
     H, W = metadata.get_video_dimensions(args.source)
