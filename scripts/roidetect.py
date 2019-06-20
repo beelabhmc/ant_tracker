@@ -93,17 +93,10 @@ def flatten(lst):
             out.append(item)
     return out
 
-def save_rois(rois, outfile, imagename, append=True):
-    if append:
-        data = [line.strip()
-                for line in open(outfile)
-                if imagename not in line and line != '\n']
-    else:
-        data = []
-    rois = [','.join(map(str, flatten(roi))) for roi in rois]
-    data.append('%s %s' % (imagename, ' '.join(rois)))
+def save_rois(rois, outfile, imagename):
+    rois = []
     f = open(outfile, 'w')
-    f.write('\n'.join(data)+'\n')
+    f.write(' '.join(','.join(map(str, flatten(roi))) for roi in rois))
     f.close()
 
 def main():
@@ -116,13 +109,6 @@ def main():
                             type=str,
                             help='The path to a file in which to write the '
                                  'detected ROIs.',
-                           )
-    arg_parser.add_argument('-o', '--override',
-                            dest='override',
-                            action='store_const', const=False,
-                            default=True,
-                            help='Override the outfile if it already exists '
-                                 '(default=append to the file)',
                            )
     arg_parser.add_argument('-f', '--frame',
                             dest='frame',
@@ -141,7 +127,7 @@ def main():
         arg_parser.error('The video only has %d frames.' % (args.frame-1))
     mask = smooth_regions(find_red(frame))
     rois = list(map(convert_polygon_to_roi, find_polygons(mask)))
-    save_rois(rois, args.outfile, args.video, append=args.override)
+    save_rois(rois, args.outfile, args.video)
 
 if __name__ == '__main__':
     main()
