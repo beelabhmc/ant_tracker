@@ -21,8 +21,9 @@ def find_red(rgb, hue_diff=constants.HSV_HUE_TOLERANCE,
     hsv = cv2.cvtColor(rgb, cv2.COLOR_RGB2HSV)
     mask = cv2.inRange(hsv, np.array([0, min_saturation, min_value]),
                             np.array([hue_diff, 255, 255]))
-    mask+= cv2.inRange(hsv, np.array([180-hue_diff, min_saturation, min_value]),
-                            np.array([180, 255, 255]))
+    mask += cv2.inRange(hsv,
+                        np.array([180-hue_diff, min_saturation, min_value]),
+                        np.array([180, 255, 255]))
     return mask // 255
 
 def smooth_regions(mask, open=constants.SMOOTH_OPEN_SIZE,
@@ -60,8 +61,9 @@ def find_polygons(mask, top_level=True, epsilon=constants.POLYGON_EPSILON):
     """
     contours, h = cv2.findContours(mask, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
     polys = [cv2.approxPolyDP(contours[i], cv2.arcLength(contours[i], True) \
-             * epsilon, True)
-             for i in range(len(contours)) if not top_level or h[0][i][3] < 0]
+                 * epsilon, True)
+             for i in range(len(contours))
+             if not top_level or h[0][i][3] < 0]
     return polys
 
 def convert_polygon_to_roi(poly):
@@ -75,8 +77,10 @@ def convert_polygon_to_roi(poly):
     (x, y), (w, h), angle = cv2.minAreaRect(poly)
     angle = pi/180 * (90+angle)  # Convert to quadrant 1 radians
     w, h = h, w  # swap width and height because angle is changed
+    # Shift x,y from the center (given by cv2) to the corner
     x += -cos(angle)*w/2 + sin(angle)*h/2
     y += -sin(angle)*w/2 - cos(angle)*h/2
+    # Round the values to the hundredths so they're easier to look at.
     x, y, w, h, angle = map(lambda x: round(x, 2), [x, y, w, h, angle])
     return [(x, y), (w, h), angle, poly]
 
@@ -121,10 +125,10 @@ def main():
     video = cv2.VideoCapture(args.video)
     for i in range(args.frame-1):
         if not video.read()[0]:
-            arg_parser.error('The video only has %d frames.' % i)
+            arg_parser.error('The video only has {} frames.'.format(i))
     exists, frame = video.read()
     if not exists:
-        arg_parser.error('The video only has %d frames.' % (args.frame-1))
+        arg_parser.error('The video only has {} frames.'.format(args.frame-1))
     mask = smooth_regions(find_red(frame))
     rois = list(map(convert_polygon_to_roi, find_polygons(mask)))
     save_rois(rois, args.outfile, args.video)

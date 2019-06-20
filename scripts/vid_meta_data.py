@@ -1,17 +1,18 @@
-#!/usr/local/bin/python3
 import subprocess
-import shlex
-import json
+import re
+
+regex_height = re.compile(r'^height=([0-9]+)$', re.MULTILINE)
+regex_width = re.compile(r'^width=([0-9]+)$', re.MULTILINE)
 
 # function to find the resolution of the input video file
 def get_video_dimensions(input_video):
-    """Returns a tuple with the video dimensions as (height, width)"""
-    # run the ffprobe process, decode stdout into utf-8 & convert to JSON
-    cmd = "ffprobe -v quiet -print_format json -show_streams".split(' ') \
-            + [input_video]
-    probe_output = json.loads(subprocess.check_output(cmd).decode('utf-8'))
-    # for example, find height and width
-    height = probe_output['streams'][0]['height']
-    width = probe_output['streams'][0]['width']
+    """Takes a path to a video file and returns a tuple containing the
+    video's height and width in that order.
+    """
+    cmd = 'ffprobe -v quiet -show_streams {}' .format(input_video).split()
+    output = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)\
+                .stdout.decode()
+    height = int(re.search(regex_height, output).group(1))
+    width = int(re.search(regex_width, output).group(1))
     return height, width
     

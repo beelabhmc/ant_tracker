@@ -107,7 +107,7 @@ def main():
     # track ants in each of the cropped videos
     result_array = np.array([['fName', 'id', 'x0', 'y0', 't0',
                               'x1', 'y1', 't1']])
-    print("Tracking ants in " + args.source)
+    print('Tracking ants in', args.source)
     # get height and width of video
     H, W = metadata.get_video_dimensions(args.source)
     # call matlab to track ants in a single cropped video
@@ -123,6 +123,6 @@ def main():
     if args.raw_results:
         np.savetxt(args.raw_results, raw_results, delimiter=',', fmt='%s')
 
-if __name__== "__main__":
+if __name__== '__main__':
     main()
 

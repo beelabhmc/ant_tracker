@@ -1,14 +1,14 @@
 # absolute path pointing to video files
 #
 # NOTE: all dir paths should have trailing slashes
-VID_DIR = "/Volumes/Storage/Ant_Tracking_Jarred/storage/"
+VID_DIR = '/Volumes/Storage/Ant_Tracking_Jarred/storage/'
 # absolute path pointing to output dir
-DIRECTORY = "/Volumes/Storage/Ant_Tracking_Jarred/out/"
+DIRECTORY = '/Volumes/Storage/Ant_Tracking_Jarred/out/'
 # path pointing to split, crop, and result dirs
 # must be relative to DIRECTORY
-SPLIT_DIR ="split/"
-CROP_DIR = "crop/"
-RESULT_VID_DIR = "result/"
+SPLIT_DIR ='split/'
+CROP_DIR = 'crop/'
+RESULT_VID_DIR = 'result/'
 
 
 # Parameters used by the python code that can be tweaked for better performance
