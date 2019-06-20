@@ -2,6 +2,8 @@ from __future__ import division
 import subprocess
 import argparse
 from math import sin, cos, ceil
+import os
+import os.path
 
 from vid_meta_data import get_video_dimensions
 
@@ -13,14 +15,11 @@ def read_bboxes(filename, videoname):
     (width, height), angle), where angle is between 0 and π/2 (radians).
     """
     boxes = []
-    # file format: fname [ulx;uly;width;height;angle]+
-    for line in open(filename):
-        line = line.strip().split()
-        if videoname not in line[0]:
-            continue
-        for i in range(1, len(line)):
-            box = list(map(float, line[i].split(',')))
-            boxes.append(((box[0], box[1]), (box[2], box[3]), box[4]))
+    line = open(filename).read().strip().split()
+    for i in range(len(line)):
+        box = list(map(float, line[i].split(',')))
+        boxes.append(((box[0], box[1]), (box[2], box[3]), box[4]))
+        # file format: [ulx,uly,width,height,angle[,...]* ]+
     return boxes
 
 def crop_video(video, out_dir, boxes, logfile=None):
@@ -33,18 +32,20 @@ def crop_video(video, out_dir, boxes, logfile=None):
     The resulting videos get saved in out_dir and get '-ROI_%d' appended
     to the end, where %d is the number of the ROI in the boxes list.
     """
+    if not os.path.isdir(out_dir):
+        os.mkdir(out_dir)
     command = 'ffmpeg -y -i {0} -vf "rotate=-{1}:ow=ceil(rotw(-{1})/2)*2:' \
               'oh=ceil(roth(-{1})/2)*2, crop={2}:{3}:{4}:{5}" {6}'
     # Format argument order: input video, rotation angle, width, height,
     #     upper-left x after rotation, upper-left y after rotation, output video
-    video_name = '.'.join(video.split('/')[-1].split('.')[:-1])
+    video_name = os.path.splitext(os.path.basename(video))[0]
     H, W = get_video_dimensions(video)
     for i in range(len(boxes)):
         (ulx, uly), (width, height), angle = boxes[i]
         x, y = ulx*cos(angle)+uly*sin(angle), (W-ulx)*sin(angle)+uly*cos(angle)
         x, y, = map(round, (x, y))
         width, height = map(lambda x: 2*ceil(x/2), (width, height))
-        outvideo = '%s/%s-ROI_%d.mp4' % (out_dir, video_name, i)
+        outvideo = '%s/ROI_%d.mp4' % (out_dir, i)
         cmd = command.format(video, angle, width, height, x, y, outvideo)
         print('About to run:\n%s' % cmd)
         output = subprocess.run(cmd, shell=True, stdout=subprocess.PIPE,

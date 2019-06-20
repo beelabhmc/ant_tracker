@@ -1,21 +1,18 @@
-#!/usr/bin/env python
-from __future__ import division
 import csv
 import subprocess
 import re
 import math
 import json
 import os
+import os.path
 import argparse
 
 import constants
 
-# ie "split/"
-
 re_length = re.compile('Duration: (\d{2}):(\d{2}):(\d{2})\.\d+,')
 
-def by_manifest(filename, destination, manifest, vcodec="copy", acodec="copy",
-                      extra="", **kwargs):
+def by_manifest(filename, destination, manifest, vcodec='copy', acodec='copy',
+                      extra='', **kwargs):
     """ Split video into segments based on the given manifest file.
 
     Arguments:
@@ -31,70 +28,72 @@ def by_manifest(filename, destination, manifest, vcodec="copy", acodec="copy",
         extra (str)         - Extra options for ffmpeg.
     """
     if not os.path.exists(manifest):
-        print("File does not exist: " + manifest)
+        print('File does not exist:', manifest)
         raise SystemExit
 
     with open(manifest) as manifest_file:
-        manifest_type = manifest.split(".")[-1]
-        if manifest_type == "json":
+        manifest_type = manifest.split('.')[-1]
+        if manifest_type == 'json':
             config = json.load(manifest_file)
-        elif manifest_type == "csv":
+        elif manifest_type == 'csv':
             config = csv.DictReader(manifest_file)
         else:
-            print("Format not supported. File must be a csv or json file")
+            print('Format not supported. File must be a csv or json file')
             raise SystemExit
 
-        split_cmd = "ffmpeg -loglevel warning -i '%s' -vcodec %s " \
-                    "-acodec %s -y %s" % (filename, vcodec, acodec, extra)
+        split_cmd = 'ffmpeg -loglevel warning -i \'{}\' -vcodec {} ' \
+                    '-acodec {} -y {}'.format(filename, vcodec, acodec, extra)
         split_count = 1
         split_error = []
         try:
-            fileext = filename.split(".")[-1]
+            fileext = filename.split('.')[-1]
         except IndexError as e:
-            raise IndexError("No . in filename. Error: " + str(e))
+            raise IndexError('No . in filename. Error: ' + str(e))
         for video_config in config:
-            split_str = ""
+            split_str = ''
             try:
-                split_start = video_config["start_time"]
-                split_length = video_config.get("end_time", None)
+                split_start = video_config['start_time']
+                split_length = video_config.get('end_time', None)
                 if not split_length:
-                    split_length = video_config["length"]
-                filebase = video_config["rename_to"]
+                    split_length = video_config['length']
+                filebase = video_config['rename_to']
                 if fileext in filebase:
-                    filebase = ".".join(filebase.split(".")[:-1])
+                    filebase = '.'.join(filebase.split('.')[:-1])
 
-                split_str += " -ss " + str(split_start) + " -t " + \
-                    str(split_length) + " '"+ filebase + "." + fileext + "'"
-                print("#######################################################")
-                print("About to run: "+split_cmd+split_str)
-                print("#######################################################")
+                split_str += ' -ss ' + str(split_start) + ' -t ' + \
+                    str(split_length) + ' ''+ filebase + '.' + fileext + '''
+                print('#######################################################')
+                print('About to run: '+split_cmd+split_str)
+                print('#######################################################')
                 output = subprocess.Popen(split_cmd+split_str,
                                           shell = True, stdout =
                                           subprocess.PIPE).stdout.read()
             except KeyError as e:
-                print( "############# Incorrect format ##############")
-                if manifest_type == "json":
-                    print("The format of each json array should be:")
-                    print("{start_time: <int>, length: <int>, rename_to: "
-                          "<string>}")
-                elif manifest_type == "csv":
-                    print("start_time,length,rename_to should be the first "
-                          "line ")
-                    print("in the csv file.")
-                print("#############################################")
+                print( '############# Incorrect format ##############')
+                if manifest_type == 'json':
+                    print('The format of each json array should be:')
+                    print('{start_time: <int>, length: <int>, rename_to: '
+                          '<string>}')
+                elif manifest_type == 'csv':
+                    print('start_time,length,rename_to should be the first '
+                          'line ')
+                    print('in the csv file.')
+                print('#############################################')
                 print(e)
                 raise SystemExit
 
 
 
-def by_seconds(filename, destination, split_length, vcodec="copy",
-               acodec="copy", extra="", **kwargs):
+def by_seconds(filename, destination, split_length, vcodec='copy',
+               acodec='copy', extra='', **kwargs):
+    if not os.path.isdir(destination):
+        os.mkdir(destination)
     if split_length and split_length <= 0:
-        print("Split length can't be 0")
+        print('Split length can\'t be 0')
         raise SystemExit
-    output = subprocess.Popen("ffmpeg -i '"+filename+"' 2>&1 | grep 'Duration'",
-                            shell = True,
-                            stdout = subprocess.PIPE
+    output = subprocess.Popen('ffmpeg -i "{}" 2>&1 | grep "Duration"' \
+                                  .format(duration),
+                              shell = True, stdout = subprocess.PIPE
                             ).stdout.read().decode()
     print(output)
     matches = re_length.search(output)
@@ -102,38 +101,32 @@ def by_seconds(filename, destination, split_length, vcodec="copy",
         video_length = int(matches.group(1)) * 3600 \
                        + int(matches.group(2)) * 60  \
                        + int(matches.group(3))
-        print("Video length in seconds: "+str(video_length))
+        print('Video length in seconds: '+str(video_length))
     else:
-        print("Can't determine video length.")
+        print('Can\'t determine video length.')
         raise SystemExit
     split_count = int(math.ceil(video_length / split_length))
     if(split_count == 1):
-        print("Video length is less then the target split length.")
+        print('Video length is less then the target split length.')
         raise SystemExit
 
     # we use -y to force overwrites of output files
-    split_cmd = "ffmpeg -loglevel warning -y -i '%s' -vcodec %s -acodec " \
-                "%s %s" % (filename, vcodec, acodec, extra)
-    try:
-        # get the filename without the file ext
-        filebase = filename.split("/")[-1]
-        filebase = ".".join(filebase.split(".")[:-1])
-        fileext = filename.split(".")[-1]
-    except IndexError as e:
-        # This won't actually be run, because the above code won't error
-        raise IndexError("No . in filename. Error: " + str(e))
+    split_cmd = 'ffmpeg -loglevel warning -y -i \'{}\' -vcodec {} -acodec ' \
+                '{} {}'.format(filename, vcodec, acodec, extra)
+    # get the filename without the file ext
+    filebase = os.path.basename(filename)
+    filebase, fileext = os.path.splitext(filebase)
     for n in range(0, split_count):
-        split_str = ""
         if n == 0:
             split_start = 0
         else:
             split_start = split_length * n
-        split_str += " -ss "+str(split_start)+" -t "+str(split_length) \
-                + " '"+ destination + filebase \
-                + "-" + str(n) + "." + fileext + "'"
-        print("About to run: "+split_cmd+split_str)
-        output = subprocess.Popen(split_cmd+split_str, shell = True, stdout =
-                               subprocess.PIPE).stdout.read()
+        split_str = ' -ss {} -t {} {}{}.mp4'.format(split_start, split_length,
+                                                    destination, n)
+        print('About to run: ', split_cmd, split_str, sep='')
+        output = subprocess.Popen(split_cmd+split_str, shell=True,
+                                  stdout=subprocess.PIPE,
+                                 ).stdout.read()
 
 
 def main():
@@ -191,3 +184,4 @@ def main():
 
 if __name__ == '__main__':
     main()
+
