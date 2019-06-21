@@ -1,30 +1,52 @@
-NUM_SEGMENTS_PER_VIDEO = 6
-NUM_ROIS = 3
+# The length of each segment split, in seconds
+SEGMENT_LENGTH = 600
 
-rule split:
+checkpoint split:
     input:
-        'input/{video}.mp4'
+        "input/{video}.mp4"
     output:
-        expand('intermediate/split/{{video}}-{split}.mp4',
-               split=range(NUM_SEGMENTS_PER_VIDEO))
+        directory("intermediate/split/{video}")
+    log:
+        "log-{video}.txt"
     shell:
-        'python3.7 scripts/split.py -s 600 {input} intermediate/split'
+        "python3.7 scripts/split.py -s %s {input} {output} 2>&1 > log-{wildcards.video}.txt || true" % SEGMENT_LENGTH
 
-rule crop:
+rule roidetect:
     input:
-        'intermediate/split/{video}-{split}.mp4',
-        'intermediate/roi_labels.txt'
+        "input/{video}.mp4"
     output:
-        expand('intermediate/crop/{{video}}-{{split}}-ROI_{roi}.mp4',
-               roi=range(NUM_ROIS))
+        "intermediate/rois/{video}.txt"
     shell:
-        'python3.7 scripts/crop.py {input[0]} intermediate/crop {input[1]}'
+        "python3.7 scripts/roidetect.py {input} {output}"
+
+checkpoint croprotate:
+    input:
+        "intermediate/split/{video}/{split}.mp4",
+        "intermediate/rois/{video}.txt"
+    output:
+        directory("intermediate/crop/{video}/{split}")
+    shell:
+        "python3.7 scripts/croprotate {input[0]} {output} {input[1]}"
 
 rule track:
     input:
-        'intermediate/crop/{video}-{split}-ROI_{roi}.mp4'
+        "intermediate/crop/{video}/{split}/{roi}.mp4"
     output:
-        'intermediate/track/{video}-{split}-ROI_{roi}.csv'
+        "intermediate/track/{video}/{split}/{roi}.csv"
     shell:
-        'python3.7 scripts/track.py {input} {output}'
+        "python3.7 scripts/track.py {input} {output}"
+
+def aggregate_rois_input(wildcards):
+    split_out = checkpoints.split.get(**wildcards).output[0]
+    return expand("intermediate/track/{video}/{split}/{roi}.csv",
+                  **wildcards,
+                  split=glob_wildcards(os.path.join(split_out, '{split}.mp4')).i)
+
+rule aggregate_rois:
+    input:
+        aggregate_rois_input
+    output:
+        "intermediate/aggregate/{video}/{roi}.txt"
+    shell:
+        "python3.7 scripts/combinetrack.py {output} {input}"
 
