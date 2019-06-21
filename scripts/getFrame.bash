@@ -19,3 +19,4 @@ fname="${1##*/}"
 # note that we use the -y option to overwrite the file if it already exists
 # 	also the loglevel option to disable any ffmpeg output that isn't an error/warning
 ffmpeg -y -loglevel warning -i "$1" -ss "$2" -vframes 1 "${3%/}/${fname%.*}".png
+
