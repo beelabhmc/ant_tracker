@@ -1,30 +1,59 @@
-NUM_SEGMENTS_PER_VIDEO = 6
-NUM_ROIS = 3
+# The length of the segments to split, in seconds
+SEGMENT_LENGTH = 600
 
-rule split:
+checkpoint split:
     input:
         'input/{video}.mp4'
     output:
-        expand('intermediate/split/{{video}}-{split}.mp4',
-               split=range(NUM_SEGMENTS_PER_VIDEO))
+        directory('intermediate/split/{video}')
     shell:
-        'python3.7 scripts/split.py -s 600 {input} intermediate/split'
+        'python3.7 scripts/split.py -s %s {input} {output}' % SEGMENT_LENGTH
 
-rule crop:
+rule roidetect:
     input:
-        'intermediate/split/{video}-{split}.mp4',
-        'intermediate/roi_labels.txt'
+        'input/{video}.mp4'
     output:
-        expand('intermediate/crop/{{video}}-{{split}}-ROI_{roi}.mp4',
-               roi=range(NUM_ROIS))
+        'intermediate/rois/{video}.txt'
     shell:
-        'python3.7 scripts/crop.py {input[0]} intermediate/crop {input[1]}'
+        'python3.7 scripts/roidetect.py {input} {output}'
+
+def croprotate_input(wildcards):
+    indir = checkpoints.split.get(video=wildcards.video).output[0]
+    return [os.path.join(indir, '{split}.mp4').format(split=wildcards.split),
+            'intermediate/rois/{video}.txt'.format(video=wildcards.video),
+           ]
+
+checkpoint croprotate:
+    input:
+        croprotate_input
+    output:
+        directory('intermediate/crop/{video}/{split}')
+    shell:
+        'python3.7 scripts/croprotate.py {input[0]} {output} {input[1]}'
+
+def track_input(wildcards):
+    checkpoints.croprotate.get(**wildcards).output[0]
+    return 'intermediate/crop/{video}/{split}/ROI_{roi}.mp4'
 
 rule track:
     input:
-        'intermediate/crop/{video}-{split}-ROI_{roi}.mp4'
+        track_input
     output:
-        'intermediate/track/{video}-{split}-ROI_{roi}.csv'
+        'intermediate/track/{video}/{split}/ROI_{roi}.csv'
     shell:
         'python3.7 scripts/track.py {input} {output}'
 
+def aggregate_rois_input(wildcards):
+    split_out = checkpoints.split.get(video=wildcards.video).output[0]
+    track_out = 'intermediate/track/{video}/{split}/ROI_{roi}.csv'
+    return expand(track_out, **wildcards,
+                  split=glob_wildcards(os.path.join(split_out, '{i}.mp4')).i)
+
+rule aggregate_rois:
+    input:
+        aggregate_rois_input
+    output:
+        'intermediate/aggregate/{video}/ROI_{roi}.txt'
+    shell:
+        'python3.7 scripts/combinetrack.py {output} {input}'
+ 
