@@ -34,8 +34,11 @@ def crop_video(video, out_dir, boxes, logfile=None):
     """
     if not os.path.isdir(out_dir):
         os.mkdir(out_dir)
-    command = 'ffmpeg -y -i {0} -vf "rotate=-{1}:ow=ceil(rotw(-{1})/2)*2:' \
-              'oh=ceil(roth(-{1})/2)*2, crop={2}:{3}:{4}:{5}" {6}'
+    command = 'ffmpeg -y -i {0} -strict -2 -vf "rotate=-{1}:' \
+              'ow=ceil(rotw(-{1})/2)*2:oh=ceil(roth(-{1})/2)*2, ' \
+              'crop={2}:{3}:{4}:{5}" {6}'
+              # The "-strict -2" in here is insecure
+              # TODO ask Donaldson if inputs are considered trusted
     # Format argument order: input video, rotation angle, width, height,
     #     upper-left x after rotation, upper-left y after rotation, output video
     video_name = os.path.splitext(os.path.basename(video))[0]
