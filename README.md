@@ -21,3 +21,13 @@ pipeline using snakemake
 The code does not yet automatically install its dependencies, so you have to
 install all of those manually for it to work.
 
+### Code Files
+
+An explanation of all of the different code files in the project, WIP:
+
+ - [antTracker.py](scripts/antTracker.py) An outdate code file which would
+   process videos from beginning to end in one sweep. This file is no longer
+   being maintained because the pipeline approach is much more flexible and
+   more easily maintainable.
+ - [ant_traking.m](scripts/ant_tracking.m
+
