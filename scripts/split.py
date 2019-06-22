@@ -60,8 +60,8 @@ def by_manifest(filename, destination, manifest, vcodec='copy', acodec='copy',
                 if fileext in filebase:
                     filebase = '.'.join(filebase.split('.')[:-1])
 
-                split_str += ' -ss ' + str(split_start) + ' -t ' + \
-                    str(split_length) + ' ''+ filebase + '.' + fileext + '''
+                split_str = ' -ss {} -t {} "{}.{}"' \
+                            .format(split_start, split_length, filebase, fileext)
                 print('#######################################################')
                 print('About to run: '+split_cmd+split_str)
                 print('#######################################################')
@@ -92,7 +92,7 @@ def by_seconds(filename, destination, split_length, vcodec='copy',
         print('Split length can\'t be 0')
         raise SystemExit
     output = subprocess.Popen('ffmpeg -i "{}" 2>&1 | grep "Duration"' \
-                                  .format(duration),
+                                  .format(filename),
                               shell = True, stdout = subprocess.PIPE
                             ).stdout.read().decode()
     print(output)

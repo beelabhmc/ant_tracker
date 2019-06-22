@@ -98,7 +98,6 @@ def flatten(lst):
     return out
 
 def save_rois(rois, outfile, imagename):
-    rois = []
     f = open(outfile, 'w')
     f.write(' '.join(','.join(map(str, flatten(roi))) for roi in rois))
     f.close()
