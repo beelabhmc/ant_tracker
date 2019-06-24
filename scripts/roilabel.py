@@ -4,6 +4,8 @@ import numpy as np
 from math import cos, sin
 import argparse
 
+import bbox
+
 def label_rois(video, roifile, outfile):
     """Labels the RoIs found in roifile onto the first frame of the
     video and saves that into outfile.
@@ -13,19 +15,14 @@ def label_rois(video, roifile, outfile):
     ret, frame = cv2.VideoCapture(video).read()
     if not ret:
         raise RuntimeError('Encountered problem reading frame from video.')
-    boxes = list(map(lambda x: ((x[0], x[1]), (x[2], x[3]), x[4]),
-                     map(lambda x: list(map(float, x.split(','))),
-                         open(roifile).read().split())))
+    boxes = bbox.read_bboxes(roifile)
     lines = []
     for i in range(len(boxes)):
         box = boxes[i]
-        ulc = np.array(box[0])
-        width = box[1][0]*np.array((cos(box[2]), sin(box[2])))
-        height = box[1][1]*np.array((-sin(box[2]), cos(box[2])))
-        pts = np.array([ulc, ulc+width, ulc+width+height, ulc+height], np.int32)
+        pts = np.array(bbox.get_vertices(box), np.int64)
         lines.append(pts.reshape((-1, 1, 2)))
-        cv2.putText(frame, str(i), tuple(map(int, ulc+width/2+height/2)),
-                    cv2.FONT_HERSHEY_PLAIN, 2, (0,)*3, 2)
+        cv2.putText(frame, str(i), bbox.get_center(box), cv2.FONT_HERSHEY_PLAIN,
+                    2, (0,)*3, 2)
     cv2.polylines(frame, lines, True, (0, 0, 0), thickness=2)
     cv2.imwrite(outfile, frame)
 

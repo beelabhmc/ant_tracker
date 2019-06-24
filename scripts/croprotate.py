@@ -6,21 +6,7 @@ import os
 import os.path
 
 from vid_meta_data import get_video_dimensions
-
-def read_bboxes(filename, videoname):
-    """Load filename and returns a list of the bounding boxes for the
-    given video.
-
-    Each bounding box is stored as ((upper_left_x, upper_left_y),
-    (width, height), angle), where angle is between 0 and π/2 (radians).
-    """
-    boxes = []
-    line = open(filename).read().strip().split()
-    for i in range(len(line)):
-        box = list(map(float, line[i].split(',')))
-        boxes.append(((box[0], box[1]), (box[2], box[3]), box[4]))
-        # file format: [ulx,uly,width,height,angle[,...]* ]+
-    return boxes
+import bbox
 
 def crop_video(video, out_dir, boxes, logfile=None):
     """Crops the given video, according to boxes, and saves the results
@@ -73,7 +59,7 @@ def main():
                                  'boxes to crop.',
                            )
     args = arg_parser.parse_args()
-    crop_video(args.video, args.out_dir, read_bboxes(args.boxes, args.video))
+    crop_video(args.video, args.out_dir, bbox.read_bboxes(args.boxes))
 
 if __name__ == '__main__':
     main()
