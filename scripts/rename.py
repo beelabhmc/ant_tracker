@@ -1,21 +1,32 @@
-from matplotlib import pyplot as plt
-import matplotlib.image as mpimg
-import math
-import glob, os
+import glob
+import os
+import os.path
 import argparse
-import matplotlib.patches as patches
-import re
 
 import constants
 
-def reNameAll(VID_DIR, colonyNum, boxRegion):
+def rename_all(vid_dir, colony_num, box_region):
+    """Takes all videos in the directory vid_dir and renames them to
+    the naming scheme:
+        C{colony_number}{box_region}-seg{s}.mp4
+    where s is the segment number of that video (segments are assumed to
+    be alphabetical).
+    """
     c=0
-    vids = glob.glob(constants.DIRECTORY + VID_DIR + "*.mp4")
+    vids = glob.glob(os.path.join(constants.DIRECTORY, vid_dir, '*.mp4'))
     vids.sort()
     
     for vidName in vids:
-        command = "mv "+ vidName + " "+ constants.DIRECTORY + "C"+colonyNum \
-                  + boxRegion+"-seg"+str(c)+".mp4"
+        command = 'mv {} {}'.format(vidName,
+                    os.path.join(constants.DIRECTORY,
+                                 'C{}{}-seg{}.mp4'\
+                                    .format(constants.DIRECTORY,
+                                            colony_num,
+                                            box_region,
+                                            c
+                                           )
+                                )
+                    )
         c+=1
         os.system(command)
 
@@ -25,39 +36,30 @@ def main():
     arg_parser.add_argument('--v',
                             dest = 'vid_dir',
                             type=str,
-                            default="",
-                            help='directory of the video files '
-                                 '(colony1/,colony2/,colony3/)')
+                            nargs='+',
+                            required=True,
+                            help='The directories of the videos, separated '
+                                 'by spaces.'
+                           )
     arg_parser.add_argument('--c',
                             dest = 'colony_number',
                             type=str,
-                            default="",
-                            help='the colony number (1,2,3)')
+                            nargs='+',
+                            required=True,
+                            help='The colony numbers, separated by spaces')
     arg_parser.add_argument('--b',
                             dest = 'box_region',
                             type=str,
-                            default="",
-                            help='the box region (R,D,O)')
+                            nargs='+',
+                            required=True,
+                            help='The box regions (R,D,O), separated by spaces')
     args = arg_parser.parse_args()
-    if args.vid_dir:
-        VID_DIR = args.vid_dir.split(',')
-    else:
-        raise Exception('requires a directory of the video files')
-    if args.colony_number:
-        colonyNum = args.colony_number.split(',')
-    else:
-        raise Exception('requires the colony number corresponding to '
-                        'the video directory')
-    if args.box_region:
-        boxRegion = args.box_region.split(',')
-    else:
-        raise Exception('requires the box region corresponding to the '
-                        'video directory')
-    if len(boxRegion) != len(VID_DIR) or len(boxRegion) != len(colonyNum) \
-            or len(colonyNum) != len(VID_DIR):
-        raise Exception('all parameters must be the same length')
-    for i in range(len(VID_DIR)):
-        reNameAll(VID_DIR[i], colonyNum[i], boxRegion[i])
+    if len(set(map(len,(args.box_region,args.vid_dir,args.colony_number)))) != 1:
+        args.error('The given arguments must be the same length.')
+    for vid_dir, colony, box in zip(args.vid_dirs,
+                                args.colony_numbers, args.box_regions):
+        rename_all(vid_dir, colony, box)
 
-if __name__== "__main__":
+if __name__== '__main__':
     main()
+
