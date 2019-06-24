@@ -83,3 +83,6 @@ POLYGON_EPSILON = 0.03  # The amount of deviation from the found shape which
                         # If the output has too many sides, increase it. If the
                         # output has too few, descrease it.
 
+ROI_BBOX_PADDING = 7    # The amount of padding to place around the detected
+                        # polygon when converting a polygon to an ROI.
+

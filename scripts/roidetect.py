@@ -73,17 +73,23 @@ def find_polygons(mask, top_level=True, has_child=True,
             ]
     return polys
 
-def convert_polygon_to_roi(poly):
+def convert_polygon_to_roi(poly, padding=constants.ROI_BBOX_PADDING):
     """Takes a polygon and outputs it in ROI format. This consists of a
     list in which the first item is a tuple with the x,y coordinates of
     the upper-left corner of the bounding rectangle, the second is a
     tuple specifying its length and width, and the third is its angle to
     the vertical in radians, between 0 and π/2, measured in radians. The
     fourth item is the polygon which was passed in.
+
+    If padding is specified, then it indicates an extra number of pixels
+    to have around all sides of the ROI.
     """
     (x, y), (w, h), angle = cv2.minAreaRect(poly)
     angle = pi/180 * (90+angle)  # Convert to quadrant 1 radians
     w, h = h, w  # swap width and height because angle is changed
+    # pad the image
+    w += 2*padding
+    h += 2*padding
     # Shift x,y from the center (given by cv2) to the corner
     x += -cos(angle)*w/2 + sin(angle)*h/2
     y += -sin(angle)*w/2 - cos(angle)*h/2
