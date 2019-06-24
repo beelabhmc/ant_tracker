@@ -16,7 +16,7 @@ The python executables depend on the [numpy](https://www.numpy.org/),
 [opencv](https://opencv.org/), [matplotlib](https://matplotlib.org/), and
 [PIL](https://pillow.readthedocs.io/en/stable/) python packages, as well as
 [ffmpeg](https://ffmpeg.org/). The code is also designed to be run as a
-pipeline using snakemake
+pipeline using [snakemake](https://snakemake.readthedocs.io/en/stable/).
 
 The code does not yet automatically install its dependencies, so you have to
 install all of those manually for it to work.
