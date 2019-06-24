@@ -44,16 +44,21 @@ def smooth_regions(mask, open=constants.SMOOTH_OPEN_SIZE,
                             cv2.MORPH_CLOSE, close_kernel
                            )
 
-def find_polygons(mask, top_level=True, epsilon=constants.POLYGON_EPSILON):
+def find_polygons(mask, top_level=True, has_child=True,
+                  epsilon=constants.POLYGON_EPSILON):
     """Takes the given mask and finds a polygon that fits it well.
     
     If top_level is  specified and falsy, then it will return all
     polygons in the image. Otherwise, it will return only the polygons
     which are "top-level", which is to say, not contained inside of
     another polygon.
-    Because of the way contour detection works, if
-    top_level is set to false, then any hollow polygons appear twice:
-    once on their external perimeter and once in their internal.
+    Because of the way contour detection works, if top_level is set to
+    false, then any hollow polygons appear twice: once on their external
+    perimeter and once in their internal.
+    
+    If has_child is specified and falsy, then it will return all
+    polygons; otherwise, it will return only polygons which have a
+    contour detected inside of them (i.e. are hollow).
 
     epsilon is a parameter specifying how loosely the polygon is allowed
     to fit the mask. The greater the value of epsilon, the fewer sides
@@ -63,7 +68,9 @@ def find_polygons(mask, top_level=True, epsilon=constants.POLYGON_EPSILON):
     polys = [cv2.approxPolyDP(contours[i], cv2.arcLength(contours[i], True) \
                  * epsilon, True)
              for i in range(len(contours))
-             if not top_level or h[0][i][3] < 0]
+             if (not top_level or h[0][i][3] < 0) \
+                     and (not has_child or h[0][i][2] >= 0)
+            ]
     return polys
 
 def convert_polygon_to_roi(poly):
