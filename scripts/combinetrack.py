@@ -31,7 +31,17 @@ def main():
                       default='SPLIT #{number}:\n',
                       help='A string to preface each file being merged.',
                      )
+    args.add_argument('--sort',
+                      type=bool,
+                      dest='sort',
+                      default=True,
+                      help='Whether or not to sort the input files. Defaults '
+                           'to true. If False, files are unsorted, otherwise, '
+                           'files get sorted in alphabetical order.'
+                     )
     args = args.parse_args()
+    if args.sort:
+        args.infiles.sort()
     combine_split_track(args.infiles, args.outfile, filesep=args.filesep)
 
 if __name__ == '__main__':
