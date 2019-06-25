@@ -1,8 +1,0 @@
-channels:
-  - anaconda
-dependencies:
-  - python=2
-  - numpy
-  - opencv
-  - matlab_engine
-  - ffmpeg
