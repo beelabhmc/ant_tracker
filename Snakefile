@@ -17,6 +17,7 @@ checkpoint split:
         'input/{video}.mp4'
     output:
         directory('intermediate/split/{video}')
+    priority: 20
     shell:
         'python3.7 scripts/split.py -s %s {input} {output}' % SEGMENT_LENGTH
 
@@ -39,6 +40,7 @@ checkpoint croprotate:
         croprotate_input
     output:
         directory('intermediate/crop/{video}/{split}')
+    priority: 10
     shell:
         'python3.7 scripts/croprotate.py {input[0]} {output} {input[1]}'
 
