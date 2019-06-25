@@ -4,7 +4,7 @@ import numpy as np
 import argparse
 from os.path import abspath
 
-import vid_meta_data as metadata
+import metadata
 import constants
 
 

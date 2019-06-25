@@ -5,7 +5,7 @@ from math import sin, cos, ceil
 import os
 import os.path
 
-from vid_meta_data import get_video_dimensions
+import metadata
 import bbox
 
 def crop_video(video, out_dir, boxes, logfile=None):
@@ -28,7 +28,7 @@ def crop_video(video, out_dir, boxes, logfile=None):
     # Format argument order: input video, rotation angle, width, height,
     #     upper-left x after rotation, upper-left y after rotation, output video
     video_name = os.path.splitext(os.path.basename(video))[0]
-    H, W = get_video_dimensions(video)
+    H, W = metadata.get_video_dimensions(video)
     for i in range(len(boxes)):
         (ulx, uly), (width, height), angle, *_ = boxes[i]
         x, y = ulx*cos(angle)+uly*sin(angle), (W-ulx)*sin(angle)+uly*cos(angle)
