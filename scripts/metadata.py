@@ -29,7 +29,7 @@ def get_video_duration(input_video):
     try:
         return float(re.search(duration_regex, output).group(1))
     except AttributeError as e:
-        raise RuntimeError(f'Unparsable ffprobe output:\n{}\nfrom command:\n{}'\
+        raise RuntimeError('Unparsable ffprobe output:\n{}\nfrom command:\n{}'\
                            .format(output, ' '.join(cmd))) from e
     
 def get_video_frames(input_video):
@@ -40,6 +40,6 @@ def get_video_frames(input_video):
     try:
         return int(re.search(frames_regex, output).group(1))
     except AttributeError as e:
-        raise RuntimeError(f'Unparsable ffprobe output:\n{}\nfrom command:\n{}'\
+        raise RuntimeError('Unparsable ffprobe output:\n{}\nfrom command:\n{}'\
                            .format(output, ' '.join(cmd))) from e
 
