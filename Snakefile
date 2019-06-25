@@ -2,7 +2,7 @@
 SEGMENT_LENGTH = 600
 
 # The framerate for the input videos
-H264_FRAMERATE = 30
+H264_FRAMERATE = 32
 
 rule convert_h264_to_mp4:
     input:
