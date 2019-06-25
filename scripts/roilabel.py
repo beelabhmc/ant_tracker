@@ -19,7 +19,7 @@ def label_rois(video, roifile, outfile):
     lines = []
     for i in range(len(boxes)):
         box = boxes[i]
-        pts = np.array(bbox.get_vertices(box), np.int64)
+        pts = np.array(bbox.get_box_vertices(box), np.int64)
         lines.append(pts.reshape((-1, 1, 2)))
         cv2.putText(frame, str(i), bbox.get_center(box), cv2.FONT_HERSHEY_PLAIN,
                     2, (0,)*3, 2)
