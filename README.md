@@ -42,6 +42,14 @@ An explanation of all of the different code files in the project, WIP:
  - [roidetect.py](scripts/roidetect.py) A script which searches an image for
    red polygons painted in there, which it interprets as being ROIs and records
    them as such in a file.
+ - [roiedgelabel.py](scripts/roiedgelabel.py) A script which labels the edges of
+   the detected polygons in each ROI with a number that the rest of the code
+   uses. This is for exporting the ROIs to a human-readable format, and is not
+   necessary for the code to run.
+ - [roilabel.py](scripts/roilabel.py) A script which takes the first frame of a
+   video and draws the regions on interest onto it, then saves it to a file.
+   This is also for exporting to human-readable and not necessary for the code
+   to run.
  - [routes.py](scripts/routes.py) Code written for an old requirement (tracking
    which path ants take along ROIs), which is preserved in case that is ever
    useful in the future.
