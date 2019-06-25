@@ -61,24 +61,24 @@ MIN_VISIBLE_COUNT = 3           # The minimum number of frames for which an ant
 # Parameters used in detecting bridges automatically via looking for red
 # For more information on the HSV color model, go to
 # https://en.wikipedia.org/wiki/HSL_and_HSV
-HSV_HUE_TOLERANCE = 60  # How close the hue must be to red to be detected
+HSV_HUE_TOLERANCE = 70  # How close the hue must be to red to be detected
                         # A measure of which color the pixel is
 
-HSV_SAT_MINIMUM = 70    # The smallest saturation for the red to be detected
+HSV_SAT_MINIMUM = 55    # The smallest saturation for the red to be detected
                         # A measure of how strongly colored the pixel is
 
-HSV_VALUE_MINIMUM = 100 # The smallest value for the red to be detected
+HSV_VALUE_MINIMUM = 60  # The smallest value for the red to be detected
                         # A measure of how bright the pixel is
 
-SMOOTH_OPEN_SIZE = 3    # The amount by which to open the mask (removes small
+SMOOTH_OPEN_SIZE = 1    # The amount by which to open the mask (removes small
                         # details).
 
-SMOOTH_DILATE_SIZE = 5  # The amount by which to expand the mask after opening
+SMOOTH_DILATE_SIZE = 1  # The amount by which to expand the mask after opening
 
-SMOOTH_CLOSE_SIZE = 9   # The amount by which to close the mask after dilating
+SMOOTH_CLOSE_SIZE = 11  # The amount by which to close the mask after dilating
                         # (fills in holes and combines adjacent figures).
 
-POLYGON_EPSILON = 0.03  # The amount of deviation from the found shape which
+POLYGON_EPSILON = 0.025 # The amount of deviation from the found shape which
                         # the program tolerates in the final result.
                         # If the output has too many sides, increase it. If the
                         # output has too few, descrease it.
