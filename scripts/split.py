@@ -103,12 +103,16 @@ def by_seconds(filename, destination, split_length, vcodec='copy',
                        + int(matches.group(3))
         print('Video length in seconds: '+str(video_length))
     else:
-        print('Can\'t determine video length.')
-        raise SystemExit
+        print('Can\'t determine video length, copying video without splitting')
+        destination = os.path.join(destination, '0.mp4')
+        subprocess.Popen(f'cp "{filename}" "{destination}"', shell=True)
+        return
     split_count = int(math.ceil(video_length / split_length))
     if(split_count == 1):
         print('Video length is less then the target split length.')
-        raise SystemExit
+        destination = os.path.join(destination, '0.mp4')
+        subprocess.Popen(f'cp "{filename}" "{destination}"', shell=True)
+        return
 
     # we use -y to force overwrites of output files
     split_cmd = 'ffmpeg -loglevel warning -y -i \'{}\' -vcodec {} -acodec ' \

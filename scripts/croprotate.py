@@ -30,7 +30,7 @@ def crop_video(video, out_dir, boxes, logfile=None):
     video_name = os.path.splitext(os.path.basename(video))[0]
     H, W = get_video_dimensions(video)
     for i in range(len(boxes)):
-        (ulx, uly), (width, height), angle = boxes[i]
+        (ulx, uly), (width, height), angle, *_ = boxes[i]
         x, y = ulx*cos(angle)+uly*sin(angle), (W-ulx)*sin(angle)+uly*cos(angle)
         x, y, = map(round, (x, y))
         width, height = map(lambda x: 2*ceil(x/2), (width, height))
