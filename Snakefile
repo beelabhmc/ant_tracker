@@ -56,20 +56,43 @@ rule track:
     shell:
         'python3.7 scripts/track.py {input} {output}'
 
-def aggregate_rois_input(wildcards):
+def aggregate_splits_input(wildcards):
     split_out = checkpoints.split.get(video=wildcards.video).output[0]
     track_out = 'intermediate/track/{video}/{split}/ROI_{roi}.csv'
     return expand(track_out, **wildcards,
                   split=glob_wildcards(os.path.join(split_out, '{i}.mp4')).i)
 
+rule aggregate_splits:
+    input:
+        aggregate_splits_input
+    output:
+        'intermediate/aggregate/{video}/ROI_{roi}.csv'
+    shell:
+        'python3.7 scripts/combinetrack.py {output} {input}'
+
+def aggregate_rois_input(wildcards):
+    crop_out = checkpoints.split.get(**wildcards, split=0).output[0]
+    aggregate_split_out = 'intermediate/aggregate/{video}/ROI_{roi}.csv'
+    return expand(aggregate_split_out, **wildcards,
+                  roi=glob_wildcards(os.path.join(crop_out, '{i}.mp4')).i)
+
 rule aggregate_rois:
     input:
         aggregate_rois_input
     output:
-        'intermediate/aggregate/{video}/ROI_{roi}.txt'
+        'output/{video}/tracks.csv'
     shell:
-        'python3.7 scripts/combinetrack.py {output} {input}'
+        'python3.7 scripts/combinerois.py {output} {input}'
 
+rule sort_aggregated_rois:
+    input:
+        'output/{video}/tracks.csv'
+    output:
+        'output/{video}/sorted.csv'
+    shell:
+        'cat {input} | sort --field-separator=, -nk 5 | sed \'s/,/\\t/g\''
+        ' > {output}'
+ 
 rule roi_label:
     input:
         'input/{video}.mp4',
@@ -92,4 +115,4 @@ rule roi_edge_label:
         'output/{video}/labels/ROI_{roi}.png'
     shell:
         'python3.7 scripts/roiedgelabel.py {input[0]} {input[1]} {output}'
- 
+
