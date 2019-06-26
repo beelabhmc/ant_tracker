@@ -12,11 +12,17 @@ RESULT_VID_DIR = 'result/'
 
 
 # Parameters used by the python code that can be tweaked for better performance
-PADDING = 10    # This constant was buried in the antTracker.py file when I got
-                # it for the first time, but I can't find out where or if it is
-                # ever used by the code.
+PADDING = 10                    # This constant was buried in the antTracker.py
+                                # file when I got it for the first time, but I
+                                # can't find out where or if it is ever used by
+                                # the code.
 
-MIN_BLOB = 20   # The smallest size of blob which is interpreted as an ant
+MIN_BLOB = 20                   # The smallest size of blob which is interpreted
+                                # as an ant
+
+COUNT_WARNING_THRESHOLD = 10    # If more ants than this are detected in the
+                                # span of 5 seconds, throw a warning and flag
+                                # the offending tracks
 
 
 # Parameters used by the matlab code that can be tweaked for better performance

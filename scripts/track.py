@@ -3,12 +3,14 @@ import matlab.engine
 import numpy as np
 import argparse
 from os.path import abspath
+import collections
 
 import metadata
 import constants
 
 
 def trackOneClip(vidPath, vidExport, result_path,
+        count_warning_threshold=constants.COUNT_WARNING_THRESHOLD,
         minBlob=constants.MIN_BLOB,
         num_gaussians=constants.NUM_GAUSSIANS,
         num_training_frames=constants.NUM_TRAINING_FRAMES,
@@ -21,7 +23,6 @@ def trackOneClip(vidPath, vidExport, result_path,
         kalman_motion_noise=constants.KALMAN_MOTION_NOISE,
         kalman_measurement_noise=constants.KALMAN_MEASUREMENT_NOISE,
         min_visible_count=constants.MIN_VISIBLE_COUNT):
-    # get height and width of video
     # call the ant_tracking.m script and get the resulting dataframe
     # inputs:
     #   vidPath - string, absolute path to cropped vid
@@ -29,6 +30,7 @@ def trackOneClip(vidPath, vidExport, result_path,
     #   result_path - string, path to the directory in which to store
     #                 result videos
     #   minBlob - int, minimum blob area in pixels
+    #   other inputs are documented in scripts/constants.py
     eng = matlab.engine.start_matlab()
     eng.addpath('scripts')
     df = eng.ant_tracking(abspath(vidPath), vidExport, abspath(result_path),
@@ -41,7 +43,7 @@ def trackOneClip(vidPath, vidExport, result_path,
                           kalman_measurement_noise, min_visible_count)
     if df:
         track_result = np.array([['filename', 'id', 'x0', 'y0', 't0',
-                                  'x1', 'y1', 't1']])
+                                  'x1', 'y1', 't1', 'number_warning']])
         fps = metadata.get_video_fps(vidPath)
         # Get the framerate of the video
         # convert the dataframe to a np array
@@ -75,8 +77,20 @@ def trackOneClip(vidPath, vidExport, result_path,
                     continue
             # save results in np array so that we can return them soon
             track_result = np.append(track_result, [[vidPath, idnum, x0, y0, t0,
-                                                     x1, y1, t1]],
+                                                     x1, y1, t1, 0]],
                                      axis=0)
+        # Iterate through the resulting dataframe and flag unexpected quantities
+        times = collections.deque()
+        for i in range(1, len(track_result)):
+            vid, idnum, x0, y0, t0, x1, y1, t1, flag = track_result[i]
+            times.append((float(t1), i))
+            while times[0][0] <= float(t1)-5:
+                times.popleft()
+            if len(times) >= count_warning_threshold:
+                print('Warning: detected an unexpected number of tracks at '
+                      't={} in {}'.format(t1, vidPath))
+                for t, index in times:
+                    track_result[index, 8] = 1
         # return the data without its header
         return track_result[1:,], df
     return np.array([]), np.array([])
@@ -116,7 +130,7 @@ def main():
 
     # track ants in each of the cropped videos
     result_array = np.array([['fName', 'id', 'x0', 'y0', 't0',
-                              'x1', 'y1', 't1']])
+                              'x1', 'y1', 't1', 'count_warning_flag']])
     print('Tracking ants in', args.source)
     # call matlab to track ants in a single cropped video
     export = args.video_path is not None
