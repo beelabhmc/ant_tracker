@@ -8,7 +8,7 @@ import metadata
 import constants
 
 
-def trackOneClip(vidPath, W, H, vidExport, result_path,
+def trackOneClip(vidPath, vidExport, result_path,
         minBlob=constants.MIN_BLOB,
         num_gaussians=constants.NUM_GAUSSIANS,
         num_training_frames=constants.NUM_TRAINING_FRAMES,
@@ -21,7 +21,7 @@ def trackOneClip(vidPath, W, H, vidExport, result_path,
         kalman_motion_noise=constants.KALMAN_MOTION_NOISE,
         kalman_measurement_noise=constants.KALMAN_MEASUREMENT_NOISE,
         min_visible_count=constants.MIN_VISIBLE_COUNT):
-    eng = matlab.engine.start_matlab()
+    # get height and width of video
     # call the ant_tracking.m script and get the resulting dataframe
     # inputs:
     #   vidPath - string, absolute path to cropped vid
@@ -29,6 +29,7 @@ def trackOneClip(vidPath, W, H, vidExport, result_path,
     #   result_path - string, path to the directory in which to store
     #                 result videos
     #   minBlob - int, minimum blob area in pixels
+    eng = matlab.engine.start_matlab()
     eng.addpath('scripts')
     df = eng.ant_tracking(abspath(vidPath), vidExport, abspath(result_path),
                           minBlob, num_gaussians, num_training_frames,
@@ -41,7 +42,8 @@ def trackOneClip(vidPath, W, H, vidExport, result_path,
     if df:
         track_result = np.array([['filename', 'id', 'x0', 'y0', 't0',
                                   'x1', 'y1', 't1']])
-        print(df[:10])
+        fps = metadata.get_video_fps(vidPath)
+        # Get the framerate of the video
         # convert the dataframe to a np array
         # it should have five columns:
         #   x_pos, y_pos, width, height, ant_id, framenumbet
@@ -58,8 +60,8 @@ def trackOneClip(vidPath, W, H, vidExport, result_path,
             x1 = antTrack[-1,0]
             y0 = antTrack[0,1]
             y1 = antTrack[-1,1]
-            t0 = antTrack[0,5]
-            t1 = antTrack[-1,5]
+            t0 = round(antTrack[0,5]/fps, 2)
+            t1 = round(antTrack[-1,5]/fps, 2)
             if (x1-x0)**2 + (y1-y0)**2 < 100:
                 # These ants appeared and disappeared close together
                 for x, y, *_ in antTrack:
@@ -116,11 +118,9 @@ def main():
     result_array = np.array([['fName', 'id', 'x0', 'y0', 't0',
                               'x1', 'y1', 't1']])
     print('Tracking ants in', args.source)
-    # get height and width of video
-    H, W = metadata.get_video_dimensions(args.source)
     # call matlab to track ants in a single cropped video
     export = args.video_path is not None
-    track_result, raw_results = trackOneClip(args.source, W, H, export,
+    track_result, raw_results = trackOneClip(args.source, export,
                                              args.video_path or '')
     # keep track of the tracking results in a np array
     if track_result.size:
