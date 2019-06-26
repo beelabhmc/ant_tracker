@@ -275,7 +275,10 @@ function displayTrackingResults(results)
 
             frameNumberMat = frameNumber * ones(size(transpose(ids)));
 
-            ants = [ants; [bboxes, transpose(ids), frameNumberMat]];
+            visible = [reliableTracks(:).consecutiveInvisibleCount] < 1;
+
+            ants = [ants; [bboxes, transpose(ids), frameNumberMat, ...
+                           transpose(visible)]];
 
             % Create labels for objects indicating the ones for
             % which we display the predicted rather than the actual

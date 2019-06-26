@@ -56,6 +56,8 @@ def trackOneClip(vidPath, vidExport, result_path,
         for idnum in id_list:
             # get tracks for this ant
             antTrack = df[df[:, 4] == idnum]
+            antTrack = antTrack[antTrack[:, -1] == 1]
+            antTrack = antTrack[:,:-1]
             # NOTE: x and y coords can be negative if kalman filter is
             #       predicting the ant after it passes out of frame
             x0 = antTrack[0,0]
