@@ -44,12 +44,12 @@ def trackOneClip(vidPath, W, H, vidExport, result_path,
         print(df[:10])
         # convert the dataframe to a np array
         # it should have five columns:
-        #   x_pos, y_pos, width, height, ant_id
+        #   x_pos, y_pos, width, height, ant_id, framenumbet
         df = np.array(df)
         # get ant IDs as the unique values of the last column of the df
-        idL = set(df[:, 4])
+        id_list = set(df[:, 4])
         # for each ant that appears in the video...
-        for idnum in idL:
+        for idnum in id_list:
             # get tracks for this ant
             antTrack = df[df[:, 4] == idnum]
             # NOTE: x and y coords can be negative if kalman filter is
@@ -61,8 +61,16 @@ def trackOneClip(vidPath, W, H, vidExport, result_path,
             t0 = antTrack[0,5]
             t1 = antTrack[-1,5]
             if (x1-x0)**2 + (y1-y0)**2 < 100:
-                # Skip "ants" who don't move, as these tracks are likely fake
-                continue
+                # These ants appeared and disappeared close together
+                for x, y, *_ in antTrack:
+                    if (x-x0)**2 + (y-y0)**2 > 100:
+                        # The ant moved a bit and then turned around and
+                        # went back
+                        # This track still counts
+                        break
+                else:
+                    # This blob never traveled far, so it is likely fake
+                    continue
             # save results in np array so that we can return them soon
             track_result = np.append(track_result, [[vidPath, idnum, x0, y0, t0,
                                                      x1, y1, t1]],
