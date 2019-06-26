@@ -1,0 +1,36 @@
+---
+# The framerate to assume if given a .h264 file
+h264-framerate: 32
+# The duration (in seconds) of each split segment
+segment-length: 600
+# Parameters used for track.py
+tracks:
+    padding: 10
+    min_blob: 20
+    count_warning_threshold: 10
+    num_gaussians: 5
+    num_training_frames: 120
+    minimum_background_ration: 0.50
+    cost_of_nonassignment: 15.0
+    invisible_threshold: 4
+    old_age_threshold: 8
+    visibility_threshold: 0.6
+    kalman_initial_error:
+        - 200
+        - 50
+    kalman_motion_noise:
+        - 100
+        - 15
+    kalman_measurement_noise: 100.0
+    min_visible_count: 3
+roi_detection:
+    hsv_hue_tolerance: 70
+    hsv_sat_minimum: 55
+    hsv_value_minimum: 60
+    smooth_open_size: 1
+    smooth_dilate_size: 1
+    smooth_close_size: 11
+    polygon_epsilon: 0.025
+    roi_bbox_padding: 7
+...
+
