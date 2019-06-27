@@ -36,6 +36,9 @@ An explanation of all of the different code files in the project, WIP:
    file which only contains the ROI, this file is necessary to crop and rotate
    the video to capture just the ROIs. It takes ROIs which are defined by
    roidetect.py.
+ - [metadata.py](scripts/vid_meta_data.py) A script which reads the
+   metadata from videos and contains functions with it common to multiple other
+   python scripts.
  - [plot_tracks.py](scripts/plot_tracks.py) A python script which plots the
    tracks which matlab detects in an ROI. This is useful for observing the
    impact of tinkering with the parameters.
@@ -50,16 +53,8 @@ An explanation of all of the different code files in the project, WIP:
    video and draws the regions on interest onto it, then saves it to a file.
    This is also for exporting to human-readable and not necessary for the code
    to run.
- - [routes.py](scripts/routes.py) Code written for an old requirement (tracking
-   which path ants take along ROIs), which is preserved in case that is ever
-   useful in the future.
  - [split.py](scripts/split.py) Code which splits up videos into smaller chunks
    based on time (I recommend 10 minutes).
  - [track.py](scripts/track.py) Python code which interfaces with ant_tracking.m
    and saves the data that it outputs into a file in a nice format.
- - [tracktor.py](scripts/track.py) Legacy code from Arya which I don't yet know
-   what it does.
- - [vid_meta_data.py](scripts/vid_meta_data.py) A script which reads the
-   metadata from videos and contains functions with it common to multiple other
-   python scripts.
 
