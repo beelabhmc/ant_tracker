@@ -1,8 +1,4 @@
-# The length of the segments to split, in seconds
-SEGMENT_LENGTH = 600
-
-# The framerate for the input videos
-H264_FRAMERATE = 32
+configfile: 'config.yaml'
 
 rule convert_h264_to_mp4:
     input:
@@ -10,7 +6,8 @@ rule convert_h264_to_mp4:
     output:
         '{video}.mp4'
     shell:
-        'ffmpeg -framerate %d -i {input} -c copy {output}' % H264_FRAMERATE
+        'ffmpeg -framerate %d -i {input} -c copy {output}' \
+            % config['h264-framerate']
 
 checkpoint split:
     input:
@@ -19,7 +16,8 @@ checkpoint split:
         directory('intermediate/split/{video}')
     priority: 20
     shell:
-        'python3.7 scripts/split.py -s %s {input} {output}' % SEGMENT_LENGTH
+        'python3.7 scripts/split.py -s %s {input} {output}' \
+            % config['segment-length']
 
 rule roidetect:
     input:
@@ -27,7 +25,13 @@ rule roidetect:
     output:
         'intermediate/rois/{video}.txt'
     shell:
-        'python3.7 scripts/roidetect.py {input} {output}'
+        'python3.7 scripts/roidetect.py {{input}} {{output}} -u {} -s {} -v {} '
+        '-o {} -d {} -c {} -e {} -p {}' \
+        .format(*(config['roi-detection'][x]
+                  for x in ['hsv-hue-tolerance', 'hsv-sat-minimum',
+                            'hsv-value-minimum', 'smooth-open-size',
+                            'smooth-dilate-size', 'smooth-close-size',
+                            'polygon-epsilon', 'roi-bbox-padding']))
 
 def croprotate_input(wildcards):
     indir = checkpoints.split.get(video=wildcards.video).output[0]
@@ -54,7 +58,16 @@ rule track:
     output:
         'intermediate/track/{video}/{split}/ROI_{roi}.csv'
     shell:
-        'python3.7 scripts/track.py {input} {output}'
+        'python3.7 scripts/track.py {{input}} {{output}} -m {} -c {} -g {} -tf '
+        '{} -b {} -n {} -it {} -ot {} -vt {} -ki {} -ko {} -km {} -v {}' \
+        .format(*(config['tracks'][x]
+                  for x in ['min-blob', 'count-warning-threshold',
+                            'num-gaussians', 'num-training-frames',
+                            'minimum-background-ratio', 'cost-of-nonassignment',
+                            'invisible-threshold', 'old-age-threshold',
+                            'visibility-threshold', 'kalman-initial-error',
+                            'kalman-motion-noise', 'kalman-measurement-noise',
+                            'min-visible-count']))
 
 def aggregate_splits_input(wildcards):
     split_out = checkpoints.split.get(video=wildcards.video).output[0]
