@@ -1,15 +1,14 @@
 import cv2
 import numpy as np
 import os.path
+import os
 import itertools
 import argparse
 from math import sin, cos, pi
 
 import constants
 
-def find_red(rgb, hue_diff=constants.HSV_HUE_TOLERANCE,
-             min_saturation=constants.HSV_SAT_MINIMUM,
-             min_value=constants.HSV_VALUE_MINIMUM):
+def find_red(rgb, hue_diff, min_saturation, min_value):
     """Finds the red regions in the given image.
     
     rgb is the image to search, stored in the format made by cv2.imread
@@ -26,9 +25,7 @@ def find_red(rgb, hue_diff=constants.HSV_HUE_TOLERANCE,
                         np.array([180, 255, 255]))
     return mask // 255
 
-def smooth_regions(mask, open=constants.SMOOTH_OPEN_SIZE,
-                         dilate=constants.SMOOTH_DILATE_SIZE,
-                         close=constants.SMOOTH_CLOSE_SIZE):
+def smooth_regions(mask, open, dilate, close):
     """Removes random dots that get made, dilates existing regions, then
     mergers together regions which are very near each other
     """
@@ -44,8 +41,7 @@ def smooth_regions(mask, open=constants.SMOOTH_OPEN_SIZE,
                             cv2.MORPH_CLOSE, close_kernel
                            )
 
-def find_polygons(mask, top_level=True, has_child=True,
-                  epsilon=constants.POLYGON_EPSILON):
+def find_polygons(mask, epsilon, top_level, has_child):
     """Takes the given mask and finds a polygon that fits it well.
     
     If top_level is  specified and falsy, then it will return all
@@ -73,7 +69,7 @@ def find_polygons(mask, top_level=True, has_child=True,
             ]
     return polys
 
-def convert_polygon_to_roi(poly, padding=constants.ROI_BBOX_PADDING):
+def convert_polygon_to_roi(poly, padding):
     """Takes a polygon and outputs it in ROI format. This consists of a
     list in which the first item is a tuple with the x,y coordinates of
     the upper-left corner of the bounding rectangle, the second is a
@@ -133,16 +129,90 @@ def main():
                             help='The frame number in the video to use for '
                                  'ROI detection (default=1)',
                            )
+    arg_parser.add_argument('-u', '--hue-tolerance',
+                            dest='hue',
+                            type=int,
+                            default=constants.HSV_HUE_TOLERANCE,
+                            help='The tolerance for changing hue away from '
+                                 'pure red, default '
+                                 f'{constants.HSV_HUE_TOLERANCE}')
+    arg_parser.add_argument('-s', '--min-saturation',
+                            dest='sat',
+                            type=int,
+                            default=constants.HSV_SAT_MINIMUM,
+                            help='The minimum saturation value allowed to be '
+                                 f'red, defult {constants.HSV_SAT_MINIMUM}')
+    arg_parser.add_argument('-v', '--min-value',
+                            dest='val',
+                            type=int,
+                            default=constants.HSV_SAT_MINIMUM,
+                            help='The minimum value allowed to be '
+                                 f'red, defult {constants.HSV_VALUE_MINIMUM}')
+    arg_parser.add_argument('-o', '--open-size',
+                            dest='open',
+                            type=int,
+                            default=constants.SMOOTH_OPEN_SIZE,
+                            help='The size by which to "open" the mask '
+                                 'to remove small details, default '
+                                 f'{constants.SMOOTH_OPEN_SIZE}')
+    arg_parser.add_argument('-d', '--dilate-size',
+                            dest='dilate',
+                            type=int,
+                            default=constants.SMOOTH_DILATE_SIZE,
+                            help='The amount by which to dilate the mask, '
+                                 f'default {constants.SMOOTH_DILATE_SIZE}')
+    arg_parser.add_argument('-c', '--close-size',
+                            dest='close',
+                            type=int,
+                            default=constants.SMOOTH_CLOSE_SIZE,
+                            help='The amount by which to "close" the mask, '
+                                 'filling in small holes, default '
+                                 f'{constants.SMOOTH_CLOSE_SIZE}')
+    arg_parser.add_argument('-e', '--poly-epsilon',
+                            dest='epsilon',
+                            type=float,
+                            default=constants.POLYGON_EPSILON,
+                            help='The amount of wiggle-room in defining '
+                                 'the polygons from the contours, default '
+                                 f'{constants.POLYGON_EPSILON}')
+    arg_parser.add_argument('-p', '--bbox-padding',
+                            dest='padding',
+                            type=int,
+                            default=constants.ROI_BBOX_PADDING,
+                            help='The amount of padding around the polygon '
+                                 'to include in the ROI, default '
+                                 f'{constants.ROI_BBOX_PADDING}')
+    arg_parser.add_argument('--include-children',
+                            dest='top_level',
+                            default=True,
+                            const=False,
+                            action='store_const',
+                            help='If specified, include child contours as '
+                                 'polygons. Otherwise, only top-level '
+                                 'contours are interpreted as polygons.')
+    arg_parser.add_argument('--include-barren',
+                            dest='has_child',
+                            default=True,
+                            const=False,
+                            action='store_const',
+                            help='If specified, allow contours which lack '
+                                 'children as polygons. Otherwise, only '
+                                 'contours which have children count.')
     args = arg_parser.parse_args()
+    if not os.path.isfile(args.video):
+        arg_parser.error(f'{args.video} is not a valid file.')
     video = cv2.VideoCapture(args.video)
     for i in range(args.frame-1):
         if not video.read()[0]:
             arg_parser.error('The video only has {} frames.'.format(i))
-    exists, frame = video.read()
-    if not exists:
+    ret, frame = video.read()
+    if not ret:
         arg_parser.error('The video only has {} frames.'.format(args.frame-1))
-    mask = smooth_regions(find_red(frame))
-    rois = list(map(convert_polygon_to_roi, find_polygons(mask)))
+    mask = find_red(frame, args.hue, args.sat, args.val)
+    mask = smooth_regions(mask, args.open, args.dilate, args.close)
+    rois = list(map(lambda x: convert_polygon_to_roi(x, args.padding),
+                    find_polygons(mask, args.epsilon,
+                                  args.top_level, args.has_child)))
     save_rois(rois, args.outfile, args.video)
 
 if __name__ == '__main__':
