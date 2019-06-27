@@ -10,13 +10,13 @@ import constants
 
 
 def trackOneClip(vidPath, vidExport, result_path,
-        count_warning_threshold=constants.COUNT_WARNING_THRESHOLD,
         minBlob=constants.MIN_BLOB,
+        count_warning_threshold=constants.COUNT_WARNING_THRESHOLD,
         num_gaussians=constants.NUM_GAUSSIANS,
         num_training_frames=constants.NUM_TRAINING_FRAMES,
         minimum_background_ratio=constants.MINIMUM_BACKGROUND_RATIO,
         cost_of_nonassignment=constants.COST_OF_NONASSIGNMENT,
-        invisible_for_too_long=constants.INVISIBLE_FOR_TOO_LONG,
+        invisible_threshold=constants.INVISIBLE_FOR_TOO_LONG,
         old_age_threshold=constants.OLD_AGE_THRESHOLD,
         visibility_threshold=constants.VISIBILITY_THRESHOLD,
         kalman_initial_error=constants.KALMAN_INITIAL_ERROR,
@@ -36,7 +36,7 @@ def trackOneClip(vidPath, vidExport, result_path,
     df = eng.ant_tracking(abspath(vidPath), vidExport, abspath(result_path),
                           minBlob, num_gaussians, num_training_frames,
                           minimum_background_ratio, cost_of_nonassignment,
-                          invisible_for_too_long, old_age_threshold,
+                          invisible_threshold, old_age_threshold,
                           visibility_threshold,
                           matlab.double(kalman_initial_error),
                           matlab.double(kalman_motion_noise),
@@ -99,12 +99,6 @@ def trackOneClip(vidPath, vidExport, result_path,
 
 def main():
     arg_parser = argparse.ArgumentParser()
-    arg_parser.add_argument('--m',
-                            dest = 'minBlob',
-                            type=int,
-                            default=constants.MIN_BLOB,
-                            help='minimum blob area in pixels (default = '
-                            '%d)' % constants.MIN_BLOB)
     arg_parser.add_argument('source',
                             type=str,
                             help='The path to a video file in which we want to '
@@ -127,7 +121,88 @@ def main():
                             help='Path of array of raw results to output. '
                                  'If no path is given, then it does not save '
                                  'the raw results.')
-
+    arg_parser.add_argument('-m', '--min-blob',
+                            dest = 'min_blob',
+                            type=int,
+                            default=constants.MIN_BLOB,
+                            help='minimum blob area in pixels (default = '
+                            '%d)' % constants.MIN_BLOB)
+    arg_parser.add_argument('-c', '--count-threshold',
+                            dest='count_threshold',
+                            type=int,
+                            default=constants.COUNT_WARNING_THRESHOLD,
+                            help='A threshold which, if more than this many '
+                                 'ants are seen in 5 seconds, causes the code '
+                                 'to output a warning and flag the offending '
+                                 'ants.')
+    arg_parser.add_argument('-g', '--num-gaussians',
+                            dest='gaussians',
+                            type=int,
+                            default=constants.NUM_GAUSSIANS,
+                            help='The number of gaussians to use when fitting '
+                                 'the background.')
+    arg_parser.add_argument('-tf', '--training-frames',
+                            dest='training_frames',
+                            type=int,
+                            default=constants.NUM_TRAINING_FRAMES,
+                            help='The number of frames to use to fit the '
+                                 'backgrond.')
+    arg_parser.add_argument('-b', '--min-background',
+                            dest='background',
+                            type=float,
+                            default=constants.MINIMUM_BACKGROUND_RATIO,
+                            help='The minimum portion of frames which must '
+                                 'be included in the background.')
+    arg_parser.add_argument('-n', '--nonassignment-cost',
+                            dest='nonassignment_cost',
+                            type=int,
+                            default=constants.COST_OF_NONASSIGNMENT,
+                            help='The cost of not assigning a detection to '
+                                 'an existing track.')
+    arg_parser.add_argument('-it', '--invisible-threshold',
+                            dest='invisible_threshold',
+                            type=int,
+                            default=constants.INVISIBLE_FOR_TOO_LONG,
+                            help='The number of frames after which to forget '
+                                 'a new, missing track.')
+    arg_parser.add_argument('-ot', '--old-age-threshold',
+                            dest='old_age_threshold',
+                            type=int,
+                            default=constants.OLD_AGE_THRESHOLD,
+                            help='The number of frames after which to make a '
+                                 'track immune to the invisible theshold.')
+    arg_parser.add_argument('-vt', '--visibility-threshold',
+                            dest='visibility_threshold',
+                            type=float,
+                            default=constants.VISIBILITY_THRESHOLD,
+                            help='The minimum fraction of frames which an ant '
+                                 'must appear in for its track to be counted.')
+    arg_parser.add_argument('-ki', '--kalman-initial',
+                            dest='kalman_initial',
+                            type=int,
+                            nargs=2,
+                            default=constants.KALMAN_INITIAL_ERROR,
+                            help='The margin of error on the initial position '
+                                 'and velocity for the kalman filter.')
+    arg_parser.add_argument('-ko', '--kalman-motion',
+                            dest='kalman_motion',
+                            type=int,
+                            nargs=2,
+                            default=constants.KALMAN_MOTION_NOISE,
+                            help='The amount of variation in position and '
+                                 'velocity expected by the kalman filter.')
+    arg_parser.add_argument('-km', '--kalman-measurement',
+                            dest='kalman_measurement',
+                            type=float,
+                            default=constants.KALMAN_MEASUREMENT_NOISE,
+                            help='The expected deviation of measurements from '
+                                 'the actual position.')
+    arg_parser.add_argument('-v', '--min-visible-count',
+                            dest='min_visible',
+                            type=int,
+                            default=constants.MIN_VISIBLE_COUNT,
+                            help='The number of frames which a track must have '
+                                 'already appeared in to be output.')
     args = arg_parser.parse_args()
 
     # track ants in each of the cropped videos
@@ -136,8 +211,14 @@ def main():
     print('Tracking ants in', args.source)
     # call matlab to track ants in a single cropped video
     export = args.video_path is not None
-    track_result, raw_results = trackOneClip(args.source, export,
-                                             args.video_path or '')
+    track_result, raw_results \
+        = trackOneClip(args.source, export, args.video_path or '',
+                        args.min_blob, args.count_threshold, args.gaussians,
+                        args.training_frames, args.background,
+                        args.nonassignment_cost, args.invisible_threshold,
+                        args.old_age_threshold, args.visibility_threshold,
+                        args.kalman_initial, args.kalman_motion,
+                        args.kalman_measurement, args.min_visible)
     # keep track of the tracking results in a np array
     if track_result.size:
         result_array = np.concatenate((result_array, track_result), axis=0)
