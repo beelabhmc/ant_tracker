@@ -155,7 +155,7 @@ def main():
                                  'be included in the background.')
     arg_parser.add_argument('-n', '--nonassignment-cost',
                             dest='nonassignment_cost',
-                            type=int,
+                            type=float,
                             default=constants.COST_OF_NONASSIGNMENT,
                             help='The cost of not assigning a detection to '
                                  'an existing track.')
