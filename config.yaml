@@ -41,14 +41,12 @@ tracks:
                                         # during an ant's lifetime for
                                         # which it must be visible.
 
-    kalman-initial-error:               # The margin of error for the
+    kalman-initial-error: '200 50'      # The margin of error for the
                                         # Kalman filter, on the initial
-        - 200                           # position and
-        - 50                            # velocity
+                                        # position and velocity
 
-    kalman-motion-noise:                # The amount of variation in
-        - 100                           # position and
-        - 15                            # velocity
+    kalman-motion-noise:  '100 15'      # The amount of variation in
+                                        # position and velocity
                                         # which the Kalman filter tolerates
 
     kalman-measurement-noise: 100.0     # The expected deviation in actual
