@@ -3,34 +3,84 @@
 h264-framerate: 32
 # The duration (in seconds) of each split segment
 segment-length: 600
-# Parameters used for track.py
 tracks:
-    padding: 10
-    min_blob: 20
-    count_warning_threshold: 10
-    num_gaussians: 5
-    num_training_frames: 120
-    minimum_background_ration: 0.50
-    cost_of_nonassignment: 15.0
-    invisible_threshold: 4
-    old_age_threshold: 8
-    visibility_threshold: 0.6
-    kalman_initial_error:
-        - 200
-        - 50
-    kalman_motion_noise:
-        - 100
-        - 15
-    kalman_measurement_noise: 100.0
-    min_visible_count: 3
+    # Parameters used by the ant tracking code (there's a lot of them)
+    min_blob: 20                        # The smallest size of blob
+                                        # which is interpreted as an ant
+
+    count_warning_threshold: 10         # If more ants than this are seen
+                                        # in 5 seconds, throw a warning
+                                        # and flag offending tracks.
+
+    num_gaussians: 5                    # The number of Guassians to use
+                                        # in fitting the background
+    num_training_frames: 120            # The number of frames of the
+                                        # video to use to identify the
+                                        # background
+
+    minimum_background_ratio: 0.50      # The fraction of frames which
+                                        # must be matched by the
+                                        # background detection
+ 
+    cost_of_nonassignment: 15.0         # The cost of not assigning a
+                                        # detection to an existing track.
+                                        # Decreasing this makes it more
+                                        # likely to assign two ants to
+                                        # one track.
+
+    invisible_threshold: 4              # If a newly-detected track is
+                                        # missing for this many frames,
+                                        # then assume that it was a fake
+                                        # track and forget it.
+ 
+    old_age_threshold: 8                # If a track exists for this many
+                                        # frames, then it becomes immune
+                                        # to the above effect
+
+    visibility_threshold: 0.6           # The minimum fraction of frames
+                                        # during an ant's lifetime for
+                                        # which it must be visible.
+
+    kalman_initial_error:               # The margin of error for the
+                                        # Kalman filter, on the initial
+        - 200                           # position and
+        - 50                            # velocity
+
+    kalman_motion_noise:                # The amount of variation in
+        - 100                           # position and
+        - 15                            # velocity
+                                        # which the Kalman filter tolerates
+
+    kalman_measurement_noise: 100.0     # The expected deviation in actual
+                                        # measurements
+
+    min_visible_count: 3                # The number of frames for which
+                                        # an ant must be spotted for its
+                                        # track to be recorded
+
 roi_detection:
-    hsv_hue_tolerance: 70
-    hsv_sat_minimum: 55
-    hsv_value_minimum: 60
-    smooth_open_size: 1
-    smooth_dilate_size: 1
-    smooth_close_size: 11
-    polygon_epsilon: 0.025
-    roi_bbox_padding: 7
+    # Parameters used by the ROI detection code
+    # HSV is the color model used by the code. Information on it can be
+    # found here: https://en.wikipedia.org/wiki/HSL_and_HSV
+    hsv_hue_tolerance: 70   # How far from pure red the hue can deviate
+
+    hsv_sat_minimum: 55     # The minimum saturation
+
+    hsv_value_minimum: 60   # The minimum value
+
+    smooth_open_size: 1     # The amount by which to "open" the mask
+                            # This removes small details.
+
+    smooth_dilate_size: 1   # The amount by which to "dilate" the mask,
+                            # expanding detected details.
+
+    smooth_close_size: 11   # The amount by which to "close" the mask,
+                            # filling in small holes.
+
+    polygon_epsilon: 0.025  # The amount of wiggle-room in turning
+                            # contours into polygons.
+
+    roi_bbox_padding: 7     # The amount of padding around polygons to
+                            # include in the ROI.
 ...
 
