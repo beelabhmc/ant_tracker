@@ -84,10 +84,12 @@ rule aggregate_splits:
         'python3.7 scripts/combinetrack.py {output} {input}'
 
 def aggregate_rois_input(wildcards):
-    crop_out = checkpoints.split.get(**wildcards, split=0).output[0]
+    crop_out = checkpoints.croprotate.get(**wildcards, split=0).output[0]
     aggregate_split_out = 'intermediate/aggregate/{video}/ROI_{roi}.csv'
-    return expand(aggregate_split_out, **wildcards,
-                  roi=glob_wildcards(os.path.join(crop_out, '{i}.mp4')).i)
+    crop_out = os.path.join(crop_out, 'ROI_{i}.mp4')
+    rois = glob_wildcards(crop_out).i
+    # print(crop_out, rois, sep='\n')
+    return expand(aggregate_split_out, **wildcards, roi=rois)
 
 rule aggregate_rois:
     input:
