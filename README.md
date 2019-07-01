@@ -16,7 +16,9 @@ The python executables depend on the [numpy](https://www.numpy.org/),
 [opencv](https://opencv.org/), and [matplotlib](https://matplotlib.org/)
 python packages, as well as [ffmpeg](https://ffmpeg.org/). The code is also
 designed to be run as a pipeline using
-[snakemake](https://snakemake.readthedocs.io/en/stable/).
+[snakemake](https://snakemake.readthedocs.io/en/stable/). Lastly, the code
+also supports manually specifying ROIs, optionally using
+[roipoly](https://github.com/jdoepfert/roipoly.py) for ease of use.
 
 The code does not yet automatically install its dependencies, so you have to
 install all of those manually for it to work.
@@ -42,6 +44,9 @@ An explanation of all of the different code files in the project, WIP:
  - [plot_tracks.py](scripts/plot_tracks.py) A python script which plots the
    tracks which matlab detects in an ROI. This is useful for observing the
    impact of tinkering with the parameters.
+ - [roidefine.py](scripts/roidefine.py) A script which allows you to manually
+   specify the ROIs in a file, as an alternative to automatic ROI detection
+   if your nest doesn't have the rois marked in red.
  - [roidetect.py](scripts/roidetect.py) A script which searches an image for
    red polygons painted in there, which it interprets as being ROIs and records
    them as such in a file.
