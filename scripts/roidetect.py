@@ -65,30 +65,6 @@ def find_polygons(mask, epsilon, top_level, has_child):
             ]
     return polys
 
-def convert_polygon_to_roi(poly, padding):
-    """Takes a polygon and outputs it in ROI format. This consists of a
-    list in which the first item is a tuple with the x,y coordinates of
-    the upper-left corner of the bounding rectangle, the second is a
-    tuple specifying its length and width, and the third is its angle to
-    the vertical in radians, between 0 and π/2, measured in radians. The
-    fourth item is the polygon which was passed in.
-
-    If padding is specified, then it indicates an extra number of pixels
-    to have around all sides of the ROI.
-    """
-    (x, y), (w, h), angle = cv2.minAreaRect(poly)
-    angle = pi/180 * (90+angle)  # Convert to quadrant 1 radians
-    w, h = h, w  # swap width and height because angle is changed
-    # pad the image
-    w += 2*padding
-    h += 2*padding
-    # Shift x,y from the center (given by cv2) to the corner
-    x += -cos(angle)*w/2 + sin(angle)*h/2
-    y += -sin(angle)*w/2 - cos(angle)*h/2
-    # Round the values to the hundredths so they're easier to look at.
-    x, y, w, h, angle = map(lambda x: round(x, 2), [x, y, w, h, angle])
-    return [(x, y), (w, h), angle, poly]
-
 def flatten(lst):
     """Flattens a list by taking any iterable element of the list and
     expanding it to be a list of its own.
@@ -101,11 +77,6 @@ def flatten(lst):
         except TypeError:
             out.append(item)
     return out
-
-def save_rois(rois, outfile, imagename):
-    f = open(outfile, 'w')
-    f.write(' '.join(','.join(map(str, flatten(roi))) for roi in rois))
-    f.close()
 
 def main():
     arg_parser = argparse.ArgumentParser()
@@ -206,10 +177,10 @@ def main():
         arg_parser.error('The video only has {} frames.'.format(args.frame-1))
     mask = find_red(frame, args.hue, args.sat, args.val)
     mask = smooth_regions(mask, args.open, args.dilate, args.close)
-    rois = list(map(lambda x: convert_polygon_to_roi(x, args.padding),
+    rois = list(map(lambda x: bbox.convert_polygon_to_roi(x, args.padding),
                     find_polygons(mask, args.epsilon,
                                   args.top_level, args.has_child)))
-    save_rois(rois, args.outfile, args.video)
+    bbox.save_rois(rois, args.outfile, args.video)
 
 if __name__ == '__main__':
     main()

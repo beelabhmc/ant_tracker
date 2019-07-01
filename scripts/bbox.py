@@ -1,5 +1,7 @@
 from math import cos, sin
 import numpy as np
+import cv2
+import os, os.path
 
 def read_bboxes(filename):
     """Load file and returns a list of the bounding boxes inside.
@@ -53,4 +55,35 @@ def get_poly_relpos(box):
         return (round(x*cos(box[2])+y*sin(box[2]), 2),
                 round(-x*sin(box[2])+y*cos(box[2]), 2))
     return list(map(transform, abspos))
+
+def convert_polygon_to_roi(poly, padding):
+    """Takes a polygon and outputs it in ROI format. This consists of a
+    list in which the first item is a tuple with the x,y coordinates of
+    the upper-left corner of the bounding rectangle, the second is a
+    tuple specifying its length and width, and the third is its angle to
+    the vertical in radians, between 0 and π/2, measured in radians. The
+    fourth item is the polygon which was passed in.
+
+    If padding is specified, then it indicates an extra number of pixels
+    to have around all sides of the ROI.
+    """
+    (x, y), (w, h), angle = cv2.minAreaRect(poly)
+    angle = pi/180 * (90+angle)  # Convert to quadrant 1 radians
+    w, h = h, w  # swap width and height because angle is changed
+    # pad the image
+    w += 2*padding
+    h += 2*padding
+    # Shift x,y from the center (given by cv2) to the corner
+    x += -cos(angle)*w/2 + sin(angle)*h/2
+    y += -sin(angle)*w/2 - cos(angle)*h/2
+    # Round the values to the hundredths so they're easier to look at.
+    x, y, w, h, angle = map(lambda x: round(x, 2), [x, y, w, h, angle])
+    return [(x, y), (w, h), angle, poly]
+
+def save_rois(rois, outfile, imagename):
+    if not os.path.isdir(os.path.dirname(outfile)):
+        os.makedirs(os.path.dirname(outfile))
+    f = open(outfile, 'w')
+    f.write(' '.join(','.join(map(str, flatten(roi))) for roi in rois))
+    f.close()
 
