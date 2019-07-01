@@ -8,23 +8,20 @@ import bbox
 
 def label_edges(video, roifile, outfile, roinum=None):
     """Label the edges of an ROI in a frame of a cropped video file.
-
-    video is the path to a video of the cropped region.
-
-    roifile is the file from which to take the ROIs.
-
-    outfile is the file in which to save the output image.
-
-    roinum is the number of the ROI. If unspecified, it tries to guess
-    based on the name of the video, raising an error if it can't.
+        video is the path to a video of the cropped region.
+        roifile is the file from which to take the ROIs.
+        outfile is the file in which to save the output image.
+        roinum is the number of the ROI. If unspecified, it tries to
+        guess based on the name of the video, raising an error if it
+        can't.
     """
     if not os.path.isfile(video):
-        raise ValueError(f'Can\'t find file {video}.')
+        raise ValueError(f"Can't find file {video}.")
     if roinum is None:
         try:
             roinum = int(re.search(r'[0-9]+', os.path.basename(video)).group(0))
         except Exception as e:
-            raise ValueError(f'Can\'t compute ROI number for {video}.') from e
+            raise ValueError(f"Can't compute ROI number for {video}.") from e
     try:
         box = bbox.read_bboxes(roifile)[roinum]
         verts = bbox.get_poly_relpos(box)

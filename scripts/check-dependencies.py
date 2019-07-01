@@ -1,4 +1,5 @@
 def main():
+    """Check that all the necessary imports are here."""
     success = True
     missing = []
     try:
@@ -19,18 +20,18 @@ def main():
         missing.append('the Matlab Python Engine')
     try:
         from subprocess import run
-        ffmpeg = (run('ffmpeg', shell=True, capture_output=True).returncode != 127)
-        if not ffmpeg:
+        code = run('ffmpeg', shell=True, capture_output=True).returncode
+        if code == 127:
             missing.append('ffmpeg')
     except Exception:
         missing.append('ffmpeg')
     if missing:
         sucess = False
         for package in missing:
-            print('You do not have {}.'.format(package))
+            print(f'You do not have {package}.')
     import sys
     if sys.version_info < (3, 6, 0):
-        print('You need to use python >=3.6, not {}.'.format(sys.version))
+        print(f'You need to use python >=3.6, not {sys.version}.')
         success = False
     if success:
         print('You\'re good to go!')

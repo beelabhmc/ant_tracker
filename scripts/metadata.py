@@ -11,7 +11,7 @@ def get_video_dimensions(input_video):
     """Takes a path to a video file and returns a tuple containing the
     video's height and width in that order.
     """
-    cmd = 'ffprobe -show_streams {}'.format(input_video).split()
+    cmd = f'ffprobe -show_streams {input_video}'.split()
     output = subprocess.run(cmd, stdout=subprocess.PIPE,
                             stderr=subprocess.STDOUT).stdout.decode()
     try:

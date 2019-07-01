@@ -9,7 +9,7 @@ import argparse
 
 import constants
 
-re_length = re.compile('Duration: (\d{2}):(\d{2}):(\d{2})\.\d+,')
+re_length = re.compile(r'Duration: (\d{2}):(\d{2}):(\d{2})\.\d+,')
 
 def by_manifest(filename, destination, manifest, vcodec='copy', acodec='copy',
                       extra='', **kwargs):
@@ -87,27 +87,18 @@ def by_manifest(filename, destination, manifest, vcodec='copy', acodec='copy',
 def by_seconds(filename, destination, split_length, vcodec='copy',
                acodec='copy', extra='', **kwargs):
     if not os.path.isdir(destination):
-        os.mkdir(destination)
-    if split_length and split_length <= 0:
-        print('Split length can\'t be 0')
+        os.makedirs(destination)
+    if split_length <= 0:
+        print('Split length must be positive')
         raise SystemExit
-    output = subprocess.Popen('ffmpeg -i "{}" 2>&1 | grep "Duration"' \
-                                  .format(filename),
-                              shell = True, stdout = subprocess.PIPE
-                            ).stdout.read().decode()
-    print(output)
-    matches = re_length.search(output)
-    if matches:
-        video_length = int(matches.group(1)) * 3600 \
-                       + int(matches.group(2)) * 60  \
-                       + int(matches.group(3))
-        print('Video length in seconds: '+str(video_length))
-    else:
-        print('Can\'t determine video length, copying video without splitting')
+    try:
+        video_length = metadata.get_video_duration(filename)
+    except RuntimeError as re:
+        print("Can't determine video length, copying video without splitting")
         destination = os.path.join(destination, '0.mp4')
         subprocess.Popen(f'cp "{filename}" "{destination}"', shell=True)
         return
-    split_count = int(math.ceil(video_length / split_length))
+    split_count = math.ceil(video_length / split_length)
     if(split_count == 1):
         print('Video length is less then the target split length.')
         destination = os.path.join(destination, '0.mp4')
@@ -115,8 +106,8 @@ def by_seconds(filename, destination, split_length, vcodec='copy',
         return
 
     # we use -y to force overwrites of output files
-    split_cmd = 'ffmpeg -loglevel warning -y -i \'{}\' -vcodec {} -acodec ' \
-                '{} {}'.format(filename, vcodec, acodec, extra)
+    split_cmd = f'ffmpeg -loglevel warning -y -i \'filename{}\' -vcodec ' \
+                f'{vcodec} -acodec {acodec} {extra}'
     # get the filename without the file ext
     filebase = os.path.basename(filename)
     filebase, fileext = os.path.splitext(filebase)
@@ -125,9 +116,8 @@ def by_seconds(filename, destination, split_length, vcodec='copy',
             split_start = 0
         else:
             split_start = split_length * n
-        split_str = ' -ss {} -t {} {}{}.mp4'.format(split_start, split_length,
-                                                    destination, n)
-        print('About to run: ', split_cmd, split_str, sep='')
+        split_str = f' -ss {split_star} -t {split_length} {destination}{n}.mp4'
+        print('About to run:', split_cmd, split_str, sep='')
         output = subprocess.Popen(split_cmd+split_str, shell=True,
                                   stdout=subprocess.PIPE,
                                  ).stdout.read()
@@ -135,44 +125,43 @@ def by_seconds(filename, destination, split_length, vcodec='copy',
 
 def main():
     parser = argparse.ArgumentParser()
-
     parser.add_argument('filename',
-                        help='The name of the file to split',
                         type=str,
+                        help='The name of the file to split',
                        )
     parser.add_argument('destination',
-                        help='The directory in which to save the split videos.',
                         type=str,
+                        help='The directory in which to save the split videos.',
                        )
     parser.add_argument('-s', '--split-size',
                         dest='split_length',
-                        help='Split or chunk size in seconds, for example 10',
                         type=int,
+                        help='Split or chunk size in seconds, for example 10',
                        )
     parser.add_argument('-m', '--manifest',
                         dest='manifest',
-                        help='Split video based on a json manifest file. ',
                         type=str,
+                        help='Split video based on a json manifest file. ',
                        )
     parser.add_argument('-v', '--vcodec',
                         dest='vcodec',
-                        help='Video codec to use. If unspecified, it defaults '
-                             'to the one in the source video.',
                         type=str,
                         default='copy',
+                        help='Video codec to use. If unspecified, it defaults '
+                             'to the one in the source video.',
                        )
     parser.add_argument('-a', '--acodec',
                         dest='acodec',
-                        help='Audio codec to use. If unspecified, it defaults '
-                             'to the one in the source video',
                         type=str,
                         default='copy',
+                        help='Audio codec to use. If unspecified, it defaults '
+                             'to the one in the source video',
                        )
     parser.add_argument('-e', '--extra',
                         dest='extra',
-                        help='Extra options for ffmpeg, e.g. "-e -threads 8". ',
                         type=str,
                         default='',
+                        help='Extra options for ffmpeg, e.g. "-e -threads 8". ',
                        )
     args = parser.parse_args()
     if args.destination[-1] != '/':

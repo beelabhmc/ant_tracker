@@ -1,5 +1,6 @@
 import argparse
 import os, os.path
+import re
 
 def combine_rois(rois, outfile):
     if not os.path.isdir(os.path.dirname(outfile)):
@@ -8,9 +9,7 @@ def combine_rois(rois, outfile):
     for f in rois:
         name = os.path.splitext(os.path.basename(f))[0]
         for line in open(f):
-            line = line.split(',')
-            line[0] = name
-            line = ','.join(line)
+            line = re.sub(r'[^,]+,', f'{name},', line)
             outfile.write(line)
     outfile.close()
 
@@ -28,4 +27,5 @@ def main():
 
 if __name__ == '__main__':
     main()
+
 

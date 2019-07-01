@@ -32,14 +32,10 @@ def smooth_regions(mask, open, dilate, close):
     open_kernel = np.ones((open, open), np.uint8)
     dilate_kernel = np.ones((dilate, dilate), np.uint8)
     close_kernel = np.ones((close, close), np.uint8)
-    return cv2.morphologyEx(cv2.dilate(cv2.morphologyEx(mask,
-                                                        cv2.MORPH_OPEN,
-                                                        open_kernel
-                                                       ),
-                                       dilate_kernel, iterations=2
-                                      ),
-                            cv2.MORPH_CLOSE, close_kernel
-                           )
+    mask = cv2.morphologyEx(mask, cv2.MORPH_OPEN, open_kernel)
+    mask = cv2.dilate(mask, dilate_kernel, iterations=1)
+    mask = cv2.morphologyEx(mask, cv2.MORPH_CLOSE, close_kernel)
+    return mask
 
 def find_polygons(mask, epsilon, top_level, has_child):
     """Takes the given mask and finds a polygon that fits it well.
@@ -204,7 +200,7 @@ def main():
     video = cv2.VideoCapture(args.video)
     for i in range(args.frame-1):
         if not video.read()[0]:
-            arg_parser.error('The video only has {} frames.'.format(i))
+            arg_parser.error(f'The video only has {i} frames.')
     ret, frame = video.read()
     if not ret:
         arg_parser.error('The video only has {} frames.'.format(args.frame-1))

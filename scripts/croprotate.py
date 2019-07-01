@@ -35,9 +35,9 @@ def crop_video(video, out_dir, boxes, logfile=None):
         x, y = ulx*cos(angle)+uly*sin(angle), (W-ulx)*sin(angle)+uly*cos(angle)
         x, y, = map(round, (x, y))
         width, height = map(lambda x: 2*ceil(x/2), (width, height))
-        outvideo = '%s/ROI_%d.mp4' % (out_dir, i)
+        outvideo = f'{out_dir}/ROI_{i}.mp4'
         cmd = command.format(video, angle, width, height, x, y, outvideo)
-        print('About to run:\n%s' % cmd)
+        print(f'About to run:\n{cmd}')
         output = subprocess.run(cmd, shell=True, stdout=subprocess.PIPE,
                                 stderr=subprocess.STDOUT).stdout.decode()
         if logfile is not None:
