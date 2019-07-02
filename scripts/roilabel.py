@@ -38,7 +38,7 @@ def label_rois(video, roifile, outfile, draw_polys=True):
         x, y = bbox.get_center(box)
         cv2.putText(frame, str(i), (x-10, y), cv2.FONT_HERSHEY_PLAIN,
                      3, (0,)*3, 2, cv2.LINE_AA)
-    # cv2.polylines(frame, lines, True, (0, 0, 0), thickness=3)
+    cv2.polylines(frame, lines, True, (0, 0, 0), thickness=3)
     cv2.imwrite(outfile, frame)
 
 def main():

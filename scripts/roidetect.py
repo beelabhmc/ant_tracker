@@ -58,13 +58,40 @@ def find_polygons(mask, epsilon, top_level, has_child):
     the resulting polygons will have.
     """
     contours, h = cv2.findContours(mask, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
-    polys = [cv2.approxPolyDP(contours[i], cv2.arcLength(contours[i], True) \
-                 * epsilon, True)
-             for i in range(len(contours))
-             if (not top_level or h[0][i][3] < 0) \
-                     and (not has_child or h[0][i][2] >= 0)
-            ]
-    return polys
+    #polys = [cv2.approxPolyDP(contours[i], cv2.arcLength(contours[i], True) \
+                 #* epsilon, True)
+             #for i in range(len(contours))
+             #if (not top_level or h[0][i][3] < 0) \
+                     #and (not has_child or h[0][i][2] >= 0)
+            #]
+    return [contours[i] for i in range(len(contours))
+            if (not top_level or h[0][i][3] < 0) \
+               and (not has_child or h[0][i][2] >= 0)
+           ]
+
+def refine_polygon_skeleton(mask, poly, padding=6, epsilon=0.021):
+    """Refine the polygon selection by converting into a skeleton and
+    then taking the polygon of that.
+    """
+    x, y, w, h = cv2.boundingRect(poly)
+    x0, x1 = max(0, x-padding), min(mask.shape[1], x+padding+w)
+    y0, y1 = max(0, y-padding), min(mask.shape[0], y+padding+h)
+    crop = np.array(mask[y0:y1, x0:x1])
+    skel = np.zeros(crop.shape, np.uint8)
+    elem = cv2.getStructuringElement(cv2.MORPH_CROSS, (5, 5))
+    while cv2.countNonZero(crop):
+        eroded = cv2.erode(crop, elem)
+        opened = cv2.dilate(eroded, elem)
+        skel |= crop - opened
+        crop = eroded
+    skel = cv2.dilate(skel, np.array([[0, 1, 0], [1, 1, 1], [0, 1, 0]],np.uint8))
+    cnts, h = cv2.findContours(skel, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+    cnts = [cnts[i] for i in range(len(cnts))
+            if h[0][i][3] < 0 and h[0][i][2] >= 0]
+    cnt = max(cnts, key=lambda x: cv2.arcLength(x, True))
+    poly = cv2.approxPolyDP(cnt, cv2.arcLength(cnt, True)*epsilon, True)
+    poly += np.array([x0, y0])
+    return poly
 
 def main():
     arg_parser = argparse.ArgumentParser()
@@ -165,9 +192,10 @@ def main():
         arg_parser.error('The video only has {} frames.'.format(args.frame-1))
     mask = find_red(frame, args.hue, args.sat, args.val)
     mask = smooth_regions(mask, args.open, args.dilate, args.close)
-    rois = list(map(lambda x: bbox.convert_polygon_to_roi(x, args.padding),
-                    find_polygons(mask, args.epsilon,
-                                  args.top_level, args.has_child)))
+    polys = find_polygons(mask, args.epsilon, args.top_level, args.has_child)
+    polys = [refine_polygon_skeleton(mask, poly, epsilon=args.epsilon)
+             for poly in polys]
+    rois = [bbox.convert_polygon_to_roi(poly, args.padding) for poly in polys]
     bbox.save_rois(rois, args.outfile, args.video)
 
 if __name__ == '__main__':
