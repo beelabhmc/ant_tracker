@@ -9,7 +9,7 @@ def combine_rois(rois, outfile):
     for f in rois:
         name = os.path.splitext(os.path.basename(f))[0]
         for line in open(f):
-            line = re.sub(r'[^,]+,', f'{name},', line)
+            line = re.sub(r'[^,]+,', f'{name},', line, count=1)
             outfile.write(line)
     outfile.close()
 
