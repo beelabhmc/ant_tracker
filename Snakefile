@@ -113,21 +113,7 @@ rule roi_label:
         'input/{video}.mp4',
         'intermediate/rois/{video}.txt'
     output:
-        'output/{video}/labels/labeledrois.png'
+        'output/{video}/labels.png'
     shell:
         'python3.7 scripts/roilabel.py {input[0]} {input[1]} {output}'
-
-def roi_edge_label_input(wildcards):
-    croprot_output = checkpoints.croprotate.get(**wildcards, split=0).output
-    return ['intermediate/crop/{video}/0/ROI_{roi}.mp4',
-            'intermediate/rois/{video}.txt',
-           ]
-
-rule roi_edge_label:
-    input:
-        roi_edge_label_input
-    output:
-        'output/{video}/labels/ROI_{roi}.png'
-    shell:
-        'python3.7 scripts/roiedgelabel.py {input[0]} {input[1]} {output}'
 

@@ -27,15 +27,18 @@ def label_rois(video, roifile, outfile, draw_polys=True):
         verts = bbox.get_poly_abspos(box)
         if draw_polys:
             cv2.polylines(frame, [np.array(verts, np.int64).reshape((-1, 1, 2))],
-                          True, (150,)*3, thickness=2)
+                          True, (0,)*3, thickness=2)
             for j in range(-1, len(verts)-1):
                 x = round((verts[j][0] +verts[j+1][0])/2) - 10
                 y = round((verts[j][1] + verts[j+1][1])/2) + 15
+                # Note: (200, 200, 0) is cyan. OpenCV does colors weirdly
                 cv2.putText(frame, str(j%len(verts)), (x, y),
-                            cv2.FONT_HERSHEY_PLAIN, 2, (100,)*3, 2, cv2.LINE_AA)
-        cv2.putText(frame, str(i), bbox.get_center(box), cv2.FONT_HERSHEY_PLAIN,
+                            cv2.FONT_HERSHEY_PLAIN, 2, (200, 200, 0),
+                            2, cv2.LINE_AA)
+        x, y = bbox.get_center(box)
+        cv2.putText(frame, str(i), (x-10, y), cv2.FONT_HERSHEY_PLAIN,
                      3, (0,)*3, 2, cv2.LINE_AA)
-    cv2.polylines(frame, lines, True, (0, 0, 0), thickness=3)
+    # cv2.polylines(frame, lines, True, (0, 0, 0), thickness=3)
     cv2.imwrite(outfile, frame)
 
 def main():

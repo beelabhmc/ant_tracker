@@ -7,6 +7,7 @@ import argparse
 from math import sin, cos, pi
 
 import constants
+import bbox
 
 def find_red(rgb, hue_diff, min_saturation, min_value):
     """Finds the red regions in the given image.
@@ -64,19 +65,6 @@ def find_polygons(mask, epsilon, top_level, has_child):
                      and (not has_child or h[0][i][2] >= 0)
             ]
     return polys
-
-def flatten(lst):
-    """Flattens a list by taking any iterable element of the list and
-    expanding it to be a list of its own.
-    """
-    out = []
-    for item in lst:
-        try:
-            iter(item)
-            out += flatten(item)
-        except TypeError:
-            out.append(item)
-    return out
 
 def main():
     arg_parser = argparse.ArgumentParser()

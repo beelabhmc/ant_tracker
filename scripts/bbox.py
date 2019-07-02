@@ -1,4 +1,4 @@
-from math import cos, sin
+from math import cos, sin, pi
 import numpy as np
 import cv2
 import os, os.path
@@ -79,6 +79,19 @@ def convert_polygon_to_roi(poly, padding):
     # Round the values to the hundredths so they're easier to look at.
     x, y, w, h, angle = map(lambda x: round(x, 2), [x, y, w, h, angle])
     return [(x, y), (w, h), angle, poly]
+
+def flatten(lst):
+    """Flattens a list by taking any iterable element of the list and
+    expanding it to be a list of its own.
+    """
+    out = []
+    for item in lst:
+        try:
+            iter(item)
+            out += flatten(item)
+        except TypeError:
+            out.append(item)
+    return out
 
 def save_rois(rois, outfile, imagename):
     if not os.path.isdir(os.path.dirname(outfile)):
