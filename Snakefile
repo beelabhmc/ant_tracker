@@ -105,9 +105,18 @@ rule sort_aggregated_rois:
     output:
         'output/{video}/sorted.csv'
     shell:
-        'cat {input} | sort --field-separator=, -nk 5 | sed \'s/,/\\t/g\''
+        'cat {input} | sort --field-separator=, -nk 5'
         ' > {output}'
  
+rule edge_from_tracks:
+    input:
+        'output/{video}/sorted.csv',
+        'intermediate/rois/{video}.txt'
+    output:
+        'output/{video}/edges.csv'
+    shell:
+        'python3.7 scripts/edgefromtrack.py {input[0]} {output} {input[1]}'
+
 rule roi_label:
     input:
         'input/{video}.mp4',
