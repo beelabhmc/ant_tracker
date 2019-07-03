@@ -36,6 +36,9 @@ An explanation of all of the different code files in the project, WIP:
    file which only contains the ROI, this file is necessary to crop and rotate
    the video to capture just the ROIs. It takes ROIs which are defined by
    roidetect.py.
+ - [edgefromtrack.py](scripts/edgefromtrack.py) A script which converts the
+   output of track.py from containing x,y coordinates to containing which side
+   the ant entered on and which side the ant exited on.
  - [metadata.py](scripts/vid_meta_data.py) A script which reads the
    metadata from videos and contains functions with it common to multiple other
    python scripts.
