@@ -8,6 +8,7 @@ import os.path
 import argparse
 
 import constants
+import metadata
 
 re_length = re.compile(r'Duration: (\d{2}):(\d{2}):(\d{2})\.\d+,')
 
@@ -106,7 +107,7 @@ def by_seconds(filename, destination, split_length, vcodec='copy',
         return
 
     # we use -y to force overwrites of output files
-    split_cmd = f'ffmpeg -loglevel warning -y -i \'filename{}\' -vcodec ' \
+    split_cmd = f'ffmpeg -loglevel warning -y -i \'{filename}\' -vcodec ' \
                 f'{vcodec} -acodec {acodec} {extra}'
     # get the filename without the file ext
     filebase = os.path.basename(filename)
@@ -116,7 +117,7 @@ def by_seconds(filename, destination, split_length, vcodec='copy',
             split_start = 0
         else:
             split_start = split_length * n
-        split_str = f' -ss {split_star} -t {split_length} {destination}{n}.mp4'
+        split_str = f' -ss {split_start} -t {split_length} {destination}{n}.mp4'
         print('About to run:', split_cmd, split_str, sep='')
         output = subprocess.Popen(split_cmd+split_str, shell=True,
                                   stdout=subprocess.PIPE,
