@@ -45,8 +45,10 @@ checkpoint croprotate:
     output:
         directory('intermediate/crop/{video}/{split}')
     priority: 10
+    threads: config['croprot']['cores']
     shell:
-        'python3.7 scripts/croprotate.py {input[0]} {output} {input[1]}'
+        'python3.7 scripts/croprotate.py -c %d {input[0]} {output} {input[1]}' \
+            % config['croprot']['cores']
 
 def track_input(wildcards):
     checkpoints.croprotate.get(**wildcards).output[0]
