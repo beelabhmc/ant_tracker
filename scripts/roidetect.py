@@ -84,7 +84,7 @@ def refine_polygon_skeleton(mask, poly, padding=6, epsilon=0.021):
         opened = cv2.dilate(eroded, elem)
         skel |= crop - opened
         crop = eroded
-    skel = cv2.dilate(skel, np.array([[0, 1, 0], [1, 1, 1], [0, 1, 0]],np.uint8))
+    skel = cv2.dilate(skel,np.array([[0, 1, 0], [1, 1, 1], [0, 1, 0]],np.uint8))
     cnts, h = cv2.findContours(skel, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
     cnts = [cnts[i] for i in range(len(cnts))
             if h[0][i][3] < 0 and h[0][i][2] >= 0]
@@ -180,6 +180,14 @@ def main():
                             help='If specified, allow contours which lack '
                                  'children as polygons. Otherwise, only '
                                  'contours which have children count.')
+    arg_parser.add_argument('--allow-concave',
+                            dest='force_convex',
+                            default=True,
+                            const=False,
+                            action='store_const',
+                            help='If specified, allow concave ROI polygons. '
+                                 'Otherwise, ROI polygons are forced to be '
+                                 'convex.')
     args = arg_parser.parse_args()
     if not os.path.isfile(args.video):
         arg_parser.error(f'{args.video} is not a valid file.')
@@ -195,6 +203,8 @@ def main():
     polys = find_polygons(mask, args.epsilon, args.top_level, args.has_child)
     polys = [refine_polygon_skeleton(mask, poly, epsilon=args.epsilon)
              for poly in polys]
+    if args.force_convex:
+        polys = [cv2.convexHull(poly) for poly in polys]
     rois = [bbox.convert_polygon_to_roi(poly, args.padding) for poly in polys]
     bbox.save_rois(rois, args.outfile, args.video)
 
