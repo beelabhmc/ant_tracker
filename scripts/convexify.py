@@ -28,7 +28,6 @@ def convexify(verts):
     retain = [verts[m], verts[m+1]]
     while any(verts[i] != retain[0]):
         s = compute_s_value(retain[-1], retain[-2], verts[i])
-        print(retain, s, verts[i])
         if s <= 0:
             # verts[i] is to the right of the previous edge
             while len(retain) > 1 and \
