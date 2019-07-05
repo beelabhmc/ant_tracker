@@ -75,7 +75,7 @@ roi-detection:
     smooth-close-size: 13   # The amount by which to "close" the mask,
                             # filling in small holes.
 
-    polygon-epsilon: 0.020  # The amount of wiggle-room in turning
+    polygon-epsilon: 0.025  # The amount of wiggle-room in turning
                             # contours into polygons.
 
     roi-bbox-padding: 7     # The amount of padding around polygons to

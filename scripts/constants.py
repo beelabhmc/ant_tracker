@@ -76,15 +76,15 @@ HSV_SAT_MINIMUM = 55    # The smallest saturation for the red to be detected
 HSV_VALUE_MINIMUM = 60  # The smallest value for the red to be detected
                         # A measure of how bright the pixel is
 
-SMOOTH_OPEN_SIZE = 1    # The amount by which to open the mask (removes small
+SMOOTH_OPEN_SIZE = 3    # The amount by which to open the mask (removes small
                         # details).
 
-SMOOTH_DILATE_SIZE = 1  # The amount by which to expand the mask after opening
+SMOOTH_DILATE_SIZE = 3  # The amount by which to expand the mask after opening
 
-SMOOTH_CLOSE_SIZE = 11  # The amount by which to close the mask after dilating
+SMOOTH_CLOSE_SIZE = 13  # The amount by which to close the mask after dilating
                         # (fills in holes and combines adjacent figures).
 
-POLYGON_EPSILON = 0.025 # The amount of deviation from the found shape which
+POLYGON_EPSILON = 0.02  # The amount of deviation from the found shape which
                         # the program tolerates in the final result.
                         # If the output has too many sides, increase it. If the
                         # output has too few, descrease it.
