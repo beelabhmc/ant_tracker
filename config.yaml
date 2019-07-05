@@ -66,16 +66,16 @@ roi-detection:
 
     hsv-value-minimum: 60   # The minimum value
 
-    smooth-open-size: 1     # The amount by which to "open" the mask
+    smooth-open-size: 3     # The amount by which to "open" the mask
                             # This removes small details.
 
-    smooth-dilate-size: 1   # The amount by which to "dilate" the mask,
+    smooth-dilate-size: 3   # The amount by which to "dilate" the mask,
                             # expanding detected details.
 
-    smooth-close-size: 11   # The amount by which to "close" the mask,
+    smooth-close-size: 13   # The amount by which to "close" the mask,
                             # filling in small holes.
 
-    polygon-epsilon: 0.025  # The amount of wiggle-room in turning
+    polygon-epsilon: 0.020  # The amount of wiggle-room in turning
                             # contours into polygons.
 
     roi-bbox-padding: 7     # The amount of padding around polygons to
