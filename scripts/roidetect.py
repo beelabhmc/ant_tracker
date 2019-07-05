@@ -8,6 +8,7 @@ from math import sin, cos, pi
 
 import constants
 import bbox
+from convexify import convexify
 
 def find_red(rgb, hue_diff, min_saturation, min_value):
     """Finds the red regions in the given image.
@@ -204,7 +205,7 @@ def main():
     polys = [refine_polygon_skeleton(mask, poly, epsilon=args.epsilon)
              for poly in polys]
     if args.force_convex:
-        polys = [cv2.convexHull(poly) for poly in polys]
+        polys = [convexify(poly) for poly in polys]
     rois = [bbox.convert_polygon_to_roi(poly, args.padding) for poly in polys]
     bbox.save_rois(rois, args.outfile, args.video)
 

@@ -80,5 +80,7 @@ roi-detection:
 
     roi-bbox-padding: 7     # The amount of padding around polygons to
                             # include in the ROI.
+
+    force-convex: true      # Force the polygons for each ROI to be convex
 ...
 

@@ -26,12 +26,13 @@ rule roidetect:
         'intermediate/rois/{video}.txt'
     shell:
         'python3.7 scripts/roidetect.py {{input}} {{output}} -u {} -s {} -v {} '
-        '-o {} -d {} -c {} -e {} -p {}' \
+        '-o {} -d {} -c {} -e {} -p {} ' \
         .format(*(config['roi-detection'][x]
                   for x in ['hsv-hue-tolerance', 'hsv-sat-minimum',
                             'hsv-value-minimum', 'smooth-open-size',
                             'smooth-dilate-size', 'smooth-close-size',
                             'polygon-epsilon', 'roi-bbox-padding']))
+        + ('' if config['roi-detection']['force-convex'] else '--allow-concave')
 
 def croprotate_input(wildcards):
     indir = checkpoints.split.get(video=wildcards.video).output[0]
