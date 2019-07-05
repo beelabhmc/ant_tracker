@@ -42,7 +42,7 @@ def get_poly_abspos(box):
     """Takes a bounding box and returns its vertices, formatted as a
     list of x,y pairs, relative to the original video.
     """
-    return list(zip(map(int, box[5::2]), map(int, box[6::2])))
+    return list(zip(map(int, box[3::2]), map(int, box[4::2])))
 
 def get_poly_relpos(box):
     """Takes a bounding box and returns its vertices, formatted as a
