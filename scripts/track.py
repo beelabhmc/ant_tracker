@@ -223,7 +223,10 @@ def main():
     if track_result.size:
         result_array = np.concatenate((result_array, track_result), axis=0)
     # save the tracking results to disk
-    np.savetxt(args.result_path, result_array, delimiter= ',', fmt='%s')
+    outfile = open(args.result_path, 'w')
+    outfile.write('%s\n' % metadata.get_video_duration(args.source))
+    outfile.close()
+    np.savetxt(open(args.result_path, 'ab'), result_array, delimiter= ',', fmt='%s')
     # save the raw results to disk
     if args.raw_results:
         np.savetxt(args.raw_results, raw_results, delimiter=',', fmt='%s')

@@ -83,8 +83,6 @@ def by_manifest(filename, destination, manifest, vcodec='copy', acodec='copy',
                 print(e)
                 raise SystemExit
 
-
-
 def by_seconds(filename, destination, split_length, vcodec='copy',
                acodec='copy', extra='', **kwargs):
     if not os.path.isdir(destination):
@@ -105,6 +103,9 @@ def by_seconds(filename, destination, split_length, vcodec='copy',
         destination = os.path.join(destination, '0.mp4')
         subprocess.Popen(f'cp "{filename}" "{destination}"', shell=True)
         return
+    # Balance it so a video slightly longer than a multiple of 10 minutes
+    # won't get one very short segment
+    split_length = video_length / split_count
 
     # we use -y to force overwrites of output files
     split_cmd = f'ffmpeg -loglevel warning -y -i \'{filename}\' -vcodec ' \
