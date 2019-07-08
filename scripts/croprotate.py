@@ -3,10 +3,17 @@ import argparse
 from math import sin, cos, ceil
 import os
 import os.path
-import concurrent.futures
+from concurrent.futures import ProcessPoolExecutor
 
 import metadata
 import bbox
+
+def run_cmd(cmd):
+    """Execute the command. A basic helper function for the next line."""
+    print(f'About to run:\n{cmd}')
+    output = subprocess.run(cmd, shell=True, stdout=subprocess.PIPE,
+                            stderr=subprocess.STDOUT).stdout.decode()
+    return output 
 
 def crop_video(video, out_dir, boxes, cores=1, logfile=None):
     """Crops the given video, according to boxes, and saves the results
@@ -41,40 +48,31 @@ def crop_video(video, out_dir, boxes, cores=1, logfile=None):
         width, height = map(lambda x: 2*ceil(x/2), (width, height))
         outvideo = f'{out_dir}/ROI_{i}.mp4'
         cmds.append(command.format(video, angle, width, height, x, y, outvideo))
-
-    def run_cmd(cmd):
-        """Execute the command. A basic helper function for the next line."""
-        print(f'About to run:\n{cmd}')
-        output = subprocess.run(cmd, shell=True, stdout=subprocess.PIPE,
-                                stderr=subprocess.STDOUT).stdout.decode()
-        if logfile is not None:
-            open(logfile, 'w').write(output)
-    concurrent.futures.ProcessPoolExecutor(max_workers=cores).map(run_cmd, cmds)
+    outputs = list(ProcessPoolExecutor(max_workers=cores).map(run_cmd, cmds))
+    if logfile is not None:
+        open(logfile, 'a').write('\n\n'.join(outputs))
 
 def main():
     arg_parser = argparse.ArgumentParser()
     arg_parser.add_argument('video',
                             type=str,
-                            help='The video to be cropped',
-                           )
+                            help='The video to be cropped')
     arg_parser.add_argument('out_dir',
                             type=str,
                             help='The directory in which to save the '
-                                 'videos made.',
-                           )
+                                 'videos made.')
     arg_parser.add_argument('boxes',
                             type=str,
                             help='A text file from which to load the '
-                                 'boxes to crop.',
-                           )
+                                 'boxes to crop.')
     arg_parser.add_argument('-c', '--cores',
                             type=int,
                             default=1,
                             dest='cores',
                             help='The number of cores to use during splitting, '
                                  'default 1. If multiple cores are specified, '
-                                 'then multiple crops will be done in parallel.'
-                           )
+                                 'then multiple crops will be done in '
+                                 'parallel.')
     args = arg_parser.parse_args()
     crop_video(args.video, args.out_dir, bbox.read_bboxes(args.boxes),
                cores=args.cores)
