@@ -1,8 +1,10 @@
 ---
 # The framerate to assume if given a .h264 file
 h264-framerate: 32
-# The duration (in seconds) of each split segment
-segment-length: 600
+split:
+    segment-length: 600     # The duration (in seconds) of each split segment
+    min-segment-length: 20  # The minimum length of a split segment to keep
+
 croprot:
     # Parameters used by the croprotate file
     cores: 4        # The number of cores to use for this step

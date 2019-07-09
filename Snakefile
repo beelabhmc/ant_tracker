@@ -16,8 +16,9 @@ checkpoint split:
         directory('intermediate/split/{video}')
     priority: 20
     shell:
-        'python3.7 scripts/split.py -s %s {input} {output}' \
-            % config['segment-length']
+        'python3.7 scripts/split.py -s %s -l %s {input} {output}' \
+            % (config['split']['segment-length'],
+               config['split']['min-segment-length'])
 
 rule roidetect:
     input:

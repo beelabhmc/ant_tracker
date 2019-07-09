@@ -86,7 +86,7 @@ def by_manifest(filename, destination, manifest, vcodec='copy', acodec='copy',
 
 
 def by_seconds(filename, destination, split_length, vcodec='copy',
-               acodec='copy', extra='', **kwargs):
+               acodec='copy', extra='', min_segment_length=20, **kwargs):
     if not os.path.isdir(destination):
         os.makedirs(destination)
     if split_length <= 0:
@@ -113,10 +113,10 @@ def by_seconds(filename, destination, split_length, vcodec='copy',
     filebase = os.path.basename(filename)
     filebase, fileext = os.path.splitext(filebase)
     for n in range(0, split_count):
-        if n == 0:
-            split_start = 0
-        else:
-            split_start = split_length * n
+        split_start = split_length * n
+        if video_length - split_start < min_segment_length:
+            print(f'Not copying the last {video_length-split_start} seconds.')
+            continue
         split_str = f' -ss {split_start} -t {split_length} {destination}{n}.mp4'
         print('About to run:', split_cmd, split_str, sep='')
         output = subprocess.Popen(split_cmd+split_str, shell=True,
@@ -158,6 +158,13 @@ def main():
                         help='Audio codec to use. If unspecified, it defaults '
                              'to the one in the source video',
                        )
+    parser.add_argument('-l', '--min-segment-length',
+                        dest='min_segment_length',
+                        type=float,
+                        default=20,
+                        help='The minimum length of a segment. If the last '
+                             'segment of the video is shorter than this '
+                             'length, then it is ignored. Default: 20')
     parser.add_argument('-e', '--extra',
                         dest='extra',
                         type=str,
