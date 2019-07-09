@@ -6,14 +6,14 @@ import os, os.path
 
 import bbox
 
-def roi_poly_input(video, show_image=True):
+def roi_poly_input(video, show_image=False):
     if not os.path.isfile(video):
         raise RuntimeError(f'{video} is not a file.')
     if show_image:
         ret, img = cv2.VideoCapture(video).read()
         if not ret:
             raise RuntimeError(f'Unknown error reading {video}')
-        plt.imshow(img)
+        plt.imshow(cv2.cvtColor(img, cv2.COLOR_BGR2RGB))
         try:
             from roipoly import MultiRoi
         except ImportError:
