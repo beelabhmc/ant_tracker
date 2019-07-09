@@ -1,26 +1,23 @@
 import argparse
 import os, os.path
 
-def combine_split_track(tracks, outfile):
+def combine_split_track(tracks, outfile, split_length=600):
     """Combines a list of tracks (specified via filenames) into one
     file, at the location specified by outfile.
     """
     if not os.path.isdir(os.path.dirname(outfile)):
         os.makedirs(os.path.dirname(outfile))
     f = open(outfile, 'w')
-    offset = 0
     for i in range(len(tracks)):
-        infile = open(tracks[i])
-        vid_len = float(infile.readline())
-        for line in infile:
+        infile = tracks[i]
+        for line in open(infile):
             line = line.split(',')
             if line[4] == 't0':
                 continue
-            line[4] = str(round(offset + float(line[4]), 2))
-            line[7] = str(round(offset + float(line[7]), 2))
+            line[4] = str(round(split_length*i + float(line[4]), 2))
+            line[7] = str(round(split_length*i + float(line[7]), 2))
             line = ','.join(line)
             f.write(line)
-        offset += vid_len
     f.close()
 
 def main():
