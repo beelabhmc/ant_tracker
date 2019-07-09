@@ -92,7 +92,7 @@ def refine_polygon_skeleton(mask, poly, padding=6, epsilon=0.021):
     if not cnts:
         # Couldn't make it better through a skeleton
         print('Refining via skeleton failed.')
-        return poly
+        return cv2.approxPolyDP(poly, cv2.arcLength(poly, True)*epsilon, True)
     cnt = max(cnts, key=lambda x: cv2.arcLength(x, True))
     poly = cv2.approxPolyDP(cnt, cv2.arcLength(cnt, True)*epsilon, True)
     poly += np.array([x0, y0])

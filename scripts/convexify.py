@@ -20,7 +20,7 @@ def convexify(verts):
     # Find v_0 from which to start
     # Negative vertices are so that we can count from the end
     m = -len(verts)
-    for i in range(-1, -len(verts)+1, -1):
+    for i in range(-1, -len(verts), -1):
         if verts[i][1] < verts[m][1] or \
                 verts[i][1] == verts[m][1] and verts[i][0] < verts[m][0]:
             m = i
