@@ -39,6 +39,7 @@ def convexify(verts):
             if not is_degenerate_handle(retain[-2], retain[-1], verts):
                 if winding_number(verts[i],
                                   get_lobe(retain[-2], retain[-1], verts)):
+                    i += 1
                     continue
             if compute_s_value(retain[-1], retain[0], verts[i]) > 0:
                 retain.append(verts[i])
@@ -84,6 +85,8 @@ def winding_number(v, poly):
         If negative, then poly's vertices are clockwise
     poly is assumed to be counter-clockwise unless otherwise specified
     """
+    if not poly:
+        return 0
     prev = quadrant(*(poly[0]-v))
     wn = 0
     for vert in poly[1:] + [poly[0]]:
