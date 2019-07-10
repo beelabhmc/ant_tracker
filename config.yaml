@@ -65,7 +65,7 @@ roi-detection:
     # Parameters used by the ROI detection code
     # HSV is the color model used by the code. Information on it can be
     # found here: https://en.wikipedia.org/wiki/HSL_and_HSV
-    hsv-hue-tolerance: 70   # How far from pure red the hue can deviate
+    hsv-hue-tolerance: 25   # How far from pure red the hue can deviate
 
     hsv-sat-minimum: 55     # The minimum saturation
 

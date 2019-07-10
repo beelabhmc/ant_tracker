@@ -19,7 +19,7 @@ def find_red(rgb, hue_diff, min_saturation, min_value):
     The three optional arguments represent the amount of tolerance for
     off-red colors in the image.
     """
-    hsv = cv2.cvtColor(rgb, cv2.COLOR_RGB2HSV)
+    hsv = cv2.cvtColor(rgb, cv2.COLOR_BGR2HSV)
     mask = cv2.inRange(hsv, np.array([0, min_saturation, min_value]),
                             np.array([hue_diff, 255, 255]))
     mask += cv2.inRange(hsv,
