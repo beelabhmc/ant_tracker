@@ -3,6 +3,10 @@ def main():
     success = True
     missing = []
     try:
+        import snakemake
+    except ImportError:
+        missing.append('snakemake')
+    try:
         import numpy
     except ImportError:
         missing.append('numpy')
@@ -28,10 +32,10 @@ def main():
     if missing:
         sucess = False
         for package in missing:
-            print(f'You do not have {package}.')
+            print('You do not have %s.' % package)
     import sys
     if sys.version_info < (3, 6, 0):
-        print(f'You need to use python >=3.6, not {sys.version}.')
+        print('You need to use python >=3.6, not %s.' % sys.version)
         success = False
     if success:
         print('You\'re good to go!')
