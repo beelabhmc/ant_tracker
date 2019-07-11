@@ -8,6 +8,9 @@ which ways the ants cross the regions during the video.
 The code also supports painting red polyhedrons to denote the regions of interest
 in the video, and the code can detect those regions automatically.
 
+If you're just interested in running the pipeline, look at
+[this page](wiki/For-People-Looking-to-Run-the-Pipeline)
+
 ### Dependencies
 
 The code in this repository runs on Python 3.7.0 and Matlab R2019A.
@@ -28,10 +31,25 @@ An explanation of all of the different code files in the project, WIP:
  - [ant_traking.m](scripts/ant_tracking.m) This file contains matlab code
    which takes footage of the ROIs and returns a dataframe containing all
    the ants which it saw and how they move. This script is called by track.py.
+ - [bbox.py](scripts/bbox.py) This file contains some functions which deal with
+   regions of interest and bounding boxes and are used by several different
+   scripts in the pipeline.
+ - [check-dependencies.py](scripts/checkdependencies.py) This is a file which
+   attempts to check for all of the dependencies that the script needs, and
+   lists everything which needs to be installed to run.
+ - [combinerois.py](scripts/combinerois.py) This file takes the separate files
+   for each ROI and combines them into one file which contains, for each ant
+   which was observed crossing the ROI, the ROI it crossed, it's initial and
+   final edge crossings, and the corresponding timestamps.
  - [combinetrack.py](scripts/combinetrack.py) This file takes tracks for
    each ROI and recombines each ROI down to one file (undoes split.py)
  - [constants.py](scripts/constants.py) This file contains various parameters
-   which one may tweak to improve performance.
+   which one may tweak to improve performance. I am in the process of removing
+   this file and moving all the constants into [config.yaml](config.yaml).
+ - [convexify.py](scripts/convexify.py) This file contains a function to turn an
+   arbitrary simple polygon into its
+   [convex hull](https://en.wikipedia.org/wiki/Convex_hull). I had to write it
+   because the default function in OpenCV does not work for all polygons.
  - [croprotate.py](scripts/croprotate.py) Because track.py requires a video
    file which only contains the ROI, this file is necessary to crop and rotate
    the video to capture just the ROIs. It takes ROIs which are defined by
@@ -51,14 +69,13 @@ An explanation of all of the different code files in the project, WIP:
  - [roidetect.py](scripts/roidetect.py) A script which searches an image for
    red polygons painted in there, which it interprets as being ROIs and records
    them as such in a file.
- - [roiedgelabel.py](scripts/roiedgelabel.py) A script which labels the edges of
-   the detected polygons in each ROI with a number that the rest of the code
-   uses. This is for exporting the ROIs to a human-readable format, and is not
-   necessary for the code to run.
  - [roilabel.py](scripts/roilabel.py) A script which takes the first frame of a
    video and draws the regions on interest onto it, then saves it to a file.
    This is also for exporting to human-readable and not necessary for the code
    to run.
+ - [roipoly.py](scripts/roipoly.py) A script which contains a modified version
+   of the [roipoly.py](https://github.com/jdoepfert/roipoly.py) repo.
+   This is used for the manual labeling of regions of interest.
  - [split.py](scripts/split.py) Code which splits up videos into smaller chunks
    based on time (I recommend 10 minutes).
  - [track.py](scripts/track.py) Python code which interfaces with ant_tracking.m
