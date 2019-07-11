@@ -9,7 +9,7 @@ The code also supports painting red polyhedrons to denote the regions of interes
 in the video, and the code can detect those regions automatically.
 
 If you're just interested in running the pipeline, look at
-[this page](wiki/For-People-Looking-to-Run-the-Pipeline)
+[this page](https://github.com/beelabhmc/ant_tracker/wiki/For-People-Looking-to-Run-the-Pipeline)
 
 ### Dependencies
 
