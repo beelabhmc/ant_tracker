@@ -73,6 +73,8 @@ An explanation of all of the different code files in the project, WIP:
    video and draws the regions on interest onto it, then saves it to a file.
    This is also for exporting to human-readable and not necessary for the code
    to run.
+ - [roimodify.py](scripts/roimodify.py) A script which allows people to take an
+   existing ROI file and modify it.
  - [roipoly.py](scripts/roipoly.py) A script which contains a modified version
    of the [roipoly.py](https://github.com/jdoepfert/roipoly.py) repo.
    This is used for the manual labeling of regions of interest.
