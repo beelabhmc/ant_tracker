@@ -61,7 +61,7 @@ def main():
                                  'bboxes.')
     args = arg_parser.parse_args()
     rois = roi_poly_input(args.infile)
-    bbox.save_rois(rois, args.outfile, args.infile)
+    bbox.save_rois(rois, args.outfile)
 
 if __name__ == '__main__':
     main()

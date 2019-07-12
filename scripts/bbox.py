@@ -93,7 +93,7 @@ def flatten(lst):
             out.append(item)
     return out
 
-def save_rois(rois, outfile, imagename):
+def save_rois(rois, outfile):
     if not os.path.isdir(os.path.dirname(outfile)):
         os.makedirs(os.path.dirname(outfile))
     f = open(outfile, 'w')
