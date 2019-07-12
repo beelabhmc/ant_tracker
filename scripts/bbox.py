@@ -94,8 +94,8 @@ def flatten(lst):
     return out
 
 def save_rois(rois, outfile):
-    if not os.path.isdir(os.path.dirname(outfile)):
-        os.makedirs(os.path.dirname(outfile))
+    if not os.path.isdir(os.path.dirname(os.path.abspath(outfile))):
+        os.makedirs(os.path.dirname(os.path.abspath(outfile)))
     f = open(outfile, 'w')
     f.write(' '.join(','.join(map(str, flatten(roi))) for roi in rois))
     f.close()
