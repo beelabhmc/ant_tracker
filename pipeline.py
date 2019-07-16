@@ -8,6 +8,7 @@ def path_split(path):
     """Takes a path and splits it into a list, where the last item is
     the file name and all items before it are folders on the path.
     """
+    path = os.path.splitext(path)[0]
     folders = []
     while 3:
         path, folder = os.path.split(path)
@@ -47,7 +48,8 @@ def main():
     parser.add_argument('-s', '--snakemake-arguments',
                         dest='args',
                         default='-pk --cores=32',
-                        help='Any arguments to pass into snakemake')
+                        help='Any arguments to pass into snakemake, default = '
+                             "'-pk --cores=32'")
     args = parser.parse_args()
     infiles = []
     for infile in map(lambda x: path_split(x)[1:], args.infiles):
