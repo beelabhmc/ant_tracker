@@ -35,7 +35,7 @@ def trackOneClip(vidPath, vidExport, result_path,
     #   other inputs are documented in scripts/constants.py
     eng = matlab.engine.start_matlab()
     eng.addpath('scripts')
-    df = eng.ant_tracking(abspath(vidPath)+'/', vidExport, abspath(result_path),
+    df = eng.ant_tracking(abspath(vidPath), vidExport, abspath(result_path)+'/',
                           minBlob, num_gaussians, num_training_frames,
                           minimum_background_ratio, cost_of_nonassignment,
                           invisible_threshold, old_age_threshold,
