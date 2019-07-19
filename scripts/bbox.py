@@ -25,7 +25,28 @@ class BBox:
         poly[:5] = list(map(float, poly[:5]))
         box = ((poly[0], poly[1]), (poly[2], poly[3]), poly[4])
         verts = list(zip(map(int, poly[5::2]), map(int, poly[6::2])))
-        return BBox(box, verts, edges)
+        return cls(box, verts, edges)
+
+    @classmethod
+    def from_vertices(cls, verts, padding=0):
+        """Takes a list of vertices of a polygon and outputs a
+        BBox object with those vertices, and the smallest bounding box
+        which fits those vertices.
+
+        If padding is given, the box will have at least padding space
+        around the vertices also included.
+        """
+        (x, y), (w, y), angle = cv2.minAreaRect(verts)
+        angle = pi/180 * (90+angle)  # Convert to radians in quadrant 1
+        w, h = h, w
+        # Pad the image
+        w += 2*padding
+        h += 2*padding
+        # Shift x,y from center (what OpenCV gives) to upper-left corner
+        x += -cos(angle)*w/2 + sin(angle)*h/2
+        y += -sin(angle)*w/2 + cos(angle)*h/2
+        x, y, w, h, angle = map(lambda x: round(x, 2), (x, y, w, h, angle))
+        return cls(((x, y), (w, h), angle), verts)
     
     def __repr__(self):
         """Returns a string which can be passed into the from_str method
