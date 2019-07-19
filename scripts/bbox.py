@@ -28,7 +28,7 @@ class BBox:
         return cls(box, verts, edges)
 
     @classmethod
-    def from_vertices(cls, verts, padding=0):
+    def from_verts(cls, verts, padding=0):
         """Takes a list of vertices of a polygon and outputs a
         BBox object with those vertices, and the smallest bounding box
         which fits those vertices.
@@ -36,7 +36,8 @@ class BBox:
         If padding is given, the box will have at least padding space
         around the vertices also included.
         """
-        (x, y), (w, y), angle = cv2.minAreaRect(verts)
+        (x, y), (w, h), angle = cv2.minAreaRect(verts)
+        verts = [tuple(vert) for vert in verts.reshape((-1, 2))]
         angle = pi/180 * (90+angle)  # Convert to radians in quadrant 1
         w, h = h, w
         # Pad the image
@@ -53,8 +54,9 @@ class BBox:
         to restore the original image.
         """
         return '%s,%s:%s' % (','.join(map(str, [self.x, self.y, self.w,
-                                                self.h, self.angle])),
-                             ','.join(map(str, sum(map(list, self.poly), []))),
+                                                self.h, self.a])),
+                             ','.join(map(str, list(sum(self.poly_abspos,
+                                                        ())))),
                              ','.join(map(str, self.edges)))
     
     def __str__(self):
@@ -100,8 +102,8 @@ class BBox:
 
     @property
     def center(self):
-        return (int(self.x+0.5*self.w*cos(self.a)-0.5*self.h*sin(self.a),
-                int(self.y+0.5*self.h*cos(self.a)+0.5*self.w*sin(self.a))))
+        return (int(self.x+0.5*self.w*cos(self.a)-0.5*self.h*sin(self.a)),
+                int(self.y+0.5*self.h*cos(self.a)+0.5*self.w*sin(self.a)))
 
     @property
     def poly_abspos(self):
@@ -137,12 +139,12 @@ def read_bboxes(filename):
     ROIs defined in the file.
     """
     txt = open(filename).read().strip().split()
-    return list(map(txt, BBox.from_str))
+    return list(map(BBox.from_str, txt))
         
 def save_rois(rois, outfile):
     if not os.path.isdir(os.path.dirname(os.path.abspath(outfile))):
         os.makedirs(os.path.dirname(os.path.abspath(outfile)))
     f = open(outfile, 'w')
-    f.write(' '.join(','.join(map(str, flatten(roi))) for roi in rois))
+    f.write(' '.join(map(repr, rois)))
     f.close()
 
