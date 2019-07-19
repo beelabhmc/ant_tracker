@@ -62,14 +62,13 @@ def main():
     arg_parser.add_argument('outfile',
                             type=str,
                             help='The file to which to write the rois.')
-    arg_parser.add_argument('--no-polys',
-                            default=False,
-                            const=True,
-                            action='store_const',
-                            help='Do not input polygons, only rectangular '
-                                 'bboxes.')
+    arg_parser.add_argument('-o', '--overwrite',
+                            dest='overwrite',
+                            action='store_true',
+                            help='If given, will overwrite a file '
+                                 'instead of appending to the file.')
     args = arg_parser.parse_args()
-    if os.path.isfile(args.outfile):
+    if os.path.isfile(args.outfile) and not args.overwrite:
         rois = bbox.read_bboxes(args.outfile)
     else:
         rois = []
