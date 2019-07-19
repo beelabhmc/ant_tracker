@@ -210,7 +210,7 @@ def main():
              for poly in polys]
     if args.force_convex:
         polys = [convexify(poly) for poly in polys]
-    rois = [bbox.convert_polygon_to_roi(poly, args.padding) for poly in polys]
+    rois = [bbox.BBox.from_verts(poly, args.padding) for poly in polys]
     bbox.save_rois(rois, args.outfile)
 
 if __name__ == '__main__':

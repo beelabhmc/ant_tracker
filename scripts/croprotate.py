@@ -26,7 +26,8 @@ def crop_video(video, out_dir, boxes, cores=1, logfile=None):
     to the end, where %d is the number of the ROI in the boxes list.
 
     Cores is an optional argument. If specified, it will run this many
-    ffmpeg operations in parallel, increasing execution speed.
+    ffmpeg operations in parallel, increasing execution speed. If cores
+    is 0, then it will run all operations in parallel.
     """
     if not os.path.isdir(out_dir):
         os.mkdir(out_dir)
@@ -42,12 +43,14 @@ def crop_video(video, out_dir, boxes, cores=1, logfile=None):
     H, W = metadata.get_video_dimensions(video)
     cmds = []
     for i in range(len(boxes)):
-        (ulx, uly), (width, height), angle, *_ = boxes[i]
+        (ulx, uly), (width, height), angle = boxes[i].box
         x, y = ulx*cos(angle)+uly*sin(angle), (W-ulx)*sin(angle)+uly*cos(angle)
         x, y, = map(round, (x, y))
         width, height = map(lambda x: 2*ceil(x/2), (width, height))
         outvideo = f'{out_dir}/ROI_{i}.mp4'
         cmds.append(command.format(video, angle, width, height, x, y, outvideo))
+    if cores == 0:
+        cores = len(cmds)
     outputs = list(ProcessPoolExecutor(max_workers=cores).map(run_cmd, cmds))
     if logfile is not None:
         open(logfile, 'a').write('\n\n'.join(outputs))

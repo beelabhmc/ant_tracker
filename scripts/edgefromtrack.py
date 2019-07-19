@@ -26,10 +26,11 @@ def convert(infile, outfile, bboxes):
     """Loads infile and converts it to which edges were crossed, as
     defined by the bboxes parameter, and then saves it to outfile.
     """
+    #TODO Consider box.edges edges only and not the other ones
     if not os.path.isdir(os.path.dirname(outfile)):
         os.makedirs(os.path.dirname(outfile))
-    centers = [np.array([w/2, h/2]) for xy, (w, h), *_ in bboxes]
-    verts = [np.array(bbox.get_poly_relpos(bboxes[i]))-centers[i]
+    centers = [np.array([box.w/2, box.h/2]) for box in bboxes]
+    verts = [np.array(bboxes[i].poly_relpos)-centers[i]
              for i in range(len(bboxes))]
     offsets = [math.atan2(verts[i][0][1], verts[i][0][0]) % (2*math.pi)
                for i in range(len(verts))]

@@ -10,7 +10,7 @@ def create_boxes(boxes, newboxes):
     (see bbox.py for the explanation of that format).
     """
     for box in newboxes:
-        boxes.append(bbox.convert_polygon_to_roi(
+        boxes.append(bbox.BBox.from_verts(
             np.array(list(map(lambda x: [int(i) for i in x.split(',')],
                               box.split(':')))).reshape((-1, 1, 2)),
             2

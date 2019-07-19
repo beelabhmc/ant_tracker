@@ -24,7 +24,7 @@ def roi_poly_input(video, show_image=False):
             rois = list(MultiRoi().rois.values())
             rois = [list(zip(r.x, r.y)) for r in rois]
             rois = [np.array(roi, np.int32).reshape((-1, 1, 2)) for roi in rois]
-            return [bbox.convert_polygon_to_roi(roi, 2) for roi in rois]
+            return [bbox.BBox.from_verts(roi, 2) for roi in rois]
     num_rois = int(input('How many ROIs are in this video? '))
     rois = []
     for i in range(num_rois):
@@ -41,7 +41,7 @@ def roi_poly_input(video, show_image=False):
             except:
                 print('Could not read input. Please try again.')
                 continue
-        box = bbox.convert_poly_to_roi(np.array(pts).reshape((-1, 1, 2)), 2)
+        box = bbox.BBox.from_verts(np.array(pts).reshape((-1, 1, 2)), 2)
         rois.append(box)
     return rois
 
