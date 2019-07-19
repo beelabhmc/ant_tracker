@@ -22,36 +22,31 @@ def find_floor_angle(angles, target_angle):
         return angles.index(m), m
     return curr
 
-def convert(infile, outfile, bboxes):
+def convert(infile, outfile, bbox):
     """Loads infile and converts it to which edges were crossed, as
     defined by the bboxes parameter, and then saves it to outfile.
     """
     if not os.path.isdir(os.path.dirname(outfile)):
         os.makedirs(os.path.dirname(outfile))
-    centers = [np.array([w/2, h/2]) for xy, (w, h), *_ in bboxes]
-    verts = [np.array(bbox.get_poly_relpos(bboxes[i]))-centers[i]
-             for i in range(len(bboxes))]
-    offsets = [math.atan2(verts[i][0][1], verts[i][0][0]) % (2*math.pi)
-               for i in range(len(verts))]
-    angles = [[round((math.atan2(vert[1], vert[0])-offsets[i]) % (2*math.pi), 3)
-               for vert in verts[i]] for i in range(len(verts))]
+    center = np.array(bbox[1])/2
+    verts = np.array(bbox.get_poly_relpos(bbox))-center
+    offset = math.atan2(verts[0][1], verts[0][0]) % (2*math.pi)
+    angles = [round((math.atan2(vert[1], vert[0])-offset) % (2*math.pi), 3)
+              for vert in verts]
     inp = open(infile)
     outp = open(outfile, 'w')
-    outp.write('roi,id,edge0,t0,edge1,t1,number_warning\n')
+    outp.write('filename,idnum,edge0,t0,edge1.t1\n')
     for line in inp:
-        roi, idnum, x0, y0, t0, x1, y1, t1, warning = line.strip().split(',')
-        roinum = int(re.search(r'[0-9]+', roi).group(0))
-        x0, y0, t0, x1, y1, t1 = map(float, (x0, y0, t0, x1, y1, t1))
-        x0 -= centers[roinum][0]
-        y0 -= centers[roinum][1]
-        a0 = (math.atan2(y0, x0) - offsets[roinum]) % (2*math.pi)
-        e0 = find_floor_angle(angles[roinum], a0)[0]
-        x1 -= centers[roinum][0]
-        y1 -= centers[roinum][1]
-        a1 = (math.atan2(y1, x1) - offsets[roinum]) % (2*math.pi)
-        e1 = find_floor_angle(angles[roinum], a1)[0]
-        outp.write(','.join(map(str, [roi, idnum, e0, t0, e1, t1, warning])))
-        outp.write('\n')
+        filename, idnum, x0, y0, t0, x1, y1, t1, number_warning = line.split(',')
+        x0 -= center[0]
+        y0 -= center[1]
+        x1 -= center[0]
+        y1 -= center[1]
+        a0 = (math.atan2(y0, x0) - offset) % (2*math.pi)
+        a1 = (math.atan2(y1, x1) - offset) % (2*math.pi)
+        edge0 = -1
+        edge1 = -1
+        outp.write('%s\n' % ','.join(filename, idnum, edge0, t0, edg1, t1))
     outp.close()
 
 def main():
