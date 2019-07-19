@@ -67,7 +67,7 @@ class BBox:
     def box(self):
         return self._box
     @box.setter
-    def _(self, newbox):
+    def box(self, newbox):
         self._box = newbox
 
     @property
@@ -77,7 +77,7 @@ class BBox:
         else:
             return self._edges
     @edges.setter
-    def _(self, newedges):
+    def edges(self, newedges):
         self._edges = newedges
 
     @property
