@@ -24,7 +24,7 @@ class Interval:
         if self.floor < self.ceil:
             return self.floor < value and self.ceil > value
         else:
-            return self.floor > value and self.ceil < value
+            return self.floor < value or self.ceil > value
 
     def distance(self, value, modulus=2*math.pi):
         """Returns the distance from value to this interval, under the
@@ -41,6 +41,9 @@ class Interval:
                 ceildist += modulus
             return min(floordist, ceildist)
 
+    def __repr__(self):
+        return 'Interval({},{},{})'.format(self.floor, self.ceil, self.payload)
+
 def closest_interval(value, intervals, modulus=2*math.pi):
     """Given a value, a list of intervals, and a modulus, it returns
     the closest interval in the list to the given value.
@@ -50,7 +53,7 @@ def closest_interval(value, intervals, modulus=2*math.pi):
         distance = interval.distance(value, modulus)
         if distance < closest[1]:
             closest = interval, distance
-    return closest
+    return closest[0]
 
 def convert(infile, outfile, bboxes):
     """Loads infile and converts it to which edges were crossed, as
