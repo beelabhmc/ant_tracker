@@ -10,7 +10,7 @@ split:
 
 croprot:
     # Parameters used by the croprotate file
-    cores: 4        # The number of cores to use for this step
+    cores: 5        # The number of cores to use for this step
 tracks:
     # Parameters used by the ant tracking code (there's a lot of them)
     min-blob: 20                        # The smallest size of blob
