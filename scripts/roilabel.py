@@ -31,14 +31,21 @@ def label_rois(
             cv2.polylines(frame, [np.array(verts, np.int64).reshape((-1,1,2))],
                           True, (0,)*3, thickness=2)
             for j in range(-1, len(verts)-1):
+                x = round((verts[j][0] +verts[j+1][0])/2) - 10
+                y = round((verts[j][1] + verts[j+1][1])/2) + 15
                 label = j % len(verts)
-                if insignificant_vertices or label in box.edges:
-                    x = round((verts[j][0] +verts[j+1][0])/2) - 10
-                    y = round((verts[j][1] + verts[j+1][1])/2) + 15
+                if label in box.edges:
                     # Note: (200,200,0) is cyan. OpenCV uses BGR instead of RGB.
                     cv2.putText(frame, str(label), (x, y),
                                 cv2.FONT_HERSHEY_PLAIN, 2, (200, 200, 0),
                                 2, cv2.LINE_AA)
+                else:
+                    if insignificant_vertices:
+                        # If still drawing insignificant vertices, make them
+                        # a darker blue to distinguish the real ones.
+                        cv2.putText(frame, str(label), (x, y),
+                                    cv2.FONT_HERSHEY_PLAIN, 2, (200, 0, 0),
+                                    2, cv2.LINE_AA)
         x, y = box.center
         cv2.putText(frame, str(i), (x-10, y), cv2.FONT_HERSHEY_PLAIN,
                      3, (0,)*3, 2, cv2.LINE_AA)
