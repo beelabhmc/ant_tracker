@@ -129,9 +129,9 @@ class BBox:
         """Returns the vertices of the bounding rectangle, in order
         counter-clockwise from the upper-left one.
         """
-        ulc = np.array([self.x, self.y])
-        width = self.w*np.array([cos(self.a), sin(self.a)])
-        height = self.h*np.array([sin(self.a), cos(self.a)])
+        ulc = np.array((self.x, self.y))
+        width = self.w*np.array((cos(self.a), sin(self.a)))
+        height = self.h*np.array((-sin(self.a), cos(self.a)))
         return [ulc, ulc+height, ulc+width+height, ulc+width]
 
 def read_bboxes(filename):
