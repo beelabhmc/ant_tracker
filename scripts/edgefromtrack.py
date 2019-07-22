@@ -70,9 +70,9 @@ def convert(infile, outfile, bboxes):
     angles = [[round((math.atan2(vert[1], vert[0])-offsets[i]) % (2*math.pi), 3)
                for vert in verts[i]] for i in range(len(verts))]
     intervals = []
-    for i, box in bboxes:
+    for i, box in enumerate(bboxes):
         box_intervals = []
-        for edge in bbox.edgs:
+        for edge in box.edges:
             box_intervals.append(Interval(
                 angles[i][edge],
                 angles[i][(edge+1) % len(angles[i])],
