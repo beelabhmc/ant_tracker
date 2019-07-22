@@ -129,4 +129,4 @@ rule roi_label:
         'output/{video}/labels.png'
     shell:
         'python3.7 scripts/roilabel.py {input[0]} {input[1]} {output}'
-
+        + (' -i' if config['label']['insignificant-vertices'] else '')

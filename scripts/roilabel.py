@@ -6,7 +6,9 @@ import argparse
 
 import bbox
 
-def label_rois(video, roifile, outfile, draw_polys=True):
+def label_rois(
+        video, roifile, outfile, draw_polys=True,
+        insignificant_vertices=False):
     """Labels the RoIs found in roifile onto the first frame of the
     video and saves that into outfile.
     
@@ -29,12 +31,14 @@ def label_rois(video, roifile, outfile, draw_polys=True):
             cv2.polylines(frame, [np.array(verts, np.int64).reshape((-1,1,2))],
                           True, (0,)*3, thickness=2)
             for j in range(-1, len(verts)-1):
-                x = round((verts[j][0] +verts[j+1][0])/2) - 10
-                y = round((verts[j][1] + verts[j+1][1])/2) + 15
-                # Note: (200, 200, 0) is cyan. OpenCV does colors weirdly
-                cv2.putText(frame, str(j%len(verts)), (x, y),
-                            cv2.FONT_HERSHEY_PLAIN, 2, (200, 200, 0),
-                            2, cv2.LINE_AA)
+                label = j % len(verts)
+                if insignificant_vertices or label in box.edges:
+                    x = round((verts[j][0] +verts[j+1][0])/2) - 10
+                    y = round((verts[j][1] + verts[j+1][1])/2) + 15
+                    # Note: (200,200,0) is cyan. OpenCV uses BGR instead of RGB.
+                    cv2.putText(frame, str(label), (x, y),
+                                cv2.FONT_HERSHEY_PLAIN, 2, (200, 200, 0),
+                                2, cv2.LINE_AA)
         x, y = box.center
         cv2.putText(frame, str(i), (x-10, y), cv2.FONT_HERSHEY_PLAIN,
                      3, (0,)*3, 2, cv2.LINE_AA)
@@ -55,8 +59,14 @@ def main():
                       type=str,
                       help='The file to which to write the output.'
                      )
+    args.add_argument('-i', '--draw-insignificant',
+                      dest='insig',
+                      action='store_true',
+                      help='If specified, all edges are labeled. Otherwise, '
+                           'only significant edges are labeled.')
     args = args.parse_args()
-    label_rois(args.video, args.roifile, args.outfile)
+    label_rois(args.video, args.roifile, args.outfile,
+               insignificant_vertices=args.insig)
 
 if __name__ == '__main__':
     main()

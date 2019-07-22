@@ -1,6 +1,9 @@
 ---
 # The framerate to assume if given a .h264 file
 h264-framerate: 32
+label:
+    # Parameters used by the roilabel file
+    insignificant-vertices: False       # If true, will draw all vertices
 split:
     segment-length: 600     # The duration (in seconds) of each split segment
     min-segment-length: 20  # The minimum length of a split segment to keep
