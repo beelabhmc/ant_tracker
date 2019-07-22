@@ -45,7 +45,7 @@ class BBox:
         h += 2*padding
         # Shift x,y from center (what OpenCV gives) to upper-left corner
         x += -cos(angle)*w/2 + sin(angle)*h/2
-        y += -sin(angle)*w/2 + cos(angle)*h/2
+        y += -sin(angle)*w/2 - cos(angle)*h/2
         x, y, w, h, angle = map(lambda x: round(x, 2), (x, y, w, h, angle))
         return cls(((x, y), (w, h), angle), verts)
     
