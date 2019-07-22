@@ -59,7 +59,6 @@ def convert(infile, outfile, bboxes):
     """Loads infile and converts it to which edges were crossed, as
     defined by the bboxes parameter, and then saves it to outfile.
     """
-    #TODO Consider box.edges edges only and not the other ones
     if not os.path.isdir(os.path.dirname(outfile)):
         os.makedirs(os.path.dirname(outfile))
     centers = [np.array([box.w/2, box.h/2]) for box in bboxes]
@@ -81,22 +80,27 @@ def convert(infile, outfile, bboxes):
         intervals.append(box_intervals)
     inp = open(infile)
     outp = open(outfile, 'w')
-    outp.write('roi,id,edge0,t0,edge1,t1,number_warning\n')
+    outp.write('roi,id,edge0,x0,y0,t0,edge1,x1,y1,t1,number_warning\n')
     for line in inp:
         roi, idnum, x0, y0, t0, x1, y1, t1, warning = line.strip().split(',')
         roinum = int(re.search(r'[0-9]+', roi).group(0))
         x0, y0, t0, x1, y1, t1 = map(float, (x0, y0, t0, x1, y1, t1))
-        x0 -= centers[roinum][0]
-        y0 -= centers[roinum][1]
-        a0 = (math.atan2(y0, x0) - offsets[roinum]) % (2*math.pi)
-        e0 = closest_interval(a0, intervals[roinum])
-        x1 -= centers[roinum][0]
-        y1 -= centers[roinum][1]
-        a1 = (math.atan2(y1, x1) - offsets[roinum]) % (2*math.pi)
-        e1 = closest_interval(a1, intervals[roinum])
-        outp.write(','.join(map(str, [roi, idnum, e0, t0, e1, t1, warning])))
+        e0 = to_edge(x0, y0, intervals[roinum],
+                     offsets[roinum], centers[roinum])
+        e1 = to_edge(x1, y1, intervals[roinum],
+                     offsets[roinum], centers[roinum])
+        outp.write(','.join(map(
+            str,
+            [roi, idnum, e0, x0, y0, t0, e1, x1, y1, t1, warning]
+        )))
         outp.write('\n')
     outp.close()
+
+def to_edge(x, y, intervals, offset, center):
+    x -= center[0]
+    y -= center[1]
+    angle = (math.atan2(y, x) - offset) % (2*math.pi)
+    return closest_interval(angle, intervals).payload
 
 def main():
     arg_parser = argparse.ArgumentParser()
