@@ -12,6 +12,9 @@ def main():
         missing.append('numpy')
     try:
         import cv2
+        if cv2.__version__[0] != '4':
+            print('You need OpenCV version 4.x, not %s' % cv2.__version__)
+            success = False
     except ImportError:
         missing.append('opencv')
     try:
