@@ -26,7 +26,7 @@ tracks:
                                         # video to use to identify the
                                         # background
 
-    minimum-background-ratio: 0.50      # The fraction of frames which
+    minimum-background-ratio: 0.70      # The fraction of frames which
                                         # must be matched by the
                                         # background detection
  
