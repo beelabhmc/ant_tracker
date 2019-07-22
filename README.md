@@ -60,6 +60,8 @@ An explanation of all of the different code files in the project, WIP:
  - [metadata.py](scripts/vid_meta_data.py) A script which reads the
    metadata from videos and contains functions with it common to multiple other
    python scripts.
+ - [pipeline.py](pipeline.py) A script made to allow easier execution of the
+   pipeline by figuring out which arguments to pass to snakemake.
  - [plot_tracks.py](scripts/plot_tracks.py) A python script which plots the
    tracks which matlab detects in an ROI. This is useful for observing the
    impact of tinkering with the parameters.
