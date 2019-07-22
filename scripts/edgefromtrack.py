@@ -55,6 +55,12 @@ def closest_interval(value, intervals, modulus=2*math.pi):
             closest = interval, distance
     return closest[0]
 
+def to_edge(x, y, intervals, offset, center):
+    x -= center[0]
+    y -= center[1]
+    angle = (math.atan2(y, x) - offset) % (2*math.pi)
+    return closest_interval(angle, intervals).payload
+
 def convert(infile, outfile, bboxes):
     """Loads infile and converts it to which edges were crossed, as
     defined by the bboxes parameter, and then saves it to outfile.
@@ -73,8 +79,8 @@ def convert(infile, outfile, bboxes):
         box_intervals = []
         for edge in box.edges:
             box_intervals.append(Interval(
-                angles[i][edge],
                 angles[i][(edge+1) % len(angles[i])],
+                angles[i][edge],
                 edge
             ))
         intervals.append(box_intervals)
@@ -95,12 +101,6 @@ def convert(infile, outfile, bboxes):
         )))
         outp.write('\n')
     outp.close()
-
-def to_edge(x, y, intervals, offset, center):
-    x -= center[0]
-    y -= center[1]
-    angle = (math.atan2(y, x) - offset) % (2*math.pi)
-    return closest_interval(angle, intervals).payload
 
 def main():
     arg_parser = argparse.ArgumentParser()
