@@ -86,7 +86,7 @@ roi-detection:
     polygon-epsilon: 0.035  # The amount of wiggle-room in turning
                             # contours into polygons.
 
-    roi-bbox-padding: 7     # The amount of padding around polygons to
+    roi-bbox-padding: 2     # The amount of padding around polygons to
                             # include in the ROI.
 
     force-convex: true      # Force the polygons for each ROI to be convex
