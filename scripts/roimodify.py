@@ -1,3 +1,5 @@
+#!/usr/local/bin/python3.7
+
 import argparse
 import cv2
 import numpy as np

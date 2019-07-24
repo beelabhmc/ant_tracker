@@ -25,6 +25,10 @@ def find_red(rgb, hue_diff, min_saturation, min_value):
     mask += cv2.inRange(hsv,
                         np.array([180-hue_diff, min_saturation, min_value]),
                         np.array([180, 255, 255]))
+    # To make it look for blue, check if the hue is within hue_diff of 120
+    # Prof. Donaldson and I (Jarred) discussed trying blue rectangles
+    # instead of red to reduce confusion between nests and polygons and
+    # hopefully make the ROI detection clearer.
     return mask // 255
 
 def smooth_regions(mask, open, dilate, close):

@@ -13,7 +13,7 @@ If you're just interested in running the pipeline, look at
 
 ### Dependencies
 
-The code in this repository runs on Python 3.7.0 and Matlab R2019A.
+The code in this repository runs on Python >= 3.7.0 and Matlab R2019A.
 
 The python executables depend on the [numpy](https://www.numpy.org/),
 [opencv](https://opencv.org/), and [matplotlib](https://matplotlib.org/)
