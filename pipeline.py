@@ -43,8 +43,8 @@ def main():
                               action='store_const',
                               const=False,
                               default=True,
-                              help='Only output the edges, and not the '
-                                   'ROI labels.')
+                              help='Only output the edge crossings, and not '
+                                   'label the ROIs.')
     parser.add_argument('-s', '--snakemake-arguments',
                         dest='args',
                         default='-pk --cores=32',
