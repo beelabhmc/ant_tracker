@@ -8,12 +8,20 @@ import bbox
 
 def label_rois(
         video, roifile, outfile, draw_polys=True,
-        insignificant_vertices=False):
+        insignificant_edges=False, draw_box=False):
     """Labels the RoIs found in roifile onto the first frame of the
     video and saves that into outfile.
     
     If draw_polys is True, then it will also draw the polygons within
     each ROI and label them.
+
+    If insignificant_edges is True, then all edges are labeled in cyan.
+    Otherwise, the unimportant edges are labeled in a darker blue to
+    distinguish them.
+
+    If draw_box is true, then it will draw a solid black box around the
+    area which is cropped in the croprotate step. Othewise, only the ROI
+    polygon is drawn and labeled.
     """
     if not os.path.isdir(os.path.dirname(os.path.abspath(outfile))):
         os.makedirs(os.path.dirname(os.path.abspath(outfile)))
@@ -22,10 +30,10 @@ def label_rois(
         raise RuntimeError('Encountered problem reading frame from video.')
     boxes = bbox.read_bboxes(roifile)
     lines = []
-    for i in range(len(boxes)):
-        box = boxes[i]
-        pts = np.array(box.box_vertices, np.int64)
-        lines.append(pts.reshape((-1, 1, 2)))
+    for i, box in enumerate(boxes)):
+        if draw_box:
+            pts = np.array(box.box_vertices, np.int64)
+            lines.append(pts.reshape((-1, 1, 2)))
         verts = box.poly_abspos
         if draw_polys:
             cv2.polylines(frame, [np.array(verts, np.int64).reshape((-1,1,2))],
@@ -40,7 +48,7 @@ def label_rois(
                                 cv2.FONT_HERSHEY_PLAIN, 2, (200, 200, 0),
                                 2, cv2.LINE_AA)
                 else:
-                    if insignificant_vertices:
+                    if insignificant_edges:
                         # If still drawing insignificant vertices, make them
                         # a darker blue to distinguish the real ones.
                         cv2.putText(frame, str(label), (x, y),
@@ -73,7 +81,7 @@ def main():
                            'only significant edges are labeled.')
     args = args.parse_args()
     label_rois(args.video, args.roifile, args.outfile,
-               insignificant_vertices=args.insig)
+               insignificant_edges=args.insig)
 
 if __name__ == '__main__':
     main()
