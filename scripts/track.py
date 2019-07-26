@@ -11,20 +11,12 @@ import constants
 COLUMN_NAMES = [['filename', 'id', 'x0', 'y0', 't0', 'x1', 'y1', 't1',
                  'number_warning']]
 
-def trackOneClip(vidPath, vidExport, result_path,
-        minBlob=constants.MIN_BLOB,
-        count_warning_threshold=constants.COUNT_WARNING_THRESHOLD,
-        num_gaussians=constants.NUM_GAUSSIANS,
-        num_training_frames=constants.NUM_TRAINING_FRAMES,
-        minimum_background_ratio=constants.MINIMUM_BACKGROUND_RATIO,
-        cost_of_nonassignment=constants.COST_OF_NONASSIGNMENT,
-        invisible_threshold=constants.INVISIBLE_FOR_TOO_LONG,
-        old_age_threshold=constants.OLD_AGE_THRESHOLD,
-        visibility_threshold=constants.VISIBILITY_THRESHOLD,
-        kalman_initial_error=constants.KALMAN_INITIAL_ERROR,
-        kalman_motion_noise=constants.KALMAN_MOTION_NOISE,
-        kalman_measurement_noise=constants.KALMAN_MEASUREMENT_NOISE,
-        min_visible_count=constants.MIN_VISIBLE_COUNT):
+def trackOneClip(
+        vidPath, vidExport, result_path, minBlob, count_warning_threshold,
+        num_gaussians, num_training_frames, minimum_background_ratio,
+        cost_of_nonassignment, invisible_threshold, old_age_threshold,
+        visibility_threshold, kalman_initial_error, kalman_motion_noise,
+        kalman_measurement_noise, min_visible_count, min_duration):
     # call the ant_tracking.m script and get the resulting dataframe
     # inputs:
     #   vidPath - string, absolute path to cropped vid
@@ -78,6 +70,8 @@ def trackOneClip(vidPath, vidExport, result_path,
                 else:
                     # This blob never traveled far, so it is likely fake
                     continue
+            if t1-t0 < min_duration:
+                continue
             # save results in np array so that we can return them soon
             track_result = np.append(track_result, [[vidPath, idnum, x0, y0, t0,
                                                      x1, y1, t1, 0]],
@@ -204,6 +198,13 @@ def main():
                             default=constants.MIN_VISIBLE_COUNT,
                             help='The number of frames which a track must have '
                                  'already appeared in to be output.')
+    arg_parser.add_argument('-d', '--min-duration',
+                            dest='min_duration',
+                            type=float,
+                            default=1.0,
+                            help='The minimum duration (in seconds) for which '
+                                 'a track must be present to be recorded '
+                                 '(default 1 second).')
     args = arg_parser.parse_args()
 
     # track ants in each of the cropped videos
@@ -218,7 +219,8 @@ def main():
                         args.nonassignment_cost, args.invisible_threshold,
                         args.old_age_threshold, args.visibility_threshold,
                         args.kalman_initial, args.kalman_motion,
-                        args.kalman_measurement, args.min_visible)
+                        args.kalman_measurement, args.min_visible,
+                        args.min_duration)
     # keep track of the tracking results in a np array
     if track_result.size:
         result_array = np.concatenate((result_array, track_result), axis=0)

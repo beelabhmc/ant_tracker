@@ -63,7 +63,7 @@ rule track:
         'intermediate/track/{video}/{split}/ROI_{roi}.csv'
     shell:
         'python3.7 scripts/track.py {{input}} {{output}} -m {} -c {} -g {} -tf '
-        '{} -b {} -n {} -it {} -ot {} -vt {} -ki {} -ko {} -km {} -v {}' \
+        '{} -b {} -n {} -it {} -ot {} -vt {} -ki {} -ko {} -km {} -v {} -d {}' \
         .format(*(config['tracks'][x]
                   for x in ['min-blob', 'count-warning-threshold',
                             'num-gaussians', 'num-training-frames',
@@ -71,7 +71,7 @@ rule track:
                             'invisible-threshold', 'old-age-threshold',
                             'visibility-threshold', 'kalman-initial-error',
                             'kalman-motion-noise', 'kalman-measurement-noise',
-                            'min-visible-count']))
+                            'min-visible-count', 'min-duration']))
 
 def aggregate_splits_input(wildcards):
     split_out = checkpoints.split.get(video=wildcards.video).output[0]
