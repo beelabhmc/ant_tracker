@@ -30,7 +30,7 @@ def label_rois(
         raise RuntimeError('Encountered problem reading frame from video.')
     boxes = bbox.read_bboxes(roifile)
     lines = []
-    for i, box in enumerate(boxes)):
+    for i, box in enumerate(boxes):
         if draw_box:
             pts = np.array(box.box_vertices, np.int64)
             lines.append(pts.reshape((-1, 1, 2)))
