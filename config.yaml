@@ -64,7 +64,7 @@ tracks:
                                         # an ant must be spotted for its
                                         # track to be recorded
 
-    min-duration: 1.0                   # The minimum duration for which
+    min-duration: 1.5                   # The minimum duration for which
                                         # a track must persist to be
                                         # saved as an ant.
 

@@ -201,10 +201,10 @@ def main():
     arg_parser.add_argument('-d', '--min-duration',
                             dest='min_duration',
                             type=float,
-                            default=1.0,
+                            default=1.5,
                             help='The minimum duration (in seconds) for which '
                                  'a track must be present to be recorded '
-                                 '(default 1 second).')
+                                 '(default 1.5 seconds).')
     args = arg_parser.parse_args()
 
     # track ants in each of the cropped videos
