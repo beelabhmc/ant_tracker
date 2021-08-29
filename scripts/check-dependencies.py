@@ -33,7 +33,7 @@ def main():
     except Exception:
         missing.append('ffmpeg')
     if missing:
-        sucess = False
+        success = False
         for package in missing:
             print('You do not have %s.' % package)
     import sys

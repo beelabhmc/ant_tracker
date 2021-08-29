@@ -1,17 +1,34 @@
 configfile: 'config.yaml'
 
-rule convert_h264_to_mp4:
+rule convert_mov_to_mp4:
     input:
-        '{video}.h264'
+        'input/{video}.mov'
     output:
-        '{video}.mp4'
+        'input/{video}.mp4'
     shell:
-        'ffmpeg -framerate %d -i {input} -c copy {output}' \
-            % config['h264-framerate']
+        'ffmpeg -i {input} -vcodec h264 -acodec mp2 {output}'
+
+
+# Video shakes at the beginning, so we trim the first 5 seconds to ensure consistency
+rule trim:
+    input:
+        'input/{video}.mp4'
+    output:
+        'intermediate/trim/{video}.mp4'
+    shell:
+        'ffmpeg -i {input} -ss 5 -c copy {output}'
+
+rule roidetect:
+    input:
+        'intermediate/trim/{video}.mp4'
+    output:
+        'intermediate/rois/{video}.txt'
+    shell:
+        'python scripts/roidetect.py {input} {output}'
 
 checkpoint split:
     input:
-        'input/{video}.mp4'
+        'intermediate/trim/{video}.mp4'
     output:
         directory('intermediate/split/{video}')
     priority: 20
@@ -20,20 +37,6 @@ checkpoint split:
             % (config['split']['segment-length'],
                config['split']['min-segment-length'])
 
-rule roidetect:
-    input:
-        'input/{video}.mp4'
-    output:
-        'intermediate/rois/{video}.txt'
-    shell:
-        'python3.7 scripts/roidetect.py {{input}} {{output}} -u {} -s {} -v {} '
-        '-o {} -d {} -c {} -e {} -p {} ' \
-        .format(*(config['roi-detection'][x]
-                  for x in ['hsv-hue-tolerance', 'hsv-sat-minimum',
-                            'hsv-value-minimum', 'smooth-open-size',
-                            'smooth-dilate-size', 'smooth-close-size',
-                            'polygon-epsilon', 'roi-bbox-padding']))
-        + ('' if config['roi-detection']['force-convex'] else '--allow-concave')
 
 def croprotate_input(wildcards):
     indir = checkpoints.split.get(video=wildcards.video).output[0]
@@ -46,7 +49,7 @@ checkpoint croprotate:
         croprotate_input
     output:
         directory('intermediate/crop/{video}/{split}')
-    priority: 10
+    priority: 20
     threads: config['croprot']['cores']
     shell:
         'python3.7 scripts/croprotate.py -c %d {input[0]} {output} {input[1]}' \
@@ -73,9 +76,19 @@ rule track:
                             'kalman-motion-noise', 'kalman-measurement-noise',
                             'min-visible-count', 'min-duration']))
 
+rule edge_from_tracks:
+    input:
+        'intermediate/track/{video}/{split}/ROI_{roi}.csv',
+        'intermediate/rois/{video}/{split}.txt'
+    output:
+        'intermediate/edges/{video}/{split}/ROI_{roi}.csv'
+    shell:
+        'python3.7 scripts/edges.py {input[0]} {output} {input[1]}'
+
+
 def aggregate_splits_input(wildcards):
     split_out = checkpoints.split.get(video=wildcards.video).output[0]
-    track_out = 'intermediate/track/{video}/{split}/ROI_{roi}.csv'
+    track_out = 'intermediate/edges/{video}/{split}/ROI_{roi}.csv'
     return expand(track_out, **wildcards,
                   split=glob_wildcards(os.path.join(split_out, '{i}.mp4')).i)
 
@@ -109,21 +122,29 @@ rule sort_aggregated_rois:
     output:
         'output/{video}/sorted.csv'
     shell:
-        'cat {input} | sort --field-separator=, -nk 5'
+        'cat {input} | sort --field-separator=, -nk 6'
         ' > {output}'
+
+rule merge_tracks:
+    input:
+        'output/{video}/sorted.csv'
+    output:
+        'output/{video}/merged.csv'
+    shell:
+        'python3.7 scripts/merged.py {input} {output}'
  
-rule edge_from_tracks:
+"""rule edge_from_tracks:
     input:
         'output/{video}/sorted.csv',
         'intermediate/rois/{video}.txt'
     output:
         'output/{video}/edges.csv'
     shell:
-        'python3.7 scripts/edgefromtrack.py {input[0]} {output} {input[1]}'
+        'python3.7 scripts/edgefromtrack.py {input[0]} {output} {input[1]}'"""
 
 rule roi_label:
     input:
-        'input/{video}.mp4',
+        'intermediate/trim/{video}.mp4',
         'intermediate/rois/{video}.txt'
     output:
         'output/{video}/labels.png'
