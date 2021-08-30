@@ -83,7 +83,7 @@ rule edge_from_tracks:
     output:
         'intermediate/edges/{video}/{split}/ROI_{roi}.csv'
     shell:
-        'python3.7 scripts/edges.py {input[0]} {output} {input[1]}'
+        'python3.7 scripts/edgefromtrack.py {input[0]} {output} {input[1]}'
 
 
 def aggregate_splits_input(wildcards):
@@ -124,23 +124,6 @@ rule sort_aggregated_rois:
     shell:
         'cat {input} | sort --field-separator=, -nk 6'
         ' > {output}'
-
-rule merge_tracks:
-    input:
-        'output/{video}/sorted.csv'
-    output:
-        'output/{video}/merged.csv'
-    shell:
-        'python3.7 scripts/merged.py {input} {output}'
- 
-"""rule edge_from_tracks:
-    input:
-        'output/{video}/sorted.csv',
-        'intermediate/rois/{video}.txt'
-    output:
-        'output/{video}/edges.csv'
-    shell:
-        'python3.7 scripts/edgefromtrack.py {input[0]} {output} {input[1]}'"""
 
 rule roi_label:
     input:
