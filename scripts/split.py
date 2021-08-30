@@ -106,9 +106,6 @@ def by_seconds(filename, destination, split_length, vcodec='copy',
         subprocess.Popen(f'cp "{filename}" "{destination}"', shell=True)
         return
 
-    # we use -y to force overwrites of output files
-    split_cmd = f'ffmpeg -loglevel warning -y -i \'{filename}\' -vcodec ' \
-                f'{vcodec} -acodec {acodec} {extra}'
     # get the filename without the file ext
     filebase = os.path.basename(filename)
     filebase, fileext = os.path.splitext(filebase)
@@ -117,9 +114,9 @@ def by_seconds(filename, destination, split_length, vcodec='copy',
         if video_length - split_start < min_segment_length:
             print(f'Not copying the last {video_length-split_start} seconds.')
             continue
-        split_str = f' -ss {split_start} -t {split_length} {destination}{n}.mp4'
-        print('About to run:', split_cmd, split_str, sep='')
-        output = subprocess.Popen(split_cmd+split_str, shell=True,
+        split_str = f'ffmpeg -i {filename} -ss {split_start} -t {split_length} -strict -2 {destination}{n}.mp4'
+        print('About to run:', split_str, sep='')
+        output = subprocess.Popen(split_str, shell=True,
                                   stdout=subprocess.PIPE,
                                  ).stdout.read()
 
