@@ -79,7 +79,7 @@ rule track:
 
 def aggregate_splits_input(wildcards):
     split_out = checkpoints.split.get(video=wildcards.video).output[0]
-    track_out = 'intermediate/edges/{video}/{split}/ROI_{roi}.csv'
+    track_out = 'intermediate/track/{video}/{split}/ROI_{roi}.csv'
     return expand(track_out, **wildcards,
                   split=glob_wildcards(os.path.join(split_out, '{i}.mp4')).i)
 
