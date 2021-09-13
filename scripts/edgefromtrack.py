@@ -45,7 +45,7 @@ def convert(infile, outfile, bboxes, Dict):
     verts = [np.array(bboxes[i].poly_relpos)
              for i in range(len(bboxes))]
     inp = open(infile)
-    lines = inp.readlines()[1:]
+    lines = inp.readlines()
     outp = open(outfile, 'w')
     outp.write('roi,id,edge0,x0,y0,t0,edge1,x1,y1,t1,number_warning,broken_track\n')
 
@@ -82,6 +82,8 @@ def convert(infile, outfile, bboxes, Dict):
         Map = {0: "Base", 1: "Left", 2: "Right"}
         e0 = Map[index0]
         e1 = Map[index1]
+
+        # If an ant track doesn't have a clear entrance/exit edge, mark track as broken
         if (min0 > 12) or (min1 > 12):
             brokentrack = 1
         outp.write(','.join(map(

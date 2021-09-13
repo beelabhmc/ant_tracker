@@ -118,10 +118,10 @@ rule sort_aggregated_rois:
 
 rule edge_from_tracks:
     input:
-        'intermediate/track/{video}/{split}/ROI_{roi}.csv',
-        'intermediate/rois/{video}/{split}.txt'
+        'output/{video}/sorted.csv',
+        'intermediate/rois/{video}.txt'
     output:
-        'intermediate/edges/{video}/{split}/ROI_{roi}.csv'
+        'output/{video}/edges.csv'
     shell:
         'python3.7 scripts/edgefromtrack.py {input[0]} {output} {input[1]}'
 
