@@ -7,7 +7,7 @@ import argparse
 import bbox
 
 def label_rois(
-        video, roifile, outfile, draw_polys=True,
+        Dict, video, roifile, outfile, draw_polys=True,
         insignificant_edges=False, draw_box=False):
     """Labels the RoIs found in roifile onto the first frame of the
     video and saves that into outfile.
@@ -55,7 +55,7 @@ def label_rois(
                                     cv2.FONT_HERSHEY_PLAIN, 2, (200, 0, 0),
                                     2, cv2.LINE_AA)
         x, y = box.center
-        cv2.putText(frame, str(i), (x-10, y), cv2.FONT_HERSHEY_PLAIN,
+        cv2.putText(frame, str(Dict[i]), (x-10, y), cv2.FONT_HERSHEY_PLAIN,
                      3, (0,)*3, 2, cv2.LINE_AA)
     cv2.polylines(frame, lines, True, (0, 0, 0), thickness=3)
     cv2.imwrite(outfile, frame)
@@ -80,7 +80,8 @@ def main():
                       help='If specified, all edges are labeled. Otherwise, '
                            'only significant edges are labeled.')
     args = args.parse_args()
-    label_rois(args.video, args.roifile, args.outfile,
+    Dict = {0:42, 1:122, 2:121, 3:41, 4:12, 5:40, 6:112, 7:8, 8:11, 9:6, 10:10, 11:4, 12:111, 13:2, 14:60, 15:0, 16:1, 17:3, 18:20, 19:7, 20:5, 21:211, 22:31, 23:21, 24:22, 25:30, 26:50, 27:212, 28:222, 29:221, 30:32}
+    label_rois(Dict, args.video, args.roifile, args.outfile,
                insignificant_edges=args.insig)
 
 if __name__ == '__main__':

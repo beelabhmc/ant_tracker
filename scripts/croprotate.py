@@ -15,7 +15,7 @@ def run_cmd(cmd):
                             stderr=subprocess.STDOUT).stdout.decode()
     return output 
 
-def crop_video(video, out_dir, boxes, cores=1, logfile=None):
+def crop_video(Dict, video, out_dir, boxes, cores=1, logfile=None):
     """Crops the given video, according to boxes, and saves the results
     in out_dir.
 
@@ -47,7 +47,7 @@ def crop_video(video, out_dir, boxes, cores=1, logfile=None):
         x, y = ulx*cos(angle)+uly*sin(angle), (W-ulx)*sin(angle)+uly*cos(angle)
         x, y, = map(round, (x, y))
         width, height = map(lambda x: 2*ceil(x/2), (width, height))
-        outvideo = f'{out_dir}/ROI_{i}.mp4'
+        outvideo = f'{out_dir}/ROI_{Dict[i]}.mp4'
         cmds.append(command.format(video, angle, width, height, x, y, outvideo))
     if cores == 0:
         cores = len(cmds)
@@ -76,8 +76,9 @@ def main():
                                  'default 1. If multiple cores are specified, '
                                  'then multiple crops will be done in '
                                  'parallel.')
+    Dict = {0:42, 1:122, 2:121, 3:41, 4:12, 5:40, 6:112, 7:8, 8:11, 9:6, 10:10, 11:4, 12:111, 13:2, 14:60, 15:0, 16:1, 17:3, 18:20, 19:7, 20:5, 21:211, 22:31, 23:21, 24:22, 25:30, 26:50, 27:212, 28:222, 29:221, 30:32}
     args = arg_parser.parse_args()
-    crop_video(args.video, args.out_dir, bbox.read_bboxes(args.boxes),
+    crop_video(Dict, args.video, args.out_dir, bbox.read_bboxes(args.boxes),
                cores=args.cores)
 
 if __name__ == '__main__':

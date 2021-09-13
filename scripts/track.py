@@ -9,7 +9,7 @@ import metadata
 import constants
 
 COLUMN_NAMES = [['filename', 'id', 'x0', 'y0', 't0', 'x1', 'y1', 't1',
-                 'number_warning']]
+                 'number_warning', 'broken_track']]
 
 def trackOneClip(
         vidPath, vidExport, result_path, minBlob, count_warning_threshold,
@@ -74,12 +74,12 @@ def trackOneClip(
                 continue
             # save results in np array so that we can return them soon
             track_result = np.append(track_result, [[vidPath, idnum, x0, y0, t0,
-                                                     x1, y1, t1, 0]],
+                                                     x1, y1, t1, 0, 0]],
                                      axis=0)
         # Iterate through the resulting dataframe and flag unexpected quantities
         times = collections.deque()
         for i in range(1, len(track_result)):
-            vid, idnum, x0, y0, t0, x1, y1, t1, flag = track_result[i]
+            vid, idnum, x0, y0, t0, x1, y1, t1, flag, brokentrack = track_result[i]
             times.append((float(t1), i))
             while times[0][0] <= float(t1)-5:
                 times.popleft()

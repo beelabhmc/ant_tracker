@@ -14,8 +14,10 @@ def combine_split_track(tracks, outfile, split_length=600):
             line = line.split(',')
             if line[4] == 't0':
                 continue
-            line[4] = str(round(split_length*i + float(line[4]), 2))
-            line[7] = str(round(split_length*i + float(line[7]), 2))
+            t0 = round(split_length*i + float(line[4]), 2)
+            t1 = round(split_length*i + float(line[7]), 2)
+            line[4] = "{minute0}.{second0:02d}".format(minute0 = int(t0//60), second0 = int(t0%60))
+            line[7] = "{minute1}.{second1:02d}".format(minute1 = int(t1//60), second1 = int(t1%60))
             line = ','.join(line)
             f.write(line)
     f.close()
