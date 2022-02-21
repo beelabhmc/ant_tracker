@@ -37,6 +37,9 @@ def crop_video(Dict, video, out_dir, boxes, cores=1, logfile=None):
               # The -strict -2 is here because ffmpeg sometimes insists on
               # using experimental codices. I don't know why it does that,
               # but this allows it to continue.
+
+              #Rotates positive because ffmpeg rotate clockwise and our angle is measured positively
+              #counterclockwise 
     # Format argument order: input video, rotation angle, width, height,
     #     upper-left x after rotation, upper-left y after rotation, output video
     video_name = os.path.splitext(os.path.basename(video))[0]

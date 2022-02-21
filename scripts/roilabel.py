@@ -8,7 +8,7 @@ import bbox
 
 def label_rois(
         Dict, video, roifile, outfile, draw_polys=True,
-        insignificant_edges=False, draw_box=False):
+        insignificant_edges=False, draw_box=True): #changed default for draw_box
     """Labels the RoIs found in roifile onto the first frame of the
     video and saves that into outfile.
     
@@ -25,10 +25,16 @@ def label_rois(
     """
     if not os.path.isdir(os.path.dirname(os.path.abspath(outfile))):
         os.makedirs(os.path.dirname(os.path.abspath(outfile)))
+    print('Looking for ' + video + '...')
+    if os.path.exists(video):
+        print('The video ' + video + ' was found.')
+    else: 
+        print('ERROR: The video ' + video + ' was not found.')
     ret, frame = cv2.VideoCapture(video).read()
     if not ret:
         raise RuntimeError('Encountered problem reading frame from video.')
     boxes = bbox.read_bboxes(roifile)
+ 
     lines = []
     for i, box in enumerate(boxes):
         if draw_box:

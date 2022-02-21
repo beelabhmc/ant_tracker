@@ -38,14 +38,14 @@ class BBox:
         """
         (x, y), (w, h), angle = cv2.minAreaRect(verts)
         verts = [tuple(vert) for vert in verts.reshape((-1, 2))]
-        angle = pi/180 * (90+angle)  # Convert to radians in quadrant 1
+        angle = pi/180 * (90-angle)  # Convert to radians in quadrant 1
         w, h = h, w
         # Pad the image
         w += 2*padding
         h += 2*padding
         # Shift x,y from center (what OpenCV gives) to upper-left corner
-        x += -cos(angle)*w/2 + sin(angle)*h/2
-        y += -sin(angle)*w/2 - cos(angle)*h/2
+        x += -sin(angle)*w/2 + cos(angle)*h/2
+        y += -cos(angle)*w/2 - sin(angle)*h/2
         x, y, w, h, angle = map(lambda x: round(x, 2), (x, y, w, h, angle))
         return cls(((x, y), (w, h), angle), verts)
     
@@ -102,8 +102,10 @@ class BBox:
 
     @property
     def center(self):
-        return (int(self.x+0.5*self.w*cos(self.a)-0.5*self.h*sin(self.a)),
-                int(self.y+0.5*self.h*cos(self.a)+0.5*self.w*sin(self.a)))
+        """Returns the coordinates of the center of the bounding box.
+        """
+        return (int(self.x+0.5*self.w*sin(self.a)-0.5*self.h*cos(self.a)),
+                int(self.y+0.5*self.h*sin(self.a)+0.5*self.w*cos(self.a)))
 
     @property
     def poly_abspos(self):
@@ -120,8 +122,8 @@ class BBox:
         def transform(xy):
             x = xy[0]-self.x
             y = xy[1]-self.y
-            return (round(x*cos(self.a)+y*sin(self.a), 2),
-                    round(-x*sin(self.a)+y*cos(self.a), 2))
+            return (round(x*sin(self.a)+y*cos(self.a), 2),
+                    round(-x*cos(self.a)+y*sin(self.a), 2))
         return list(map(transform, self.poly_abspos))
     
     @property
@@ -130,8 +132,8 @@ class BBox:
         counter-clockwise from the upper-left one.
         """
         ulc = np.array((self.x, self.y))
-        width = self.w*np.array((cos(self.a), sin(self.a)))
-        height = self.h*np.array((-sin(self.a), cos(self.a)))
+        width = self.w*np.array((sin(self.a), cos(self.a)))
+        height = self.h*np.array((-cos(self.a), sin(self.a)))
         return [ulc, ulc+height, ulc+width+height, ulc+width]
 
 def read_bboxes(filename):

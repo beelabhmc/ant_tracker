@@ -3,6 +3,8 @@ output/
 archive/
 input/*
 intermediate/*
+miniconda3/*
+tests/*
 
 out_test/
 out_test2
