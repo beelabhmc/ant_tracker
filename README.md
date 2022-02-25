@@ -1,19 +1,16 @@
 # Ant Tracker
 
-These scripts can be used to count ant moving across a video. The pipeline works
+These scripts can be used to count ants moving across a video. The pipeline works
 by identifying "Regions of Interest", which are choke points through which the
 ants must cross to travel from one area to another area, and then recording in
 which ways the ants cross the regions during the video.
-
-The code also supports painting red polyhedrons to denote the regions of interest
-in the video, and the code can detect those regions automatically.
 
 If you're just interested in running the pipeline, look at
 [this page](https://github.com/beelabhmc/ant_tracker/wiki/For-People-Looking-to-Run-the-Pipeline)
 
 ### Dependencies
 
-The code in this repository runs on Python >= 3.7.0 and Matlab R2019A.
+The code in this repository runs on Python >= 3.9.0 and Matlab R2019A.
 
 The python executables depend on the [numpy](https://www.numpy.org/),
 [opencv](https://opencv.org/), and [matplotlib](https://matplotlib.org/)
@@ -23,6 +20,22 @@ designed to be run as a pipeline using
 
 The code does not yet automatically install its dependencies, so you have to
 install all of those manually for it to work.
+
+Make sure to add these dependencies: 
+-numpy
+-cv2
+-os
+-math
+-argparse
+-re
+-subprocess
+-concurrent.futures
+-matplotlib
+-networkx
+-Skimage (scikit-image)
+-sklearn
+-numba
+-ffmpeg
 
 ### Code Files
 
