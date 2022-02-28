@@ -44,7 +44,6 @@ class BBox:
         w += 2*padding
         h += 2*padding
         # Shift x,y from center (what OpenCV gives) to upper-left corner
-        #Changed to new formula 
         ulx = x -sin(angle)*h/2 - cos(angle)*w/2
         uly = y -cos(angle)*h/2 + sin(angle)*w/2
         ulx, uly, w, h, angle = map(lambda x: round(x, 2), (ulx, uly, w, h, angle))
@@ -118,9 +117,8 @@ class BBox:
     def center(self):
         """Returns the coordinates of the center of the bounding box.
         """
-        # TODO: check math
-        return (int(self.x+0.5*self.w*sin(self.a)-0.5*self.h*cos(self.a)),
-                int(self.y+0.5*self.h*sin(self.a)+0.5*self.w*cos(self.a)))
+        return (int(self.x+0.5*self.w*cos(self.a)+0.5*self.h*sin(self.a)),
+                int(self.y-0.5*self.w*sin(self.a)+0.5*self.h*cos(self.a)))
 
     @property
     def poly_abspos(self):
@@ -134,12 +132,11 @@ class BBox:
         """Returns the positions of the vertices relative to the
         bounding box defined.
         """
-        # TODO: check math
         def transform(xy):
             x = xy[0]-self.x
             y = xy[1]-self.y
-            return (round(x*sin(self.a)+y*cos(self.a), 2),
-                    round(-x*cos(self.a)+y*sin(self.a), 2))
+            return (round(x*cos(self.a)-y*sin(self.a), 2),
+                    round(x*sin(self.a)+y*cos(self.a), 2))
         return list(map(transform, self.poly_abspos))
     
     @property
@@ -147,10 +144,9 @@ class BBox:
         """Returns the vertices of the bounding rectangle, in order
         counter-clockwise from the upper-left one.
         """
-        # TODO: check math
         ulc = np.array((self.x, self.y))
-        width = self.w*np.array((sin(self.a), cos(self.a)))
-        height = self.h*np.array((-cos(self.a), sin(self.a)))
+        width  = self.w*np.array((cos(self.a), -sin(self.a)))
+        height = self.h*np.array((sin(self.a), cos(self.a)))
         return [ulc, ulc+height, ulc+width+height, ulc+width]
 
 def read_bboxes(filename):
