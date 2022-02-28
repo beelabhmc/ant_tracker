@@ -44,10 +44,11 @@ class BBox:
         w += 2*padding
         h += 2*padding
         # Shift x,y from center (what OpenCV gives) to upper-left corner
-        x += -sin(angle)*w/2 + cos(angle)*h/2
-        y += -cos(angle)*w/2 - sin(angle)*h/2
-        x, y, w, h, angle = map(lambda x: round(x, 2), (x, y, w, h, angle))
-        return cls(((x, y), (w, h), angle), verts)
+        #Changed to new formula 
+        ulx = x -sin(angle)*h/2 - cos(angle)*w/2
+        uly = y -cos(angle)*h/2 + sin(angle)*w/2
+        ulx, uly, w, h, angle = map(lambda x: round(x, 2), (ulx, uly, w, h, angle))
+        return cls(((ulx, uly), (w, h), angle), verts)
     
     def __repr__(self):
         """Returns a string which can be passed into the from_str method
@@ -82,28 +83,42 @@ class BBox:
 
     @property
     def x(self):
+        """Returns the x coordinate of the upper left corner (after rotating to
+        be flat) of the bounding box.
+        """
         return self._box[0][0]
 
     @property
     def y(self):
+        """Returns the y coordinate of the upper left corner (after rotating to
+        be flat) of the bounding box.
+        """
         return self._box[0][1]
 
     @property
     def w(self):
+        """Returns the width of the bounding box.
+        """
         return self._box[1][0]
 
     @property
     def h(self):
+        """Returns the height of the bounding box.
+        """
         return self._box[1][1]
 
     @property
     def a(self):
+        """Returns the angle of the bounding box, in radians, as measured
+        counterclockwise from the horizontal.
+        """
         return self._box[2]
 
     @property
     def center(self):
         """Returns the coordinates of the center of the bounding box.
         """
+        # TODO: check math
         return (int(self.x+0.5*self.w*sin(self.a)-0.5*self.h*cos(self.a)),
                 int(self.y+0.5*self.h*sin(self.a)+0.5*self.w*cos(self.a)))
 
@@ -119,6 +134,7 @@ class BBox:
         """Returns the positions of the vertices relative to the
         bounding box defined.
         """
+        # TODO: check math
         def transform(xy):
             x = xy[0]-self.x
             y = xy[1]-self.y
@@ -131,6 +147,7 @@ class BBox:
         """Returns the vertices of the bounding rectangle, in order
         counter-clockwise from the upper-left one.
         """
+        # TODO: check math
         ulc = np.array((self.x, self.y))
         width = self.w*np.array((sin(self.a), cos(self.a)))
         height = self.h*np.array((-cos(self.a), sin(self.a)))
