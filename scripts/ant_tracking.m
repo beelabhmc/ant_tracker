@@ -4,12 +4,13 @@ function ants = ant_tracking(videoName, vidOut, outputVidDir, blobSize, ...
                              invisibleForTooLong, ageThreshold, ...
                              visibilityThreshold, kalmanInitialError, ...
                              kalmanMotionNoise, kalmanMeasurementNoise, ...
-                             minVisibleCount)
+                             minVisibleCount, debug)
 % vidOut - boolean, whether we should export the result video
 % blobSize - int, minimum blob area in pixels
 % videoName - string, absolute path to cropped vid
 % outputVidDir - string, path to the directory in which to store result videos
 % ants - array, the output of the function
+% debug - boolean, whether to create the video player for display
 ants =[];
 if vidOut
     % split videoName into array containing path and extension
@@ -29,7 +30,14 @@ end
 
 % reader reads the video given to the function and returns the frames,
 % one by one.
-reader = vision.VideoFileReader(videoName);
+try
+    reader = vision.VideoFileReader(videoName);
+catch ME
+    msg = ['Trying to read ', videoName];
+    causeException = MException('OpenCV:unreadableInput', msg);
+    ME = addCause(ME,causeException);
+    rethrow(ME)
+end 
 
 % Uses the beginning of the video to identify the background colors and
 % then compares each frame to that to identify the foreground as anything
@@ -47,8 +55,10 @@ blobAnalysis = vision.BlobAnalysis('BoundingBoxOutputPort', true, ...
 
 % Create two video players, one to display the video,
 % and one to display the foreground mask.
-% maskPlayer = vision.VideoPlayer('Position', [740, 400, 700, 400]);
-% videoPlayer = vision.VideoPlayer('Position', [20, 400, 700, 400]);
+if debug
+    maskPlayer = vision.VideoPlayer('Position', [740, 400, 700, 400]);
+    videoPlayer = vision.VideoPlayer('Position', [20, 400, 700, 400]);
+end
 
 % id : the integer ID of the track
 % bbox : the current bounding box of the object; used for display
@@ -89,7 +99,10 @@ while ~isDone(reader)
     displayTrackingResults(tracks);
     frameNumber = frameNumber + 1;
 end
+% finished 
 
+
+%Function Definitions: 
 function [centroids, bboxes, mask] = detectObjects(frame)
 
     % Detect foreground.
@@ -101,11 +114,10 @@ function [centroids, bboxes, mask] = detectObjects(frame)
     % collective region of 1's in a sea of 0's)
     % the second argument to strel() specifies the shape (see
     % matlab documentation)
-    % docs: https://www.mathworks.com/help/images/morphological-dilation-and-
-    % erosion.html
+    % docs: https://www.mathworks.com/help/images/morphological-dilation-and-erosion.html
     
-    mask = imerode(mask, strel('rectangle', [4,4]));
-    % mask = imdilate(mask, strel('rectangle', [1, 1]));
+    mask = imerode(mask, strel('rectangle', [3,3]));
+    mask = imdilate(mask, strel('rectangle', [2,2]));
     % mask = imopen(mask, strel('rectangle', [3,3]));
     % mask = imclose(mask, strel('rectangle', [3, 3]));
     mask = imfill(mask, 'holes');
@@ -291,25 +303,26 @@ function displayTrackingResults(results)
             labels = strcat(labels, isPredicted);
 
             % remove labels
-            % labels = cellstr(strings(size(ids')));
+            labels = cellstr(strings(size(ids')));
+            % Commented out below for testing- hopefully to remove the font error 
 
             % Draw the objects on the frame.
-            frame = insertObjectAnnotation(frame, 'rectangle', ...
-                bboxes, labels, 'TextBoxOpacity', 0, 'FontSize', 10, ...
-                'TextColor', 'red');
+            % frame = insertObjectAnnotation(frame, 'rectangle', ...
+            %     bboxes, labels, 'TextBoxOpacity', 0, 'FontSize', 10, ...
+            %     'TextColor', 'red');
 
-            % Draw the objects on the mask.
-            mask = insertObjectAnnotation(mask, 'rectangle', ...
-                bboxes, labels, 'TextBoxOpacity', 0, 'FontSize', 10, ...
-                'TextColor', 'red');
+            % % Draw the objects on the mask.
+            % mask = insertObjectAnnotation(mask, 'rectangle', ...
+            %     bboxes, labels, 'TextBoxOpacity', 0, 'FontSize', 10, ...
+            %     'TextColor', 'red');
     % Commented out these so video is only written if ants are in the frame.
     %     end
     % end
             if vidOut
                 % Display the mask and the frame.
-                % maskPlayer.step(mask);
+                maskPlayer.step(mask);
                 writeVideo(v,mask);
-                % videoPlayer.step(frame);
+                videoPlayer.step(frame);
                 writeVideo(w,frame);
             end
         end

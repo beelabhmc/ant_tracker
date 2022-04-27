@@ -5,6 +5,8 @@ input/*
 intermediate/*
 miniconda3/*
 tests/*
+nohup.out
+?/*
 
 out_test/
 out_test2

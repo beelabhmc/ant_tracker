@@ -16,7 +16,7 @@ def trackOneClip(
         num_gaussians, num_training_frames, minimum_background_ratio,
         cost_of_nonassignment, invisible_threshold, old_age_threshold,
         visibility_threshold, kalman_initial_error, kalman_motion_noise,
-        kalman_measurement_noise, min_visible_count, min_duration):
+        kalman_measurement_noise, min_visible_count, min_duration, debug):
     # call the ant_tracking.m script and get the resulting dataframe
     # inputs:
     #   vidPath - string, absolute path to cropped vid
@@ -27,21 +27,29 @@ def trackOneClip(
     #   other inputs are documented in scripts/constants.py
     eng = matlab.engine.start_matlab()
     eng.addpath('scripts')
-    df = eng.ant_tracking(abspath(vidPath), vidExport, abspath(result_path)+'/',
-                          minBlob, num_gaussians, num_training_frames,
-                          minimum_background_ratio, cost_of_nonassignment,
-                          invisible_threshold, old_age_threshold,
-                          visibility_threshold,
-                          matlab.double(kalman_initial_error),
-                          matlab.double(kalman_motion_noise),
-                          kalman_measurement_noise, min_visible_count)
+    try:
+        df = eng.ant_tracking(abspath(vidPath), vidExport, abspath(result_path)+'/',
+                            minBlob, num_gaussians, num_training_frames,
+                            minimum_background_ratio, cost_of_nonassignment,
+                            invisible_threshold, old_age_threshold,
+                            visibility_threshold,
+                            matlab.double(kalman_initial_error),
+                            matlab.double(kalman_motion_noise),
+                            kalman_measurement_noise, min_visible_count,
+                            debug)
+    except SystemError as err:
+        # added to maybe get a more helpful error message
+        eng.eval('exception = MException.last;', nargout=0)
+        print(eng.eval('getReport(exception)'))
+        print("MATLAB Error: ", err)
+        raise
     if df:
         track_result = np.array(COLUMN_NAMES)
         fps = metadata.get_video_fps(vidPath)
         # Get the framerate of the video
         # convert the dataframe to a np array
         # it should have five columns:
-        #   x_pos, y_pos, width, height, ant_id, framenumbet
+        #   x_pos, y_pos, width, height, ant_id, framenumber
         df = np.array(df)
         # get ant IDs as the unique values of the last column of the df
         id_list = set(df[:, 4])
@@ -205,6 +213,13 @@ def main():
                             help='The minimum duration (in seconds) for which '
                                  'a track must be present to be recorded '
                                  '(default 1.5 seconds).')
+    arg_parser.add_argument('-db', '--debug',
+                            dest='debug',
+                            action='store_const',
+                            const=True,
+                            default=False,
+                            help='Create a video player and display the tracking '
+                                'mask. Useful for debugging.')
     args = arg_parser.parse_args()
 
     # track ants in each of the cropped videos
@@ -220,7 +235,7 @@ def main():
                         args.old_age_threshold, args.visibility_threshold,
                         args.kalman_initial, args.kalman_motion,
                         args.kalman_measurement, args.min_visible,
-                        args.min_duration)
+                        args.min_duration, args.debug)
     # keep track of the tracking results in a np array
     if track_result.size:
         result_array = np.concatenate((result_array, track_result), axis=0)

@@ -10,6 +10,8 @@ SPLIT_DIR ='split/'
 CROP_DIR = 'crop/'
 RESULT_VID_DIR = 'result/'
 
+# These parameters are used only as default values. The actual values used are 
+# stored in config.yaml.
 
 # Parameters used by the python code that can be tweaked for better performance
 PADDING = 10                    # This constant was buried in the antTracker.py
@@ -32,7 +34,7 @@ NUM_GAUSSIANS = 5               # The number of Gaussians to use in fitting
 NUM_TRAINING_FRAMES = 120       # The number of frames from which to learn the
                                 # background
 
-MINIMUM_BACKGROUND_RATIO = 0.50 # The portion of training footage which should
+MINIMUM_BACKGROUND_RATIO = 0.70 # The portion of training footage which should
                                 # be considered to match the background
 
 COST_OF_NONASSIGNMENT = 15.0    # The cost of not assigning a detection to a
