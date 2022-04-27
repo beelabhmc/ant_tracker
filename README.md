@@ -36,6 +36,8 @@ Make sure to add these dependencies:
 - sklearn
 - numba
 - ffmpeg
+If you are using a miniconda environment to run the pipeline, you can use the following command on requirements.txt to get all the necessary packages. 
+
 
 ### Code Files
 
