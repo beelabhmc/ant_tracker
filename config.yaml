@@ -1,4 +1,5 @@
 ---
+INPUT_DIR: /biology/donaldson/ant_videos
 # The framerate to assume if given a .h264 file
 h264-framerate: 32
 label:

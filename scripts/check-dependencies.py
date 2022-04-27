@@ -1,3 +1,4 @@
+#hello
 def main():
     """Check that all the necessary imports are here."""
     success = True
@@ -32,6 +33,22 @@ def main():
             missing.append('ffmpeg')
     except Exception:
         missing.append('ffmpeg')
+    try: 
+        import networkx
+    except ImportError:
+        missing.append('networkx')
+    try: 
+        import numba
+    except ImportError:
+        missing.append('numba')
+    try: 
+        import sklearn
+    except ImportError:
+        missing.append('scikit-learn')
+    try: 
+        import skimage
+    except ImportError:
+        missing.append('scikit-image')
     if missing:
         success = False
         for package in missing:

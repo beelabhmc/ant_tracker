@@ -6,6 +6,8 @@ import numpy as np
 
 import bbox
 
+# INPUT_DIR = glob_wildcards('../../ant_tracker')
+
 def dist(x1, y1, x2, y2, x3, y3): # x3,y3 is the point
     px = x2-x1
     py = y2-y1

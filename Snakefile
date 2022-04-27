@@ -33,7 +33,7 @@ checkpoint split:
         directory('intermediate/split/{video}')
     priority: 20
     shell:
-        'python3.7 scripts/split.py -s %s -l %s {input} {output}' \
+        'python scripts/split.py -s %s -l %s {input} {output}' \
             % (config['split']['segment-length'],
                config['split']['min-segment-length'])
 
@@ -52,7 +52,7 @@ checkpoint croprotate:
     priority: 20
     threads: config['croprot']['cores']
     shell:
-        'python3.7 scripts/croprotate.py -c %d {input[0]} {output} {input[1]}' \
+        'python scripts/croprotate.py -c %d {input[0]} {output} {input[1]}' \
             % config['croprot']['cores']
 
 def track_input(wildcards):
@@ -89,14 +89,14 @@ rule aggregate_splits:
     output:
         'intermediate/aggregate/{video}/ROI_{roi}.csv'
     shell:
-        'python3.7 scripts/combinetrack.py {output} {input}'
+        'python scripts/combinetrack.py {output} {input}'
 
 def aggregate_rois_input(wildcards):
     crop_out = checkpoints.croprotate.get(**wildcards, split=0).output[0]
     aggregate_split_out = 'intermediate/aggregate/{video}/ROI_{roi}.csv'
     crop_out = os.path.join(crop_out, 'ROI_{i}.mp4')
     rois = glob_wildcards(crop_out).i
-    # print(crop_out, rois, sep='\n')
+    print(crop_out, rois, sep='\n')
     return expand(aggregate_split_out, **wildcards, roi=rois)
 
 rule aggregate_rois:
@@ -105,7 +105,7 @@ rule aggregate_rois:
     output:
         'output/{video}/tracks.csv'
     shell:
-        'python3.7 scripts/combinerois.py {output} {input}'
+        'python scripts/combinerois.py {output} {input}'
 
 rule sort_aggregated_rois:
     input:
@@ -123,7 +123,7 @@ rule edge_from_tracks:
     output:
         'output/{video}/edges.csv'
     shell:
-        'python3.7 scripts/edgefromtrack.py {input[0]} {output} {input[1]}'
+        'python scripts/edgefromtrack.py {input[0]} {output} {input[1]}'
 
 
 rule roi_label:
@@ -133,5 +133,5 @@ rule roi_label:
     output:
         'output/{video}/labels.png'
     shell:
-        'python3.7 scripts/roilabel.py {input[0]} {input[1]} {output}'
+        'python scripts/roilabel.py {input[0]} {input[1]} {output}'
         + (' -i' if config['label']['insignificant-vertices'] else '')
