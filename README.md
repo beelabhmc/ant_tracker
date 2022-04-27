@@ -22,20 +22,20 @@ The code does not yet automatically install its dependencies, so you have to
 install all of those manually for it to work.
 
 Make sure to add these dependencies: 
--numpy
--cv2
--os
--math
--argparse
--re
--subprocess
--concurrent.futures
--matplotlib
--networkx
--Skimage (scikit-image)
--sklearn
--numba
--ffmpeg
+- numpy
+- cv2
+- os
+- math
+- argparse
+- re
+- subprocess
+- concurrent.futures
+- matplotlib
+- networkx
+- Skimage (scikit-image)
+- sklearn
+- numba
+- ffmpeg
 
 ### Code Files
 
