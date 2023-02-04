@@ -1,0 +1,5 @@
+name: ant_tracker_new_2
+channels:
+  - conda-forge
+  - defaults
+prefix: /mnt/biology/donaldson/brian_and_daniela/miniconda3/envs/ant_tracker_new_2
