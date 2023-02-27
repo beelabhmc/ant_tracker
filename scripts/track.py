@@ -1,104 +1,119 @@
-import math
-import matlab.engine
+import ant_tracking
 import numpy as np
 import argparse
 from os.path import abspath
 import collections
-
 import metadata
 import constants
+import cv2
+import copy
 
 COLUMN_NAMES = [['filename', 'id', 'x0', 'y0', 't0', 'x1', 'y1', 't1',
                  'number_warning', 'broken_track']]
 
-def trackOneClip(
-        vidPath, vidExport, result_path, minBlob, count_warning_threshold,
-        num_gaussians, num_training_frames, minimum_background_ratio,
-        cost_of_nonassignment, invisible_threshold, old_age_threshold,
-        visibility_threshold, kalman_initial_error, kalman_motion_noise,
-        kalman_measurement_noise, min_visible_count, min_duration, debug):
-    # call the ant_tracking.m script and get the resulting dataframe
-    # inputs:
-    #   vidPath - string, absolute path to cropped vid
-    #   vidExport - boolean, whether we should export the result video
-    #   result_path - string, path to the directory in which to store
-    #                 result videos
-    #   minBlob - int, minimum blob area in pixels
-    #   other inputs are documented in scripts/constants.py
-    eng = matlab.engine.start_matlab()
-    eng.addpath('scripts')
-    try:
-        df = eng.ant_tracking(abspath(vidPath), vidExport, abspath(result_path)+'/',
-                            minBlob, num_gaussians, num_training_frames,
-                            minimum_background_ratio, cost_of_nonassignment,
-                            invisible_threshold, old_age_threshold,
-                            visibility_threshold,
-                            matlab.double(kalman_initial_error),
-                            matlab.double(kalman_motion_noise),
-                            kalman_measurement_noise, min_visible_count,
-                            debug)
-    except SystemError as err:
-        # added to maybe get a more helpful error message
-        eng.eval('exception = MException.last;', nargout=0)
-        print(eng.eval('getReport(exception)'))
-        print("MATLAB Error: ", err)
-        raise
-    if df:
-        track_result = np.array(COLUMN_NAMES)
-        fps = metadata.get_video_fps(vidPath)
-        # Get the framerate of the video
-        # convert the dataframe to a np array
-        # it should have five columns:
-        #   x_pos, y_pos, width, height, ant_id, framenumber
-        df = np.array(df)
-        # get ant IDs as the unique values of the last column of the df
-        id_list = set(df[:, 4])
-        # for each ant that appears in the video...
-        for idnum in id_list:
-            # get tracks for this ant
-            antTrack = df[df[:, 4] == idnum]
-            antTrack = antTrack[antTrack[:, -1] == 1]
-            antTrack = antTrack[:,:-1]
-            # NOTE: x and y coords can be negative if kalman filter is
-            #       predicting the ant after it passes out of frame
-            x0 = antTrack[0,0]
-            x1 = antTrack[-1,0]
-            y0 = antTrack[0,1]
-            y1 = antTrack[-1,1]
-            t0 = round(antTrack[0,5]/fps, 2)
-            t1 = round(antTrack[-1,5]/fps, 2)
-            if (x1-x0)**2 + (y1-y0)**2 < 100:
-                # These ants appeared and disappeared close together
-                for x, y, *_ in antTrack:
-                    if (x-x0)**2 + (y-y0)**2 > 100:
-                        # The ant moved a bit and then turned around and
-                        # went back
-                        # This track still counts
-                        break
-                else:
-                    # This blob never traveled far, so it is likely fake
-                    continue
-            if t1-t0 < min_duration:
+
+# def trackOneClip(
+#         vidPath, vidExport, result_path, minBlob, count_warning_threshold,
+#         num_gaussians, num_training_frames, minimum_background_ratio,
+#         cost_of_nonassignment, invisible_threshold, old_age_threshold,
+#         visibility_threshold, kalman_initial_error, kalman_motion_noise,
+#         kalman_measurement_noise, min_visible_count, min_duration, debug):
+
+
+def track(vidPath):
+    cap = cv2.VideoCapture(vidPath)
+                
+    detector = ant_tracking.Detectors()
+    """Initialize variable used by Tracker class
+    Args:
+        dist_thresh: distance threshold. When exceeds the threshold,
+                        track will be deleted and new track is created
+        max_frames_to_skip: maximum allowed frames to be skipped for
+                            the track object undetected
+        max_trace_lenght: trace path history length
+        trackIdCount: identification of each track object
+    Return:
+        None
+    """
+    tracker = ant_tracking.Tracker(50, 1000000, 10, 1)
+
+    results = []
+
+    frame_idx = 1
+    while(True):
+        ret, frame = cap.read()
+        
+        if ret == True:
+
+            orig_frame = copy.copy(frame)
+            centers = detector.Detect(frame)
+            if (len(centers) > 0):
+                
+                tracker.Update(centers)
+
+                for i in range(len(tracker.tracks)):
+                    if (len(tracker.tracks[i].trace) > 1):
+                        for j in range(len(tracker.tracks[i].trace)-1):
+                            x1 = tracker.tracks[i].trace[j][0][0]
+                            y1 = tracker.tracks[i].trace[j][1][0]
+                            x2 = tracker.tracks[i].trace[j+1][0][0]
+                            y2 = tracker.tracks[i].trace[j+1][1][0]
+                            ant_id = tracker.tracks[i].track_id
+                            
+                            res = (x1, y1, ant_id, frame_idx)
+                            results.append(res)
+                
+            frame_idx += 1
+                            
+        else:
+            cap.release()
+            return results
+
+
+def formatResults(results, vidPath, min_duration):
+    track_result = np.array(COLUMN_NAMES)
+
+    cap = cv2.VideoCapture(vidPath)  # TO DO: prob just get this from the original function
+    fps = cap.get(cv2.CAP_PROP_FPS)
+
+    x = results[:,0]
+    y = results[:,1]
+
+    df = np.array(results)
+    id_list = set(df[:, 2])
+
+    for idnum in id_list:
+        antTrack = df[df[:, 2] == idnum]  # get tracks for that ant
+        x0 = antTrack[0,0]
+        x1 = antTrack[-1,0] 
+        y0 = antTrack[0,1]
+        y1 = antTrack[-1,1] 
+        
+        t0 = round(antTrack[0,3]/fps, 2)
+        t1 = round(antTrack[-1,3]/fps, 2)
+        
+        if (x1-x0)**2 + (y1-y0)**2 < 100:
+            # These ants appeared and disappeared close together
+            for x, y, *_ in antTrack:
+                if (x-x0)**2 + (y-y0)**2 > 100:
+                    # The ant moved a bit and then turned around and
+                    # went back
+                    # This track still counts
+                    break
+            else:
+                # This blob never traveled far, so it is likely fake
                 continue
-            # save results in np array so that we can return them soon
-            track_result = np.append(track_result, [[vidPath, idnum, x0, y0, t0,
-                                                     x1, y1, t1, 0, 0]],
-                                     axis=0)
-        # Iterate through the resulting dataframe and flag unexpected quantities
-        times = collections.deque()
-        for i in range(1, len(track_result)):
-            vid, idnum, x0, y0, t0, x1, y1, t1, flag, brokentrack = track_result[i]
-            times.append((float(t1), i))
-            while times[0][0] <= float(t1)-5:
-                times.popleft()
-            if len(times) >= count_warning_threshold:
-                print('Warning: detected an unexpected number of tracks at '
-                      f't={t1} in {vidPath}')
-                for t, index in times:
-                    track_result[index, 8] = 1
-        # return the data without its header
-        return track_result[1:,], df
-    return np.array([]), np.array([])
+        
+        if t1-t0 < min_duration:
+            continue
+
+    # save results in np array so that we can return them soon
+    track_result = np.append(track_result, [[vidPath, idnum, x0, y0, t0,
+                                             x1, y1, t1, 0, 0]], axis=0)
+
+    # return data w/o its header
+    return track_result[1:,], df
+
 
 def main():
     arg_parser = argparse.ArgumentParser()
@@ -225,17 +240,21 @@ def main():
     # track ants in each of the cropped videos
     result_array = np.array(COLUMN_NAMES)
     print('Tracking ants in', args.source)
-    # call matlab to track ants in a single cropped video
-    export = args.video_path is not None
-    track_result, raw_results \
-        = trackOneClip(args.source, export, args.video_path or '',
-                        args.min_blob, args.count_threshold, args.gaussians,
-                        args.training_frames, args.background,
-                        args.nonassignment_cost, args.invisible_threshold,
-                        args.old_age_threshold, args.visibility_threshold,
-                        args.kalman_initial, args.kalman_motion,
-                        args.kalman_measurement, args.min_visible,
-                        args.min_duration, args.debug)
+    
+    print(args.source)
+    results = np.array(track(args.source))
+    track_result, raw_results = formatResults(results, args.source, args.min_duration)
+
+    # track_result, raw_results \
+    #     = trackOneClip(args.source, export, args.video_path or '',
+    #                     args.min_blob, args.count_threshold, args.gaussians,
+    #                     args.training_frames, args.background,
+    #                     args.nonassignment_cost, args.invisible_threshold,
+    #                     args.old_age_threshold, args.visibility_threshold,
+    #                     args.kalman_initial, args.kalman_motion,
+    #                     args.kalman_measurement, args.min_visible,
+    #                     args.min_duration, args.debug)
+
     # keep track of the tracking results in a np array
     if track_result.size:
         result_array = np.concatenate((result_array, track_result), axis=0)

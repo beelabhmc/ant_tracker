@@ -1,5 +1,6 @@
 configfile: 'config.yaml'
 
+
 rule convert_mov_to_mp4:
     input:
         'input/{video}.mov'
