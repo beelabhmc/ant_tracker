@@ -1,6 +1,5 @@
 configfile: 'config.yaml'
 
-
 rule convert_mov_to_mp4:
     input:
         'input/{video}.mov'
@@ -66,7 +65,7 @@ rule track:
     output:
         'intermediate/track/{video}/{split}/ROI_{roi}.csv'
     shell:
-        'python3.7 scripts/track.py {{input}} {{output}} -m {} -c {} -g {} -tf '
+        'python scripts/track.py {{input}} {{output}} -m {} -c {} -g {} -tf '
         '{} -b {} -n {} -it {} -ot {} -vt {} -ki {} -ko {} -km {} -v {} -d {}' \
         .format(*(config['tracks'][x]
                   for x in ['min-blob', 'count-warning-threshold',

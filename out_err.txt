@@ -1,0 +1,876 @@
+Updating job 6.
+intermediate/crop/7-7-21_21-BA2_2B/0/ROI_{i}.mp4
+['4', '40', '31', '32', '11', '221', '50', '1', '22', '112', '10', '8', '12', '222', '41', '5', '60', '111', '20', '0', '7', '211', '30', '121', '21', '212', '3', '6', '122', '2', '42']
+[Mon Mar 20 16:27:08 2023]
+Finished job 9.
+1 of 65 steps (2%) done
+
+[Mon Mar 20 16:27:08 2023]
+rule track:
+    input: intermediate/crop/7-7-21_21-BA2_2B/0/ROI_6.mp4
+    output: intermediate/track/7-7-21_21-BA2_2B/0/ROI_6.csv
+    jobid: 69
+    wildcards: video=7-7-21_21-BA2_2B, split=0, roi=6
+
+python3.7 scripts/track.py intermediate/crop/7-7-21_21-BA2_2B/0/ROI_6.mp4 intermediate/track/7-7-21_21-BA2_2B/0/ROI_6.csv -m 20 -c 10 -g 5 -tf 120 -b 0.7 -n 15.0 -it 4 -ot 8 -vt 0.6 -ki 200 50 -ko 100 15 -km 100.0 -v 3 -d 1.5
+
+[Mon Mar 20 16:27:08 2023]
+rule track:
+    input: intermediate/crop/7-7-21_21-BA2_2B/0/ROI_211.mp4
+    output: intermediate/track/7-7-21_21-BA2_2B/0/ROI_211.csv
+    jobid: 63
+    wildcards: video=7-7-21_21-BA2_2B, split=0, roi=211
+
+python3.7 scripts/track.py intermediate/crop/7-7-21_21-BA2_2B/0/ROI_211.mp4 intermediate/track/7-7-21_21-BA2_2B/0/ROI_211.csv -m 20 -c 10 -g 5 -tf 120 -b 0.7 -n 15.0 -it 4 -ot 8 -vt 0.6 -ki 200 50 -ko 100 15 -km 100.0 -v 3 -d 1.5
+
+[Mon Mar 20 16:27:08 2023]
+rule track:
+    input: intermediate/crop/7-7-21_21-BA2_2B/0/ROI_5.mp4
+    output: intermediate/track/7-7-21_21-BA2_2B/0/ROI_5.csv
+    jobid: 57
+    wildcards: video=7-7-21_21-BA2_2B, split=0, roi=5
+
+python3.7 scripts/track.py intermediate/crop/7-7-21_21-BA2_2B/0/ROI_5.mp4 intermediate/track/7-7-21_21-BA2_2B/0/ROI_5.csv -m 20 -c 10 -g 5 -tf 120 -b 0.7 -n 15.0 -it 4 -ot 8 -vt 0.6 -ki 200 50 -ko 100 15 -km 100.0 -v 3 -d 1.5
+
+[Mon Mar 20 16:27:09 2023]
+rule track:
+    input: intermediate/crop/7-7-21_21-BA2_2B/0/ROI_1.mp4
+    output: intermediate/track/7-7-21_21-BA2_2B/0/ROI_1.csv
+    jobid: 49
+    wildcards: video=7-7-21_21-BA2_2B, split=0, roi=1
+
+python3.7 scripts/track.py intermediate/crop/7-7-21_21-BA2_2B/0/ROI_1.mp4 intermediate/track/7-7-21_21-BA2_2B/0/ROI_1.csv -m 20 -c 10 -g 5 -tf 120 -b 0.7 -n 15.0 -it 4 -ot 8 -vt 0.6 -ki 200 50 -ko 100 15 -km 100.0 -v 3 -d 1.5
+
+[Mon Mar 20 16:27:09 2023]
+rule track:
+    input: intermediate/crop/7-7-21_21-BA2_2B/0/ROI_212.mp4
+    output: intermediate/track/7-7-21_21-BA2_2B/0/ROI_212.csv
+    jobid: 67
+    wildcards: video=7-7-21_21-BA2_2B, split=0, roi=212
+
+python3.7 scripts/track.py intermediate/crop/7-7-21_21-BA2_2B/0/ROI_212.mp4 intermediate/track/7-7-21_21-BA2_2B/0/ROI_212.csv -m 20 -c 10 -g 5 -tf 120 -b 0.7 -n 15.0 -it 4 -ot 8 -vt 0.6 -ki 200 50 -ko 100 15 -km 100.0 -v 3 -d 1.5
+
+[Mon Mar 20 16:27:09 2023]
+rule track:
+    input: intermediate/crop/7-7-21_21-BA2_2B/0/ROI_3.mp4
+    output: intermediate/track/7-7-21_21-BA2_2B/0/ROI_3.csv
+    jobid: 68
+    wildcards: video=7-7-21_21-BA2_2B, split=0, roi=3
+
+python3.7 scripts/track.py intermediate/crop/7-7-21_21-BA2_2B/0/ROI_3.mp4 intermediate/track/7-7-21_21-BA2_2B/0/ROI_3.csv -m 20 -c 10 -g 5 -tf 120 -b 0.7 -n 15.0 -it 4 -ot 8 -vt 0.6 -ki 200 50 -ko 100 15 -km 100.0 -v 3 -d 1.5
+
+[Mon Mar 20 16:27:09 2023]
+rule track:
+    input: intermediate/crop/7-7-21_21-BA2_2B/0/ROI_0.mp4
+    output: intermediate/track/7-7-21_21-BA2_2B/0/ROI_0.csv
+    jobid: 61
+    wildcards: video=7-7-21_21-BA2_2B, split=0, roi=0
+
+python3.7 scripts/track.py intermediate/crop/7-7-21_21-BA2_2B/0/ROI_0.mp4 intermediate/track/7-7-21_21-BA2_2B/0/ROI_0.csv -m 20 -c 10 -g 5 -tf 120 -b 0.7 -n 15.0 -it 4 -ot 8 -vt 0.6 -ki 200 50 -ko 100 15 -km 100.0 -v 3 -d 1.5
+
+[Mon Mar 20 16:27:09 2023]
+rule track:
+    input: intermediate/crop/7-7-21_21-BA2_2B/0/ROI_20.mp4
+    output: intermediate/track/7-7-21_21-BA2_2B/0/ROI_20.csv
+    jobid: 60
+    wildcards: video=7-7-21_21-BA2_2B, split=0, roi=20
+
+python3.7 scripts/track.py intermediate/crop/7-7-21_21-BA2_2B/0/ROI_20.mp4 intermediate/track/7-7-21_21-BA2_2B/0/ROI_20.csv -m 20 -c 10 -g 5 -tf 120 -b 0.7 -n 15.0 -it 4 -ot 8 -vt 0.6 -ki 200 50 -ko 100 15 -km 100.0 -v 3 -d 1.5
+
+[Mon Mar 20 16:27:09 2023]
+rule track:
+    input: intermediate/crop/7-7-21_21-BA2_2B/0/ROI_41.mp4
+    output: intermediate/track/7-7-21_21-BA2_2B/0/ROI_41.csv
+    jobid: 56
+    wildcards: video=7-7-21_21-BA2_2B, split=0, roi=41
+
+python3.7 scripts/track.py intermediate/crop/7-7-21_21-BA2_2B/0/ROI_41.mp4 intermediate/track/7-7-21_21-BA2_2B/0/ROI_41.csv -m 20 -c 10 -g 5 -tf 120 -b 0.7 -n 15.0 -it 4 -ot 8 -vt 0.6 -ki 200 50 -ko 100 15 -km 100.0 -v 3 -d 1.5
+
+[Mon Mar 20 16:27:09 2023]
+rule track:
+    input: intermediate/crop/7-7-21_21-BA2_2B/0/ROI_112.mp4
+    output: intermediate/track/7-7-21_21-BA2_2B/0/ROI_112.csv
+    jobid: 51
+    wildcards: video=7-7-21_21-BA2_2B, split=0, roi=112
+
+python3.7 scripts/track.py intermediate/crop/7-7-21_21-BA2_2B/0/ROI_112.mp4 intermediate/track/7-7-21_21-BA2_2B/0/ROI_112.csv -m 20 -c 10 -g 5 -tf 120 -b 0.7 -n 15.0 -it 4 -ot 8 -vt 0.6 -ki 200 50 -ko 100 15 -km 100.0 -v 3 -d 1.5
+Traceback (most recent call last):
+Traceback (most recent call last):
+  File "scripts/track.py", line 1, in <module>
+  File "scripts/track.py", line 1, in <module>
+Traceback (most recent call last):
+  File "scripts/track.py", line 1, in <module>
+Traceback (most recent call last):
+  File "scripts/track.py", line 1, in <module>
+    import ant_tracking
+    import ant_tracking
+  File "/mnt/biology/donaldson/hayley_daniela/ant_tracker_python/ant_tracker/scripts/ant_tracking.py", line 3, in <module>
+  File "/mnt/biology/donaldson/hayley_daniela/ant_tracker_python/ant_tracker/scripts/ant_tracking.py", line 3, in <module>
+    import ant_tracking
+    import ant_tracking
+  File "/mnt/biology/donaldson/hayley_daniela/ant_tracker_python/ant_tracker/scripts/ant_tracking.py", line 3, in <module>
+    import cv2
+  File "/mnt/biology/donaldson/hayley_daniela/ant_tracker_python/ant_tracker/scripts/ant_tracking.py", line 3, in <module>
+    import cv2
+  File "/usr/local/lib/python3.7/site-packages/cv2/__init__.py", line 89, in <module>
+  File "/usr/local/lib/python3.7/site-packages/cv2/__init__.py", line 89, in <module>
+    import cv2
+    import cv2
+  File "/usr/local/lib/python3.7/site-packages/cv2/__init__.py", line 89, in <module>
+  File "/usr/local/lib/python3.7/site-packages/cv2/__init__.py", line 89, in <module>
+    bootstrap()
+  File "/usr/local/lib/python3.7/site-packages/cv2/__init__.py", line 79, in bootstrap
+    bootstrap()
+  File "/usr/local/lib/python3.7/site-packages/cv2/__init__.py", line 79, in bootstrap
+    bootstrap()
+  File "/usr/local/lib/python3.7/site-packages/cv2/__init__.py", line 79, in bootstrap
+    import cv2
+    bootstrap()
+ImportError: libpng12.so.0: cannot open shared object file: No such file or directory
+  File "/usr/local/lib/python3.7/site-packages/cv2/__init__.py", line 79, in bootstrap
+    import cv2
+ImportError: libpng12.so.0: cannot open shared object file: No such file or directory
+    import cv2
+ImportError: libpng12.so.0: cannot open shared object file: No such file or directory
+    import cv2
+ImportError: libpng12.so.0: cannot open shared object file: No such file or directory
+Traceback (most recent call last):
+  File "scripts/track.py", line 1, in <module>
+    import ant_tracking
+  File "/mnt/biology/donaldson/hayley_daniela/ant_tracker_python/ant_tracker/scripts/ant_tracking.py", line 3, in <module>
+    import cv2
+  File "/usr/local/lib/python3.7/site-packages/cv2/__init__.py", line 89, in <module>
+    bootstrap()
+  File "/usr/local/lib/python3.7/site-packages/cv2/__init__.py", line 79, in bootstrap
+    import cv2
+ImportError: libpng12.so.0: cannot open shared object file: No such file or directory
+Traceback (most recent call last):
+  File "scripts/track.py", line 1, in <module>
+    import ant_tracking
+  File "/mnt/biology/donaldson/hayley_daniela/ant_tracker_python/ant_tracker/scripts/ant_tracking.py", line 3, in <module>
+    import cv2
+  File "/usr/local/lib/python3.7/site-packages/cv2/__init__.py", line 89, in <module>
+    bootstrap()
+  File "/usr/local/lib/python3.7/site-packages/cv2/__init__.py", line 79, in bootstrap
+    import cv2
+ImportError: libpng12.so.0: cannot open shared object file: No such file or directory
+Traceback (most recent call last):
+  File "scripts/track.py", line 1, in <module>
+    import ant_tracking
+  File "/mnt/biology/donaldson/hayley_daniela/ant_tracker_python/ant_tracker/scripts/ant_tracking.py", line 3, in <module>
+    import cv2
+  File "/usr/local/lib/python3.7/site-packages/cv2/__init__.py", line 89, in <module>
+    bootstrap()
+  File "/usr/local/lib/python3.7/site-packages/cv2/__init__.py", line 79, in bootstrap
+    import cv2
+ImportError: libpng12.so.0: cannot open shared object file: No such file or directory
+Traceback (most recent call last):
+  File "scripts/track.py", line 1, in <module>
+    import ant_tracking
+  File "/mnt/biology/donaldson/hayley_daniela/ant_tracker_python/ant_tracker/scripts/ant_tracking.py", line 3, in <module>
+    import cv2
+  File "/usr/local/lib/python3.7/site-packages/cv2/__init__.py", line 89, in <module>
+    bootstrap()
+  File "/usr/local/lib/python3.7/site-packages/cv2/__init__.py", line 79, in bootstrap
+    import cv2
+ImportError: libpng12.so.0: cannot open shared object file: No such file or directory
+Traceback (most recent call last):
+  File "scripts/track.py", line 1, in <module>
+    import ant_tracking
+  File "/mnt/biology/donaldson/hayley_daniela/ant_tracker_python/ant_tracker/scripts/ant_tracking.py", line 3, in <module>
+    import cv2
+  File "/usr/local/lib/python3.7/site-packages/cv2/__init__.py", line 89, in <module>
+    bootstrap()
+  File "/usr/local/lib/python3.7/site-packages/cv2/__init__.py", line 79, in bootstrap
+    import cv2
+ImportError: libpng12.so.0: cannot open shared object file: No such file or directory
+Traceback (most recent call last):
+  File "scripts/track.py", line 1, in <module>
+[Mon Mar 20 16:27:09 2023]
+    import ant_tracking
+  File "/mnt/biology/donaldson/hayley_daniela/ant_tracker_python/ant_tracker/scripts/ant_tracking.py", line 3, in <module>
+    import cv2
+  File "/usr/local/lib/python3.7/site-packages/cv2/__init__.py", line 89, in <module>
+Error in rule track:
+    bootstrap()
+  File "/usr/local/lib/python3.7/site-packages/cv2/__init__.py", line 79, in bootstrap
+    jobid: 49
+    output: intermediate/track/7-7-21_21-BA2_2B/0/ROI_1.csv
+    import cv2
+ImportError: libpng12.so.0: cannot open shared object file: No such file or directory
+    shell:
+        python3.7 scripts/track.py intermediate/crop/7-7-21_21-BA2_2B/0/ROI_1.mp4 intermediate/track/7-7-21_21-BA2_2B/0/ROI_1.csv -m 20 -c 10 -g 5 -tf 120 -b 0.7 -n 15.0 -it 4 -ot 8 -vt 0.6 -ki 200 50 -ko 100 15 -km 100.0 -v 3 -d 1.5
+        (exited with non-zero exit code)
+
+Job failed, going on with independent jobs.
+[Mon Mar 20 16:27:09 2023]
+Error in rule track:
+    jobid: 63
+    output: intermediate/track/7-7-21_21-BA2_2B/0/ROI_211.csv
+    shell:
+        python3.7 scripts/track.py intermediate/crop/7-7-21_21-BA2_2B/0/ROI_211.mp4 intermediate/track/7-7-21_21-BA2_2B/0/ROI_211.csv -m 20 -c 10 -g 5 -tf 120 -b 0.7 -n 15.0 -it 4 -ot 8 -vt 0.6 -ki 200 50 -ko 100 15 -km 100.0 -v 3 -d 1.5
+        (exited with non-zero exit code)
+
+[Mon Mar 20 16:27:09 2023]
+Job failed, going on with independent jobs.
+[Mon Mar 20 16:27:09 2023]
+Error in rule track:
+[Mon Mar 20 16:27:09 2023]
+Error in rule track:
+    jobid: 61
+Error in rule track:
+    jobid: 57
+    output: intermediate/track/7-7-21_21-BA2_2B/0/ROI_0.csv
+    jobid: 67
+    output: intermediate/track/7-7-21_21-BA2_2B/0/ROI_5.csv
+    shell:
+        python3.7 scripts/track.py intermediate/crop/7-7-21_21-BA2_2B/0/ROI_0.mp4 intermediate/track/7-7-21_21-BA2_2B/0/ROI_0.csv -m 20 -c 10 -g 5 -tf 120 -b 0.7 -n 15.0 -it 4 -ot 8 -vt 0.6 -ki 200 50 -ko 100 15 -km 100.0 -v 3 -d 1.5
+        (exited with non-zero exit code)
+    output: intermediate/track/7-7-21_21-BA2_2B/0/ROI_212.csv
+    shell:
+        python3.7 scripts/track.py intermediate/crop/7-7-21_21-BA2_2B/0/ROI_5.mp4 intermediate/track/7-7-21_21-BA2_2B/0/ROI_5.csv -m 20 -c 10 -g 5 -tf 120 -b 0.7 -n 15.0 -it 4 -ot 8 -vt 0.6 -ki 200 50 -ko 100 15 -km 100.0 -v 3 -d 1.5
+        (exited with non-zero exit code)
+
+    shell:
+        python3.7 scripts/track.py intermediate/crop/7-7-21_21-BA2_2B/0/ROI_212.mp4 intermediate/track/7-7-21_21-BA2_2B/0/ROI_212.csv -m 20 -c 10 -g 5 -tf 120 -b 0.7 -n 15.0 -it 4 -ot 8 -vt 0.6 -ki 200 50 -ko 100 15 -km 100.0 -v 3 -d 1.5
+        (exited with non-zero exit code)
+
+
+Job failed, going on with independent jobs.
+[Mon Mar 20 16:27:09 2023]
+Error in rule track:
+    jobid: 56
+    output: intermediate/track/7-7-21_21-BA2_2B/0/ROI_41.csv
+    shell:
+        python3.7 scripts/track.py intermediate/crop/7-7-21_21-BA2_2B/0/ROI_41.mp4 intermediate/track/7-7-21_21-BA2_2B/0/ROI_41.csv -m 20 -c 10 -g 5 -tf 120 -b 0.7 -n 15.0 -it 4 -ot 8 -vt 0.6 -ki 200 50 -ko 100 15 -km 100.0 -v 3 -d 1.5
+        (exited with non-zero exit code)
+
+Job failed, going on with independent jobs.
+Job failed, going on with independent jobs.
+[Mon Mar 20 16:27:09 2023]
+[Mon Mar 20 16:27:09 2023]
+[Mon Mar 20 16:27:09 2023]
+Error in rule track:
+Job failed, going on with independent jobs.
+Error in rule track:
+Error in rule track:
+    jobid: 68
+    jobid: 69
+    jobid: 60
+    output: intermediate/track/7-7-21_21-BA2_2B/0/ROI_3.csv
+    output: intermediate/track/7-7-21_21-BA2_2B/0/ROI_6.csv
+    output: intermediate/track/7-7-21_21-BA2_2B/0/ROI_20.csv
+    shell:
+        python3.7 scripts/track.py intermediate/crop/7-7-21_21-BA2_2B/0/ROI_3.mp4 intermediate/track/7-7-21_21-BA2_2B/0/ROI_3.csv -m 20 -c 10 -g 5 -tf 120 -b 0.7 -n 15.0 -it 4 -ot 8 -vt 0.6 -ki 200 50 -ko 100 15 -km 100.0 -v 3 -d 1.5
+        (exited with non-zero exit code)
+    shell:
+        python3.7 scripts/track.py intermediate/crop/7-7-21_21-BA2_2B/0/ROI_6.mp4 intermediate/track/7-7-21_21-BA2_2B/0/ROI_6.csv -m 20 -c 10 -g 5 -tf 120 -b 0.7 -n 15.0 -it 4 -ot 8 -vt 0.6 -ki 200 50 -ko 100 15 -km 100.0 -v 3 -d 1.5
+        (exited with non-zero exit code)
+    shell:
+        python3.7 scripts/track.py intermediate/crop/7-7-21_21-BA2_2B/0/ROI_20.mp4 intermediate/track/7-7-21_21-BA2_2B/0/ROI_20.csv -m 20 -c 10 -g 5 -tf 120 -b 0.7 -n 15.0 -it 4 -ot 8 -vt 0.6 -ki 200 50 -ko 100 15 -km 100.0 -v 3 -d 1.5
+        (exited with non-zero exit code)
+
+[Mon Mar 20 16:27:09 2023]
+
+
+Error in rule track:
+Job failed, going on with independent jobs.
+    jobid: 51
+    output: intermediate/track/7-7-21_21-BA2_2B/0/ROI_112.csv
+    shell:
+        python3.7 scripts/track.py intermediate/crop/7-7-21_21-BA2_2B/0/ROI_112.mp4 intermediate/track/7-7-21_21-BA2_2B/0/ROI_112.csv -m 20 -c 10 -g 5 -tf 120 -b 0.7 -n 15.0 -it 4 -ot 8 -vt 0.6 -ki 200 50 -ko 100 15 -km 100.0 -v 3 -d 1.5
+        (exited with non-zero exit code)
+
+Job failed, going on with independent jobs.
+Job failed, going on with independent jobs.
+Job failed, going on with independent jobs.
+
+[Mon Mar 20 16:27:09 2023]
+rule track:
+    input: intermediate/crop/7-7-21_21-BA2_2B/0/ROI_11.mp4
+    output: intermediate/track/7-7-21_21-BA2_2B/0/ROI_11.csv
+    jobid: 46
+    wildcards: video=7-7-21_21-BA2_2B, split=0, roi=11
+
+python3.7 scripts/track.py intermediate/crop/7-7-21_21-BA2_2B/0/ROI_11.mp4 intermediate/track/7-7-21_21-BA2_2B/0/ROI_11.csv -m 20 -c 10 -g 5 -tf 120 -b 0.7 -n 15.0 -it 4 -ot 8 -vt 0.6 -ki 200 50 -ko 100 15 -km 100.0 -v 3 -d 1.5
+
+[Mon Mar 20 16:27:09 2023]
+rule track:
+    input: intermediate/crop/7-7-21_21-BA2_2B/0/ROI_30.mp4
+    output: intermediate/track/7-7-21_21-BA2_2B/0/ROI_30.csv
+    jobid: 64
+    wildcards: video=7-7-21_21-BA2_2B, split=0, roi=30
+
+python3.7 scripts/track.py intermediate/crop/7-7-21_21-BA2_2B/0/ROI_30.mp4 intermediate/track/7-7-21_21-BA2_2B/0/ROI_30.csv -m 20 -c 10 -g 5 -tf 120 -b 0.7 -n 15.0 -it 4 -ot 8 -vt 0.6 -ki 200 50 -ko 100 15 -km 100.0 -v 3 -d 1.5
+
+[Mon Mar 20 16:27:10 2023]
+rule track:
+    input: intermediate/crop/7-7-21_21-BA2_2B/0/ROI_40.mp4
+    output: intermediate/track/7-7-21_21-BA2_2B/0/ROI_40.csv
+    jobid: 43
+    wildcards: video=7-7-21_21-BA2_2B, split=0, roi=40
+
+python3.7 scripts/track.py intermediate/crop/7-7-21_21-BA2_2B/0/ROI_40.mp4 intermediate/track/7-7-21_21-BA2_2B/0/ROI_40.csv -m 20 -c 10 -g 5 -tf 120 -b 0.7 -n 15.0 -it 4 -ot 8 -vt 0.6 -ki 200 50 -ko 100 15 -km 100.0 -v 3 -d 1.5
+
+[Mon Mar 20 16:27:10 2023]
+rule track:
+    input: intermediate/crop/7-7-21_21-BA2_2B/0/ROI_8.mp4
+    output: intermediate/track/7-7-21_21-BA2_2B/0/ROI_8.csv
+    jobid: 53
+    wildcards: video=7-7-21_21-BA2_2B, split=0, roi=8
+
+python3.7 scripts/track.py intermediate/crop/7-7-21_21-BA2_2B/0/ROI_8.mp4 intermediate/track/7-7-21_21-BA2_2B/0/ROI_8.csv -m 20 -c 10 -g 5 -tf 120 -b 0.7 -n 15.0 -it 4 -ot 8 -vt 0.6 -ki 200 50 -ko 100 15 -km 100.0 -v 3 -d 1.5
+
+[Mon Mar 20 16:27:10 2023]
+rule track:
+    input: intermediate/crop/7-7-21_21-BA2_2B/0/ROI_221.mp4
+    output: intermediate/track/7-7-21_21-BA2_2B/0/ROI_221.csv
+    jobid: 47
+    wildcards: video=7-7-21_21-BA2_2B, split=0, roi=221
+
+python3.7 scripts/track.py intermediate/crop/7-7-21_21-BA2_2B/0/ROI_221.mp4 intermediate/track/7-7-21_21-BA2_2B/0/ROI_221.csv -m 20 -c 10 -g 5 -tf 120 -b 0.7 -n 15.0 -it 4 -ot 8 -vt 0.6 -ki 200 50 -ko 100 15 -km 100.0 -v 3 -d 1.5
+
+[Mon Mar 20 16:27:10 2023]
+rule track:
+    input: intermediate/crop/7-7-21_21-BA2_2B/0/ROI_4.mp4
+    output: intermediate/track/7-7-21_21-BA2_2B/0/ROI_4.csv
+    jobid: 42
+    wildcards: video=7-7-21_21-BA2_2B, split=0, roi=4
+
+python3.7 scripts/track.py intermediate/crop/7-7-21_21-BA2_2B/0/ROI_4.mp4 intermediate/track/7-7-21_21-BA2_2B/0/ROI_4.csv -m 20 -c 10 -g 5 -tf 120 -b 0.7 -n 15.0 -it 4 -ot 8 -vt 0.6 -ki 200 50 -ko 100 15 -km 100.0 -v 3 -d 1.5
+
+[Mon Mar 20 16:27:10 2023]
+rule track:
+    input: intermediate/crop/7-7-21_21-BA2_2B/0/ROI_31.mp4
+    output: intermediate/track/7-7-21_21-BA2_2B/0/ROI_31.csv
+    jobid: 44
+    wildcards: video=7-7-21_21-BA2_2B, split=0, roi=31
+
+python3.7 scripts/track.py intermediate/crop/7-7-21_21-BA2_2B/0/ROI_31.mp4 intermediate/track/7-7-21_21-BA2_2B/0/ROI_31.csv -m 20 -c 10 -g 5 -tf 120 -b 0.7 -n 15.0 -it 4 -ot 8 -vt 0.6 -ki 200 50 -ko 100 15 -km 100.0 -v 3 -d 1.5
+
+[Mon Mar 20 16:27:10 2023]
+rule track:
+    input: intermediate/crop/7-7-21_21-BA2_2B/0/ROI_32.mp4
+    output: intermediate/track/7-7-21_21-BA2_2B/0/ROI_32.csv
+    jobid: 45
+    wildcards: video=7-7-21_21-BA2_2B, split=0, roi=32
+
+python3.7 scripts/track.py intermediate/crop/7-7-21_21-BA2_2B/0/ROI_32.mp4 intermediate/track/7-7-21_21-BA2_2B/0/ROI_32.csv -m 20 -c 10 -g 5 -tf 120 -b 0.7 -n 15.0 -it 4 -ot 8 -vt 0.6 -ki 200 50 -ko 100 15 -km 100.0 -v 3 -d 1.5
+
+[Mon Mar 20 16:27:10 2023]
+rule track:
+    input: intermediate/crop/7-7-21_21-BA2_2B/0/ROI_42.mp4
+    output: intermediate/track/7-7-21_21-BA2_2B/0/ROI_42.csv
+    jobid: 72
+    wildcards: video=7-7-21_21-BA2_2B, split=0, roi=42
+
+python3.7 scripts/track.py intermediate/crop/7-7-21_21-BA2_2B/0/ROI_42.mp4 intermediate/track/7-7-21_21-BA2_2B/0/ROI_42.csv -m 20 -c 10 -g 5 -tf 120 -b 0.7 -n 15.0 -it 4 -ot 8 -vt 0.6 -ki 200 50 -ko 100 15 -km 100.0 -v 3 -d 1.5
+
+[Mon Mar 20 16:27:10 2023]
+rule track:
+    input: intermediate/crop/7-7-21_21-BA2_2B/0/ROI_50.mp4
+    output: intermediate/track/7-7-21_21-BA2_2B/0/ROI_50.csv
+    jobid: 48
+    wildcards: video=7-7-21_21-BA2_2B, split=0, roi=50
+
+python3.7 scripts/track.py intermediate/crop/7-7-21_21-BA2_2B/0/ROI_50.mp4 intermediate/track/7-7-21_21-BA2_2B/0/ROI_50.csv -m 20 -c 10 -g 5 -tf 120 -b 0.7 -n 15.0 -it 4 -ot 8 -vt 0.6 -ki 200 50 -ko 100 15 -km 100.0 -v 3 -d 1.5
+Traceback (most recent call last):
+  File "scripts/track.py", line 1, in <module>
+    import ant_tracking
+  File "/mnt/biology/donaldson/hayley_daniela/ant_tracker_python/ant_tracker/scripts/ant_tracking.py", line 3, in <module>
+    import cv2
+  File "/usr/local/lib/python3.7/site-packages/cv2/__init__.py", line 89, in <module>
+    bootstrap()
+  File "/usr/local/lib/python3.7/site-packages/cv2/__init__.py", line 79, in bootstrap
+    import cv2
+ImportError: libpng12.so.0: cannot open shared object file: No such file or directory
+Traceback (most recent call last):
+  File "scripts/track.py", line 1, in <module>
+    import ant_tracking
+  File "/mnt/biology/donaldson/hayley_daniela/ant_tracker_python/ant_tracker/scripts/ant_tracking.py", line 3, in <module>
+    import cv2
+  File "/usr/local/lib/python3.7/site-packages/cv2/__init__.py", line 89, in <module>
+    bootstrap()
+  File "/usr/local/lib/python3.7/site-packages/cv2/__init__.py", line 79, in bootstrap
+    import cv2
+ImportError: libpng12.so.0: cannot open shared object file: No such file or directory
+Traceback (most recent call last):
+  File "scripts/track.py", line 1, in <module>
+    import ant_tracking
+  File "/mnt/biology/donaldson/hayley_daniela/ant_tracker_python/ant_tracker/scripts/ant_tracking.py", line 3, in <module>
+    import cv2
+  File "/usr/local/lib/python3.7/site-packages/cv2/__init__.py", line 89, in <module>
+    bootstrap()
+  File "/usr/local/lib/python3.7/site-packages/cv2/__init__.py", line 79, in bootstrap
+    import cv2
+ImportError: libpng12.so.0: cannot open shared object file: No such file or directory
+Traceback (most recent call last):
+  File "scripts/track.py", line 1, in <module>
+    import ant_tracking
+  File "/mnt/biology/donaldson/hayley_daniela/ant_tracker_python/ant_tracker/scripts/ant_tracking.py", line 3, in <module>
+    import cv2
+  File "/usr/local/lib/python3.7/site-packages/cv2/__init__.py", line 89, in <module>
+    bootstrap()
+  File "/usr/local/lib/python3.7/site-packages/cv2/__init__.py", line 79, in bootstrap
+    import cv2
+ImportError: libpng12.so.0: cannot open shared object file: No such file or directory
+Traceback (most recent call last):
+  File "scripts/track.py", line 1, in <module>
+    import ant_tracking
+  File "/mnt/biology/donaldson/hayley_daniela/ant_tracker_python/ant_tracker/scripts/ant_tracking.py", line 3, in <module>
+    import cv2
+  File "/usr/local/lib/python3.7/site-packages/cv2/__init__.py", line 89, in <module>
+    bootstrap()
+  File "/usr/local/lib/python3.7/site-packages/cv2/__init__.py", line 79, in bootstrap
+    import cv2
+ImportError: libpng12.so.0: cannot open shared object file: No such file or directory
+[Mon Mar 20 16:27:10 2023]
+Error in rule track:
+    jobid: 43
+    output: intermediate/track/7-7-21_21-BA2_2B/0/ROI_40.csv
+    shell:
+        python3.7 scripts/track.py intermediate/crop/7-7-21_21-BA2_2B/0/ROI_40.mp4 intermediate/track/7-7-21_21-BA2_2B/0/ROI_40.csv -m 20 -c 10 -g 5 -tf 120 -b 0.7 -n 15.0 -it 4 -ot 8 -vt 0.6 -ki 200 50 -ko 100 15 -km 100.0 -v 3 -d 1.5
+        (exited with non-zero exit code)
+
+[Mon Mar 20 16:27:10 2023]
+Error in rule track:
+    jobid: 42
+    output: intermediate/track/7-7-21_21-BA2_2B/0/ROI_4.csv
+    shell:
+        python3.7 scripts/track.py intermediate/crop/7-7-21_21-BA2_2B/0/ROI_4.mp4 intermediate/track/7-7-21_21-BA2_2B/0/ROI_4.csv -m 20 -c 10 -g 5 -tf 120 -b 0.7 -n 15.0 -it 4 -ot 8 -vt 0.6 -ki 200 50 -ko 100 15 -km 100.0 -v 3 -d 1.5
+        (exited with non-zero exit code)
+
+Job failed, going on with independent jobs.
+Job failed, going on with independent jobs.
+[Mon Mar 20 16:27:10 2023]
+Traceback (most recent call last):
+  File "scripts/track.py", line 1, in <module>
+Error in rule track:
+    import ant_tracking
+  File "/mnt/biology/donaldson/hayley_daniela/ant_tracker_python/ant_tracker/scripts/ant_tracking.py", line 3, in <module>
+    import cv2
+  File "/usr/local/lib/python3.7/site-packages/cv2/__init__.py", line 89, in <module>
+    bootstrap()
+  File "/usr/local/lib/python3.7/site-packages/cv2/__init__.py", line 79, in bootstrap
+    import cv2
+ImportError: libpng12.so.0: cannot open shared object file: No such file or directory
+[Mon Mar 20 16:27:10 2023]
+    jobid: 47
+Error in rule track:
+    output: intermediate/track/7-7-21_21-BA2_2B/0/ROI_221.csv
+    jobid: 46
+    shell:
+        python3.7 scripts/track.py intermediate/crop/7-7-21_21-BA2_2B/0/ROI_221.mp4 intermediate/track/7-7-21_21-BA2_2B/0/ROI_221.csv -m 20 -c 10 -g 5 -tf 120 -b 0.7 -n 15.0 -it 4 -ot 8 -vt 0.6 -ki 200 50 -ko 100 15 -km 100.0 -v 3 -d 1.5
+        (exited with non-zero exit code)
+    output: intermediate/track/7-7-21_21-BA2_2B/0/ROI_11.csv
+
+    shell:
+        python3.7 scripts/track.py intermediate/crop/7-7-21_21-BA2_2B/0/ROI_11.mp4 intermediate/track/7-7-21_21-BA2_2B/0/ROI_11.csv -m 20 -c 10 -g 5 -tf 120 -b 0.7 -n 15.0 -it 4 -ot 8 -vt 0.6 -ki 200 50 -ko 100 15 -km 100.0 -v 3 -d 1.5
+        (exited with non-zero exit code)
+
+Job failed, going on with independent jobs.
+Job failed, going on with independent jobs.
+Traceback (most recent call last):
+  File "scripts/track.py", line 1, in <module>
+    import ant_tracking
+  File "/mnt/biology/donaldson/hayley_daniela/ant_tracker_python/ant_tracker/scripts/ant_tracking.py", line 3, in <module>
+    import cv2
+  File "/usr/local/lib/python3.7/site-packages/cv2/__init__.py", line 89, in <module>
+    bootstrap()
+  File "/usr/local/lib/python3.7/site-packages/cv2/__init__.py", line 79, in bootstrap
+    import cv2
+ImportError: libpng12.so.0: cannot open shared object file: No such file or directory
+Traceback (most recent call last):
+  File "scripts/track.py", line 1, in <module>
+    import ant_tracking
+  File "/mnt/biology/donaldson/hayley_daniela/ant_tracker_python/ant_tracker/scripts/ant_tracking.py", line 3, in <module>
+    import cv2
+  File "/usr/local/lib/python3.7/site-packages/cv2/__init__.py", line 89, in <module>
+[Mon Mar 20 16:27:10 2023]
+    bootstrap()
+  File "/usr/local/lib/python3.7/site-packages/cv2/__init__.py", line 79, in bootstrap
+Error in rule track:
+    jobid: 64
+    import cv2
+ImportError: libpng12.so.0: cannot open shared object file: No such file or directory
+    output: intermediate/track/7-7-21_21-BA2_2B/0/ROI_30.csv
+    shell:
+        python3.7 scripts/track.py intermediate/crop/7-7-21_21-BA2_2B/0/ROI_30.mp4 intermediate/track/7-7-21_21-BA2_2B/0/ROI_30.csv -m 20 -c 10 -g 5 -tf 120 -b 0.7 -n 15.0 -it 4 -ot 8 -vt 0.6 -ki 200 50 -ko 100 15 -km 100.0 -v 3 -d 1.5
+        (exited with non-zero exit code)
+
+Job failed, going on with independent jobs.
+Traceback (most recent call last):
+  File "scripts/track.py", line 1, in <module>
+    import ant_tracking
+  File "/mnt/biology/donaldson/hayley_daniela/ant_tracker_python/ant_tracker/scripts/ant_tracking.py", line 3, in <module>
+    import cv2
+  File "/usr/local/lib/python3.7/site-packages/cv2/__init__.py", line 89, in <module>
+    bootstrap()
+  File "/usr/local/lib/python3.7/site-packages/cv2/__init__.py", line 79, in bootstrap
+    import cv2
+ImportError: libpng12.so.0: cannot open shared object file: No such file or directory
+Traceback (most recent call last):
+  File "scripts/track.py", line 1, in <module>
+    import ant_tracking
+  File "/mnt/biology/donaldson/hayley_daniela/ant_tracker_python/ant_tracker/scripts/ant_tracking.py", line 3, in <module>
+    import cv2
+  File "/usr/local/lib/python3.7/site-packages/cv2/__init__.py", line 89, in <module>
+    bootstrap()
+  File "/usr/local/lib/python3.7/site-packages/cv2/__init__.py", line 79, in bootstrap
+    import cv2
+ImportError: libpng12.so.0: cannot open shared object file: No such file or directory
+[Mon Mar 20 16:27:10 2023]
+Error in rule track:
+    jobid: 44
+    output: intermediate/track/7-7-21_21-BA2_2B/0/ROI_31.csv
+    shell:
+        python3.7 scripts/track.py intermediate/crop/7-7-21_21-BA2_2B/0/ROI_31.mp4 intermediate/track/7-7-21_21-BA2_2B/0/ROI_31.csv -m 20 -c 10 -g 5 -tf 120 -b 0.7 -n 15.0 -it 4 -ot 8 -vt 0.6 -ki 200 50 -ko 100 15 -km 100.0 -v 3 -d 1.5
+        (exited with non-zero exit code)
+
+Job failed, going on with independent jobs.
+[Mon Mar 20 16:27:10 2023]
+Error in rule track:
+    jobid: 45
+    output: intermediate/track/7-7-21_21-BA2_2B/0/ROI_32.csv
+    shell:
+        python3.7 scripts/track.py intermediate/crop/7-7-21_21-BA2_2B/0/ROI_32.mp4 intermediate/track/7-7-21_21-BA2_2B/0/ROI_32.csv -m 20 -c 10 -g 5 -tf 120 -b 0.7 -n 15.0 -it 4 -ot 8 -vt 0.6 -ki 200 50 -ko 100 15 -km 100.0 -v 3 -d 1.5
+        (exited with non-zero exit code)
+
+Job failed, going on with independent jobs.
+[Mon Mar 20 16:27:10 2023]
+Error in rule track:
+    jobid: 53
+    output: intermediate/track/7-7-21_21-BA2_2B/0/ROI_8.csv
+    shell:
+        python3.7 scripts/track.py intermediate/crop/7-7-21_21-BA2_2B/0/ROI_8.mp4 intermediate/track/7-7-21_21-BA2_2B/0/ROI_8.csv -m 20 -c 10 -g 5 -tf 120 -b 0.7 -n 15.0 -it 4 -ot 8 -vt 0.6 -ki 200 50 -ko 100 15 -km 100.0 -v 3 -d 1.5
+        (exited with non-zero exit code)
+[Mon Mar 20 16:27:10 2023]
+
+Error in rule track:
+    jobid: 72
+    output: intermediate/track/7-7-21_21-BA2_2B/0/ROI_42.csv
+    shell:
+        python3.7 scripts/track.py intermediate/crop/7-7-21_21-BA2_2B/0/ROI_42.mp4 intermediate/track/7-7-21_21-BA2_2B/0/ROI_42.csv -m 20 -c 10 -g 5 -tf 120 -b 0.7 -n 15.0 -it 4 -ot 8 -vt 0.6 -ki 200 50 -ko 100 15 -km 100.0 -v 3 -d 1.5
+        (exited with non-zero exit code)
+
+[Mon Mar 20 16:27:10 2023]
+Job failed, going on with independent jobs.
+Error in rule track:
+    jobid: 48
+    output: intermediate/track/7-7-21_21-BA2_2B/0/ROI_50.csv
+    shell:
+        python3.7 scripts/track.py intermediate/crop/7-7-21_21-BA2_2B/0/ROI_50.mp4 intermediate/track/7-7-21_21-BA2_2B/0/ROI_50.csv -m 20 -c 10 -g 5 -tf 120 -b 0.7 -n 15.0 -it 4 -ot 8 -vt 0.6 -ki 200 50 -ko 100 15 -km 100.0 -v 3 -d 1.5
+        (exited with non-zero exit code)
+Job failed, going on with independent jobs.
+
+Job failed, going on with independent jobs.
+
+[Mon Mar 20 16:27:10 2023]
+rule track:
+    input: intermediate/crop/7-7-21_21-BA2_2B/0/ROI_60.mp4
+    output: intermediate/track/7-7-21_21-BA2_2B/0/ROI_60.csv
+    jobid: 58
+    wildcards: video=7-7-21_21-BA2_2B, split=0, roi=60
+
+python3.7 scripts/track.py intermediate/crop/7-7-21_21-BA2_2B/0/ROI_60.mp4 intermediate/track/7-7-21_21-BA2_2B/0/ROI_60.csv -m 20 -c 10 -g 5 -tf 120 -b 0.7 -n 15.0 -it 4 -ot 8 -vt 0.6 -ki 200 50 -ko 100 15 -km 100.0 -v 3 -d 1.5
+
+[Mon Mar 20 16:27:11 2023]
+rule track:
+    input: intermediate/crop/7-7-21_21-BA2_2B/0/ROI_111.mp4
+    output: intermediate/track/7-7-21_21-BA2_2B/0/ROI_111.csv
+    jobid: 59
+    wildcards: video=7-7-21_21-BA2_2B, split=0, roi=111
+
+python3.7 scripts/track.py intermediate/crop/7-7-21_21-BA2_2B/0/ROI_111.mp4 intermediate/track/7-7-21_21-BA2_2B/0/ROI_111.csv -m 20 -c 10 -g 5 -tf 120 -b 0.7 -n 15.0 -it 4 -ot 8 -vt 0.6 -ki 200 50 -ko 100 15 -km 100.0 -v 3 -d 1.5
+
+[Mon Mar 20 16:27:11 2023]
+rule track:
+    input: intermediate/crop/7-7-21_21-BA2_2B/0/ROI_10.mp4
+    output: intermediate/track/7-7-21_21-BA2_2B/0/ROI_10.csv
+    jobid: 52
+    wildcards: video=7-7-21_21-BA2_2B, split=0, roi=10
+
+python3.7 scripts/track.py intermediate/crop/7-7-21_21-BA2_2B/0/ROI_10.mp4 intermediate/track/7-7-21_21-BA2_2B/0/ROI_10.csv -m 20 -c 10 -g 5 -tf 120 -b 0.7 -n 15.0 -it 4 -ot 8 -vt 0.6 -ki 200 50 -ko 100 15 -km 100.0 -v 3 -d 1.5
+
+[Mon Mar 20 16:27:11 2023]
+rule track:
+    input: intermediate/crop/7-7-21_21-BA2_2B/0/ROI_121.mp4
+    output: intermediate/track/7-7-21_21-BA2_2B/0/ROI_121.csv
+    jobid: 65
+    wildcards: video=7-7-21_21-BA2_2B, split=0, roi=121
+
+python3.7 scripts/track.py intermediate/crop/7-7-21_21-BA2_2B/0/ROI_121.mp4 intermediate/track/7-7-21_21-BA2_2B/0/ROI_121.csv -m 20 -c 10 -g 5 -tf 120 -b 0.7 -n 15.0 -it 4 -ot 8 -vt 0.6 -ki 200 50 -ko 100 15 -km 100.0 -v 3 -d 1.5
+
+[Mon Mar 20 16:27:11 2023]
+rule track:
+    input: intermediate/crop/7-7-21_21-BA2_2B/0/ROI_2.mp4
+    output: intermediate/track/7-7-21_21-BA2_2B/0/ROI_2.csv
+    jobid: 71
+    wildcards: video=7-7-21_21-BA2_2B, split=0, roi=2
+
+python3.7 scripts/track.py intermediate/crop/7-7-21_21-BA2_2B/0/ROI_2.mp4 intermediate/track/7-7-21_21-BA2_2B/0/ROI_2.csv -m 20 -c 10 -g 5 -tf 120 -b 0.7 -n 15.0 -it 4 -ot 8 -vt 0.6 -ki 200 50 -ko 100 15 -km 100.0 -v 3 -d 1.5
+
+[Mon Mar 20 16:27:11 2023]
+rule track:
+    input: intermediate/crop/7-7-21_21-BA2_2B/0/ROI_21.mp4
+    output: intermediate/track/7-7-21_21-BA2_2B/0/ROI_21.csv
+    jobid: 66
+    wildcards: video=7-7-21_21-BA2_2B, split=0, roi=21
+
+python3.7 scripts/track.py intermediate/crop/7-7-21_21-BA2_2B/0/ROI_21.mp4 intermediate/track/7-7-21_21-BA2_2B/0/ROI_21.csv -m 20 -c 10 -g 5 -tf 120 -b 0.7 -n 15.0 -it 4 -ot 8 -vt 0.6 -ki 200 50 -ko 100 15 -km 100.0 -v 3 -d 1.5
+
+[Mon Mar 20 16:27:11 2023]
+rule track:
+    input: intermediate/crop/7-7-21_21-BA2_2B/0/ROI_22.mp4
+    output: intermediate/track/7-7-21_21-BA2_2B/0/ROI_22.csv
+    jobid: 50
+    wildcards: video=7-7-21_21-BA2_2B, split=0, roi=22
+
+python3.7 scripts/track.py intermediate/crop/7-7-21_21-BA2_2B/0/ROI_22.mp4 intermediate/track/7-7-21_21-BA2_2B/0/ROI_22.csv -m 20 -c 10 -g 5 -tf 120 -b 0.7 -n 15.0 -it 4 -ot 8 -vt 0.6 -ki 200 50 -ko 100 15 -km 100.0 -v 3 -d 1.5
+
+[Mon Mar 20 16:27:11 2023]
+rule track:
+    input: intermediate/crop/7-7-21_21-BA2_2B/0/ROI_122.mp4
+    output: intermediate/track/7-7-21_21-BA2_2B/0/ROI_122.csv
+    jobid: 70
+    wildcards: video=7-7-21_21-BA2_2B, split=0, roi=122
+
+python3.7 scripts/track.py intermediate/crop/7-7-21_21-BA2_2B/0/ROI_122.mp4 intermediate/track/7-7-21_21-BA2_2B/0/ROI_122.csv -m 20 -c 10 -g 5 -tf 120 -b 0.7 -n 15.0 -it 4 -ot 8 -vt 0.6 -ki 200 50 -ko 100 15 -km 100.0 -v 3 -d 1.5
+
+[Mon Mar 20 16:27:11 2023]
+rule track:
+    input: intermediate/crop/7-7-21_21-BA2_2B/0/ROI_222.mp4
+    output: intermediate/track/7-7-21_21-BA2_2B/0/ROI_222.csv
+    jobid: 55
+    wildcards: video=7-7-21_21-BA2_2B, split=0, roi=222
+
+python3.7 scripts/track.py intermediate/crop/7-7-21_21-BA2_2B/0/ROI_222.mp4 intermediate/track/7-7-21_21-BA2_2B/0/ROI_222.csv -m 20 -c 10 -g 5 -tf 120 -b 0.7 -n 15.0 -it 4 -ot 8 -vt 0.6 -ki 200 50 -ko 100 15 -km 100.0 -v 3 -d 1.5
+
+[Mon Mar 20 16:27:11 2023]
+rule track:
+    input: intermediate/crop/7-7-21_21-BA2_2B/0/ROI_7.mp4
+    output: intermediate/track/7-7-21_21-BA2_2B/0/ROI_7.csv
+    jobid: 62
+    wildcards: video=7-7-21_21-BA2_2B, split=0, roi=7
+
+python3.7 scripts/track.py intermediate/crop/7-7-21_21-BA2_2B/0/ROI_7.mp4 intermediate/track/7-7-21_21-BA2_2B/0/ROI_7.csv -m 20 -c 10 -g 5 -tf 120 -b 0.7 -n 15.0 -it 4 -ot 8 -vt 0.6 -ki 200 50 -ko 100 15 -km 100.0 -v 3 -d 1.5
+Traceback (most recent call last):
+  File "scripts/track.py", line 1, in <module>
+    import ant_tracking
+  File "/mnt/biology/donaldson/hayley_daniela/ant_tracker_python/ant_tracker/scripts/ant_tracking.py", line 3, in <module>
+    import cv2
+  File "/usr/local/lib/python3.7/site-packages/cv2/__init__.py", line 89, in <module>
+    bootstrap()
+  File "/usr/local/lib/python3.7/site-packages/cv2/__init__.py", line 79, in bootstrap
+    import cv2
+ImportError: libpng12.so.0: cannot open shared object file: No such file or directory
+Traceback (most recent call last):
+  File "scripts/track.py", line 1, in <module>
+    import ant_tracking
+  File "/mnt/biology/donaldson/hayley_daniela/ant_tracker_python/ant_tracker/scripts/ant_tracking.py", line 3, in <module>
+    import cv2
+  File "/usr/local/lib/python3.7/site-packages/cv2/__init__.py", line 89, in <module>
+    bootstrap()
+  File "/usr/local/lib/python3.7/site-packages/cv2/__init__.py", line 79, in bootstrap
+    import cv2
+ImportError: libpng12.so.0: cannot open shared object file: No such file or directory
+Traceback (most recent call last):
+[Mon Mar 20 16:27:11 2023]
+Error in rule track:
+    jobid: 59
+    output: intermediate/track/7-7-21_21-BA2_2B/0/ROI_111.csv
+    shell:
+        python3.7 scripts/track.py intermediate/crop/7-7-21_21-BA2_2B/0/ROI_111.mp4 intermediate/track/7-7-21_21-BA2_2B/0/ROI_111.csv -m 20 -c 10 -g 5 -tf 120 -b 0.7 -n 15.0 -it 4 -ot 8 -vt 0.6 -ki 200 50 -ko 100 15 -km 100.0 -v 3 -d 1.5
+        (exited with non-zero exit code)
+
+  File "scripts/track.py", line 1, in <module>
+    import ant_tracking
+  File "/mnt/biology/donaldson/hayley_daniela/ant_tracker_python/ant_tracker/scripts/ant_tracking.py", line 3, in <module>
+    import cv2
+  File "/usr/local/lib/python3.7/site-packages/cv2/__init__.py", line 89, in <module>
+Job failed, going on with independent jobs.
+    bootstrap()
+  File "/usr/local/lib/python3.7/site-packages/cv2/__init__.py", line 79, in bootstrap
+    import cv2
+ImportError: libpng12.so.0: cannot open shared object file: No such file or directory
+Traceback (most recent call last):
+Traceback (most recent call last):
+  File "scripts/track.py", line 1, in <module>
+  File "scripts/track.py", line 1, in <module>
+    import ant_tracking
+    import ant_tracking
+  File "/mnt/biology/donaldson/hayley_daniela/ant_tracker_python/ant_tracker/scripts/ant_tracking.py", line 3, in <module>
+  File "/mnt/biology/donaldson/hayley_daniela/ant_tracker_python/ant_tracker/scripts/ant_tracking.py", line 3, in <module>
+    import cv2
+    import cv2
+  File "/usr/local/lib/python3.7/site-packages/cv2/__init__.py", line 89, in <module>
+  File "/usr/local/lib/python3.7/site-packages/cv2/__init__.py", line 89, in <module>
+    bootstrap()
+  File "/usr/local/lib/python3.7/site-packages/cv2/__init__.py", line 79, in bootstrap
+    bootstrap()
+  File "/usr/local/lib/python3.7/site-packages/cv2/__init__.py", line 79, in bootstrap
+    import cv2
+ImportError: libpng12.so.0: cannot open shared object file: No such file or directory
+    import cv2
+ImportError: libpng12.so.0: cannot open shared object file: No such file or directory
+[Mon Mar 20 16:27:11 2023]
+Error in rule track:
+    jobid: 65
+    output: intermediate/track/7-7-21_21-BA2_2B/0/ROI_121.csv
+    shell:
+        python3.7 scripts/track.py intermediate/crop/7-7-21_21-BA2_2B/0/ROI_121.mp4 intermediate/track/7-7-21_21-BA2_2B/0/ROI_121.csv -m 20 -c 10 -g 5 -tf 120 -b 0.7 -n 15.0 -it 4 -ot 8 -vt 0.6 -ki 200 50 -ko 100 15 -km 100.0 -v 3 -d 1.5
+        (exited with non-zero exit code)
+
+Job failed, going on with independent jobs.
+Traceback (most recent call last):
+  File "scripts/track.py", line 1, in <module>
+    import ant_tracking
+  File "/mnt/biology/donaldson/hayley_daniela/ant_tracker_python/ant_tracker/scripts/ant_tracking.py", line 3, in <module>
+    import cv2
+  File "/usr/local/lib/python3.7/site-packages/cv2/__init__.py", line 89, in <module>
+    bootstrap()
+  File "/usr/local/lib/python3.7/site-packages/cv2/__init__.py", line 79, in bootstrap
+    import cv2
+ImportError: libpng12.so.0: cannot open shared object file: No such file or directory
+[Mon Mar 20 16:27:11 2023]
+Error in rule track:
+    jobid: 52
+    output: intermediate/track/7-7-21_21-BA2_2B/0/ROI_10.csv
+    shell:
+        python3.7 scripts/track.py intermediate/crop/7-7-21_21-BA2_2B/0/ROI_10.mp4 intermediate/track/7-7-21_21-BA2_2B/0/ROI_10.csv -m 20 -c 10 -g 5 -tf 120 -b 0.7 -n 15.0 -it 4 -ot 8 -vt 0.6 -ki 200 50 -ko 100 15 -km 100.0 -v 3 -d 1.5
+        (exited with non-zero exit code)
+
+Job failed, going on with independent jobs.
+Traceback (most recent call last):
+  File "scripts/track.py", line 1, in <module>
+    import ant_tracking
+  File "/mnt/biology/donaldson/hayley_daniela/ant_tracker_python/ant_tracker/scripts/ant_tracking.py", line 3, in <module>
+    import cv2
+  File "/usr/local/lib/python3.7/site-packages/cv2/__init__.py", line 89, in <module>
+[Mon Mar 20 16:27:11 2023]
+    bootstrap()
+  File "/usr/local/lib/python3.7/site-packages/cv2/__init__.py", line 79, in bootstrap
+Error in rule track:
+    import cv2
+    jobid: 66
+ImportError: libpng12.so.0: cannot open shared object file: No such file or directory
+    output: intermediate/track/7-7-21_21-BA2_2B/0/ROI_21.csv
+    shell:
+        python3.7 scripts/track.py intermediate/crop/7-7-21_21-BA2_2B/0/ROI_21.mp4 intermediate/track/7-7-21_21-BA2_2B/0/ROI_21.csv -m 20 -c 10 -g 5 -tf 120 -b 0.7 -n 15.0 -it 4 -ot 8 -vt 0.6 -ki 200 50 -ko 100 15 -km 100.0 -v 3 -d 1.5
+        (exited with non-zero exit code)
+
+Job failed, going on with independent jobs.
+[Mon Mar 20 16:27:11 2023]
+Error in rule track:
+    jobid: 58
+    output: intermediate/track/7-7-21_21-BA2_2B/0/ROI_60.csv
+    shell:
+        python3.7 scripts/track.py intermediate/crop/7-7-21_21-BA2_2B/0/ROI_60.mp4 intermediate/track/7-7-21_21-BA2_2B/0/ROI_60.csv -m 20 -c 10 -g 5 -tf 120 -b 0.7 -n 15.0 -it 4 -ot 8 -vt 0.6 -ki 200 50 -ko 100 15 -km 100.0 -v 3 -d 1.5
+        (exited with non-zero exit code)
+
+Job failed, going on with independent jobs.
+[Mon Mar 20 16:27:11 2023]
+Error in rule track:
+    jobid: 50
+    output: intermediate/track/7-7-21_21-BA2_2B/0/ROI_22.csv
+    shell:
+        python3.7 scripts/track.py intermediate/crop/7-7-21_21-BA2_2B/0/ROI_22.mp4 intermediate/track/7-7-21_21-BA2_2B/0/ROI_22.csv -m 20 -c 10 -g 5 -tf 120 -b 0.7 -n 15.0 -it 4 -ot 8 -vt 0.6 -ki 200 50 -ko 100 15 -km 100.0 -v 3 -d 1.5
+        (exited with non-zero exit code)
+
+Job failed, going on with independent jobs.
+Traceback (most recent call last):
+  File "scripts/track.py", line 1, in <module>
+    import ant_tracking
+  File "/mnt/biology/donaldson/hayley_daniela/ant_tracker_python/ant_tracker/scripts/ant_tracking.py", line 3, in <module>
+    import cv2
+  File "/usr/local/lib/python3.7/site-packages/cv2/__init__.py", line 89, in <module>
+    bootstrap()
+  File "/usr/local/lib/python3.7/site-packages/cv2/__init__.py", line 79, in bootstrap
+    import cv2
+ImportError: libpng12.so.0: cannot open shared object file: No such file or directory
+[Mon Mar 20 16:27:11 2023]
+Error in rule track:
+    jobid: 70
+    output: intermediate/track/7-7-21_21-BA2_2B/0/ROI_122.csv
+    shell:
+        python3.7 scripts/track.py intermediate/crop/7-7-21_21-BA2_2B/0/ROI_122.mp4 intermediate/track/7-7-21_21-BA2_2B/0/ROI_122.csv -m 20 -c 10 -g 5 -tf 120 -b 0.7 -n 15.0 -it 4 -ot 8 -vt 0.6 -ki 200 50 -ko 100 15 -km 100.0 -v 3 -d 1.5
+        (exited with non-zero exit code)
+
+Job failed, going on with independent jobs.
+Traceback (most recent call last):
+  File "scripts/track.py", line 1, in <module>
+    import ant_tracking
+  File "/mnt/biology/donaldson/hayley_daniela/ant_tracker_python/ant_tracker/scripts/ant_tracking.py", line 3, in <module>
+    import cv2
+  File "/usr/local/lib/python3.7/site-packages/cv2/__init__.py", line 89, in <module>
+    bootstrap()
+  File "/usr/local/lib/python3.7/site-packages/cv2/__init__.py", line 79, in bootstrap
+    import cv2
+ImportError: libpng12.so.0: cannot open shared object file: No such file or directory
+Traceback (most recent call last):
+  File "scripts/track.py", line 1, in <module>
+    import ant_tracking
+  File "/mnt/biology/donaldson/hayley_daniela/ant_tracker_python/ant_tracker/scripts/ant_tracking.py", line 3, in <module>
+    import cv2
+  File "/usr/local/lib/python3.7/site-packages/cv2/__init__.py", line 89, in <module>
+    bootstrap()
+  File "/usr/local/lib/python3.7/site-packages/cv2/__init__.py", line 79, in bootstrap
+    import cv2
+ImportError: libpng12.so.0: cannot open shared object file: No such file or directory
+[Mon Mar 20 16:27:11 2023]
+Error in rule track:
+    jobid: 71
+    output: intermediate/track/7-7-21_21-BA2_2B/0/ROI_2.csv
+    shell:
+        python3.7 scripts/track.py intermediate/crop/7-7-21_21-BA2_2B/0/ROI_2.mp4 intermediate/track/7-7-21_21-BA2_2B/0/ROI_2.csv -m 20 -c 10 -g 5 -tf 120 -b 0.7 -n 15.0 -it 4 -ot 8 -vt 0.6 -ki 200 50 -ko 100 15 -km 100.0 -v 3 -d 1.5
+        (exited with non-zero exit code)
+
+Job failed, going on with independent jobs.
+[Mon Mar 20 16:27:11 2023]
+Error in rule track:
+    jobid: 55
+    output: intermediate/track/7-7-21_21-BA2_2B/0/ROI_222.csv
+    shell:
+        python3.7 scripts/track.py intermediate/crop/7-7-21_21-BA2_2B/0/ROI_222.mp4 intermediate/track/7-7-21_21-BA2_2B/0/ROI_222.csv -m 20 -c 10 -g 5 -tf 120 -b 0.7 -n 15.0 -it 4 -ot 8 -vt 0.6 -ki 200 50 -ko 100 15 -km 100.0 -v 3 -d 1.5
+        (exited with non-zero exit code)
+
+Job failed, going on with independent jobs.
+[Mon Mar 20 16:27:11 2023]
+Error in rule track:
+    jobid: 62
+    output: intermediate/track/7-7-21_21-BA2_2B/0/ROI_7.csv
+    shell:
+        python3.7 scripts/track.py intermediate/crop/7-7-21_21-BA2_2B/0/ROI_7.mp4 intermediate/track/7-7-21_21-BA2_2B/0/ROI_7.csv -m 20 -c 10 -g 5 -tf 120 -b 0.7 -n 15.0 -it 4 -ot 8 -vt 0.6 -ki 200 50 -ko 100 15 -km 100.0 -v 3 -d 1.5
+        (exited with non-zero exit code)
+
+Job failed, going on with independent jobs.
+
+[Mon Mar 20 16:27:12 2023]
+rule track:
+    input: intermediate/crop/7-7-21_21-BA2_2B/0/ROI_12.mp4
+    output: intermediate/track/7-7-21_21-BA2_2B/0/ROI_12.csv
+    jobid: 54
+    wildcards: video=7-7-21_21-BA2_2B, split=0, roi=12
+
+python3.7 scripts/track.py intermediate/crop/7-7-21_21-BA2_2B/0/ROI_12.mp4 intermediate/track/7-7-21_21-BA2_2B/0/ROI_12.csv -m 20 -c 10 -g 5 -tf 120 -b 0.7 -n 15.0 -it 4 -ot 8 -vt 0.6 -ki 200 50 -ko 100 15 -km 100.0 -v 3 -d 1.5
+Traceback (most recent call last):
+  File "scripts/track.py", line 1, in <module>
+    import ant_tracking
+  File "/mnt/biology/donaldson/hayley_daniela/ant_tracker_python/ant_tracker/scripts/ant_tracking.py", line 3, in <module>
+    import cv2
+  File "/usr/local/lib/python3.7/site-packages/cv2/__init__.py", line 89, in <module>
+    bootstrap()
+  File "/usr/local/lib/python3.7/site-packages/cv2/__init__.py", line 79, in bootstrap
+    import cv2
+ImportError: libpng12.so.0: cannot open shared object file: No such file or directory
+[Mon Mar 20 16:27:12 2023]
+Error in rule track:
+    jobid: 54
+    output: intermediate/track/7-7-21_21-BA2_2B/0/ROI_12.csv
+    shell:
+        python3.7 scripts/track.py intermediate/crop/7-7-21_21-BA2_2B/0/ROI_12.mp4 intermediate/track/7-7-21_21-BA2_2B/0/ROI_12.csv -m 20 -c 10 -g 5 -tf 120 -b 0.7 -n 15.0 -it 4 -ot 8 -vt 0.6 -ki 200 50 -ko 100 15 -km 100.0 -v 3 -d 1.5
+        (exited with non-zero exit code)
+
+Job failed, going on with independent jobs.
+Exiting because a job execution failed. Look above for error message
+Complete log: /mnt/biology/donaldson/hayley_daniela/ant_tracker_python/ant_tracker/.snakemake/log/2023-03-20T155536.076855.snakemake.log

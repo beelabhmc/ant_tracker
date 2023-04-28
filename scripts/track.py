@@ -7,6 +7,7 @@ import metadata
 import constants
 import cv2
 import copy
+import csv
 
 COLUMN_NAMES = [['filename', 'id', 'x0', 'y0', 't0', 'x1', 'y1', 't1',
                  'number_warning', 'broken_track']]
@@ -20,7 +21,7 @@ COLUMN_NAMES = [['filename', 'id', 'x0', 'y0', 't0', 'x1', 'y1', 't1',
 #         kalman_measurement_noise, min_visible_count, min_duration, debug):
 
 
-def track(vidPath):
+def track(vidPath, debug = False, video_path = None):
     cap = cv2.VideoCapture(vidPath)
                 
     detector = ant_tracking.Detectors()
@@ -36,17 +37,32 @@ def track(vidPath):
         None
     """
     tracker = ant_tracking.Tracker(50, 1000000, 10, 1)
-
+    
+    # colors of the trace pattern displayed in the debug video
+    track_colors = [(255, 0, 0), (0, 255, 0), (0, 0, 255), (255, 255, 0),
+                    (0, 255, 255), (255, 0, 255), (255, 127, 255),
+                    (127, 0, 255), (127, 0, 127)]
+    # array for debug video frames to be stored in
+    img_arr = []
+    # dimensions of the video
+    size = (0,0)
+    # font for writing text on video
+    font = cv2.FONT_HERSHEY_SIMPLEX
+    # scales the font down to 1/4 (generally a good size for the ROIs)
+    font_scale = .25
+    fps = 0
+    
     results = []
 
     frame_idx = 1
-    while(True):
+    
+    while (True):
         ret, frame = cap.read()
         
         if ret == True:
-
-            orig_frame = copy.copy(frame)
+            
             centers = detector.Detect(frame)
+            
             if (len(centers) > 0):
                 
                 tracker.Update(centers)
@@ -62,11 +78,47 @@ def track(vidPath):
                             
                             res = (x1, y1, ant_id, frame_idx)
                             results.append(res)
-                
+                            
+                            # overlays track paths to the debug video
+                            if debug:
+                                color = track_colors[ant_id%(len(track_colors))]
+                                cv2.line(frame, (int(x1), int(y1)), (int(x2), int(y2)),
+                                    color, 2)
+                                cv2.putText(frame, str(ant_id), (int(x1)+1, int(y1)), font, font_scale, color, 1)
             frame_idx += 1
+            
+            # writes to a debug video if specified
+            if debug:
+                # collects video information from the first frame of the video
+                if frame_idx == 1:
+                    height, width, _ = frame.shape
+                    size = (width,height)
+                    fps = cap.get(cv2.CAP_PROP_FPS)
+                
+                time = round(frame_idx/fps)
+                minutes = int(time / 60)
+                seconds = time % 60
+                text = f'{minutes}:{seconds}'
+                # labels the top right corner with the current time
+                cv2.putText(frame, str(text), (10,10), font, font_scale, (0, 0, 0), 1)
+                img_arr.append(frame)
+            
                             
         else:
             cap.release()
+        
+            if debug and video_path:
+                #creates the output debug video and writes it to the specified video_path
+                fourcc = cv2.VideoWriter_fourcc(*'DIVX')
+                #fourcc = 0x00000021
+                file_extension = '.avi'
+                #file_extension = '.mp4'
+                out = cv2.VideoWriter(video_path+file_extension,fourcc, 15, size)
+                for i in range(len(img_arr)):
+                    out.write(img_arr[i])
+                out.release()
+            else:
+                raise ValueError('debug is True but no output file path was provided.')
             return results
 
 
@@ -76,14 +128,17 @@ def formatResults(results, vidPath, min_duration):
     cap = cv2.VideoCapture(vidPath)  # TO DO: prob just get this from the original function
     fps = cap.get(cv2.CAP_PROP_FPS)
 
-    x = results[:,0]
-    y = results[:,1]
+    x = results[:,0] #all values in column 0, x1 (from all rows).
+    y = results[:,1] #all values in column 1, y1 (from all rows).
 
     df = np.array(results)
-    id_list = set(df[:, 2])
+    
+    id_list = set(df[:, 2]) #all values in column 2, ant_id (from all rows).
 
+    #idnum = one ant_id
     for idnum in id_list:
         antTrack = df[df[:, 2] == idnum]  # get tracks for that ant
+        print(antTrack)
         x0 = antTrack[0,0]
         x1 = antTrack[-1,0] 
         y0 = antTrack[0,1]
@@ -92,6 +147,7 @@ def formatResults(results, vidPath, min_duration):
         t0 = round(antTrack[0,3]/fps, 2)
         t1 = round(antTrack[-1,3]/fps, 2)
         
+        ## TODO: Add results information to CSV files below:
         if (x1-x0)**2 + (y1-y0)**2 < 100:
             # These ants appeared and disappeared close together
             for x, y, *_ in antTrack:
@@ -235,6 +291,7 @@ def main():
                             default=False,
                             help='Create a video player and display the tracking '
                                 'mask. Useful for debugging.')
+    
     args = arg_parser.parse_args()
 
     # track ants in each of the cropped videos
@@ -242,7 +299,7 @@ def main():
     print('Tracking ants in', args.source)
     
     print(args.source)
-    results = np.array(track(args.source))
+    results = np.array(track(args.source, args.debug, args.video_path))
     track_result, raw_results = formatResults(results, args.source, args.min_duration)
 
     # track_result, raw_results \

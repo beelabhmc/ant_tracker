@@ -11,6 +11,9 @@ from scipy.optimize import linear_sum_assignment
 # output_vidpath = folder + 'output/' + video + '_tracked.mp4'
 # output_filepath = folder + 'output/' + video + '_tracked.csv'
 
+#constants:
+debug = False
+
 class KalmanFilter(object):
     """Kalman Filter class keeps track of the estimated state of
     the system and the variance or uncertainty of the estimate.
@@ -117,7 +120,32 @@ class Detectors(object):
         """
         self.fgbg = cv2.createBackgroundSubtractorMOG2()
 
-    def Detect(self, frame):
+    # def detect_contours(self, frame):
+    #     hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
+        
+    #     ant_color = (23.4146, 40.5941, 39.6078)
+    #     lower_bound = (ant_color[0]-20, ant_color[1]-30, ant_color[2]-20)
+    #     upper_bound = (ant_color[0]+100, ant_color[1]+100, ant_color[2]+100)
+    #     mask = cv2.inRange(hsv, lower_bound, upper_bound)
+        
+    #     masked = cv2.bitwise_and(hsv, hsv, mask=mask)
+        
+    #     # imask = mask>0
+    #     # ant_brown = np.zeros_like(img, np.uint8)
+    #     # ant_brown[imask] = img[imask]
+        
+    #     # _, thresh = cv2.threshold(hsv, 135, 255, cv2.THRESH_BINARY)
+    #     # fgmask = cv2.createBackgroundSubtractorMOG2().apply(thresh)
+    #     edges = cv2.Canny(masked, 120, 190, 3)
+
+    #     ret, thresh = cv2.threshold(edges, 135, 255, 0)
+
+    #     contours, hierarchy = cv2.findContours(thresh, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+    
+    #     return contours
+
+
+    def Detect(self, frame, min_radius = 2, max_radius = 5):
         """Detect objects in video frame using following pipeline
             - Convert captured frame from BGR to GRAY
             - Perform Background Subtraction
@@ -131,16 +159,58 @@ class Detectors(object):
         Return:
             centers: vector of object centroids in a frame
         """
+        #ORIGINAL
+        # gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+        # _, thresh = cv2.threshold(gray, 135, 255, cv2.THRESH_BINARY)
+        # fgmask = cv2.createBackgroundSubtractorMOG2().apply(thresh)
+        # edges = cv2.Canny(fgmask, 120, 190, 3)
+
+        # ret, thresh = cv2.threshold(edges, 135, 255, 0)
+
+        # contours, hierarchy = cv2.findContours(thresh, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+        #frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
         
+        #TRY 1
+        
+        hsv = cv2.cvtColor(frame, cv2.COLOR_RGB2HSV)
+        
+        hue_channel = hsv[:,:,2]
+        hsv_img = np.zeros(hsv.shape)
+        hsv_img[:,:,2] = hue_channel
+        # if debug:
+        #     cv2.imwrite('hue_image', )
+        
+
+        
+        ant_color = (23.4146, 40.5941, 39.6078)
+        lower_bound = (ant_color[0]-20, ant_color[1]-30, ant_color[2]-30)
+        upper_bound = (ant_color[0]+100, ant_color[1]+100, ant_color[2]+100)
+        
+        mask = cv2.inRange(hsv, lower_bound, upper_bound)
+        
+        masked = cv2.bitwise_and(hsv, hsv, mask=mask)
+        
+        #TRY 2
+        #frame = cv2.GaussianBlur(frame, (1,1), 0)
         gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-        _, thresh = cv2.threshold(gray, 135, 255, cv2.THRESH_BINARY)
+        _, thresh = cv2.threshold(gray, 115, 255, cv2.THRESH_BINARY)
         fgmask = cv2.createBackgroundSubtractorMOG2().apply(thresh)
+        # edges = cv2.Canny(fgmask, 120, 190, 3)
+        
+        
+        
+        # cv2.imwrite('troubleshoot/testoutput_masked.jpg', masked)
+        # cv2.imwrite('troubleshoot/testoutput_frame.jpg', frame)
+        # cv2.imwrite('troubleshoot/testoutput_frame_hsv.jpg', hsv)
+        
+        # _, thresh = cv2.threshold(hsv, 135, 255, cv2.THRESH_BINARY)
+        # fgmask = cv2.createBackgroundSubtractorMOG2().apply(thresh)
         edges = cv2.Canny(fgmask, 120, 190, 3)
 
         ret, thresh = cv2.threshold(edges, 135, 255, 0)
 
         contours, hierarchy = cv2.findContours(thresh, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
-    
+
         centers = []  # vector of object centroids in a frame
 
         for cnt in contours:
@@ -148,15 +218,20 @@ class Detectors(object):
                 (x, y), radius = cv2.minEnclosingCircle(cnt)
                 centroid = (int(x), int(y))
                 radius = int(radius)
-                min_radius = 1
-                max_radius = 5
+                # control the max and minimum pixels for an object to be detected
+                # min_radius = 1
+                # max_radius = 5
                 if (radius >= min_radius and radius <= max_radius):
+                    # circles the object in green
                     cv2.circle(frame, centroid, radius, (0, 255, 0), 2)
                     b = np.array([[x], [y]])
                     centers.append(np.round(b))
 
             except ZeroDivisionError:
                 pass
+            
+        # cv2.imwrite('troubleshoot/testoutput_masked2.jpg', masked)
+        # cv2.imwrite('troubleshoot/testoutput_frame_hsv2.jpg', hsv)
         
         return centers
 
@@ -221,7 +296,8 @@ class Tracker(object):
             - Start new tracks
             - Update KalmanFilter state, lastResults and tracks trace
         Args:
-            detections: detected centroids of object to be tracked
+            detections: detected centroids of object to be tracked. the
+                centers array outputted from Detect()
         Return:
             None
         """

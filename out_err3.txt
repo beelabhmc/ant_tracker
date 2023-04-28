@@ -1,0 +1,822 @@
+Building DAG of jobs...
+Updating job 6.
+intermediate/crop/7-7-21_21-BA2_2B/0/ROI_{i}.mp4
+['4', '40', '31', '32', '11', '221', '50', '1', '22', '112', '10', '8', '12', '222', '41', '5', '60', '111', '20', '0', '7', '211', '30', '121', '21', '212', '3', '6', '122', '2', '42']
+Updating job 7.
+Using shell: /usr/bin/bash
+Provided cores: 32
+Rules claiming more threads will be scaled down.
+Job counts:
+        count   jobs
+        1       aggregate_rois
+        31      aggregate_splits
+        1       edge_from_tracks
+        1       sort_aggregated_rois
+        31      track
+        65
+
+[Thu Mar 23 22:57:43 2023]
+rule track:
+    input: intermediate/crop/7-7-21_21-BA2_2B/0/ROI_22.mp4
+    output: intermediate/track/7-7-21_21-BA2_2B/0/ROI_22.csv
+    jobid: 49
+    wildcards: video=7-7-21_21-BA2_2B, split=0, roi=22
+
+python scripts/track.py intermediate/crop/7-7-21_21-BA2_2B/0/ROI_22.mp4 intermediate/track/7-7-21_21-BA2_2B/0/ROI_22.csv -m 20 -c 10 -g 5 -tf 120 -b 0.7 -n 15.0 -it 4 -ot 8 -vt 0.6 -ki 200 50 -ko 100 15 -km 100.0 -v 3 -d 1.5
+
+[Thu Mar 23 22:57:43 2023]
+rule track:
+    input: intermediate/crop/7-7-21_21-BA2_2B/0/ROI_3.mp4
+    output: intermediate/track/7-7-21_21-BA2_2B/0/ROI_3.csv
+    jobid: 67
+    wildcards: video=7-7-21_21-BA2_2B, split=0, roi=3
+
+python scripts/track.py intermediate/crop/7-7-21_21-BA2_2B/0/ROI_3.mp4 intermediate/track/7-7-21_21-BA2_2B/0/ROI_3.csv -m 20 -c 10 -g 5 -tf 120 -b 0.7 -n 15.0 -it 4 -ot 8 -vt 0.6 -ki 200 50 -ko 100 15 -km 100.0 -v 3 -d 1.5
+
+[Thu Mar 23 22:57:43 2023]
+rule track:
+    input: intermediate/crop/7-7-21_21-BA2_2B/0/ROI_222.mp4
+    output: intermediate/track/7-7-21_21-BA2_2B/0/ROI_222.csv
+    jobid: 54
+    wildcards: video=7-7-21_21-BA2_2B, split=0, roi=222
+
+python scripts/track.py intermediate/crop/7-7-21_21-BA2_2B/0/ROI_222.mp4 intermediate/track/7-7-21_21-BA2_2B/0/ROI_222.csv -m 20 -c 10 -g 5 -tf 120 -b 0.7 -n 15.0 -it 4 -ot 8 -vt 0.6 -ki 200 50 -ko 100 15 -km 100.0 -v 3 -d 1.5
+
+[Thu Mar 23 22:57:43 2023]
+rule track:
+    input: intermediate/crop/7-7-21_21-BA2_2B/0/ROI_32.mp4
+    output: intermediate/track/7-7-21_21-BA2_2B/0/ROI_32.csv
+    jobid: 44
+    wildcards: video=7-7-21_21-BA2_2B, split=0, roi=32
+
+python scripts/track.py intermediate/crop/7-7-21_21-BA2_2B/0/ROI_32.mp4 intermediate/track/7-7-21_21-BA2_2B/0/ROI_32.csv -m 20 -c 10 -g 5 -tf 120 -b 0.7 -n 15.0 -it 4 -ot 8 -vt 0.6 -ki 200 50 -ko 100 15 -km 100.0 -v 3 -d 1.5
+
+[Thu Mar 23 22:57:43 2023]
+rule track:
+    input: intermediate/crop/7-7-21_21-BA2_2B/0/ROI_121.mp4
+    output: intermediate/track/7-7-21_21-BA2_2B/0/ROI_121.csv
+    jobid: 64
+    wildcards: video=7-7-21_21-BA2_2B, split=0, roi=121
+
+python scripts/track.py intermediate/crop/7-7-21_21-BA2_2B/0/ROI_121.mp4 intermediate/track/7-7-21_21-BA2_2B/0/ROI_121.csv -m 20 -c 10 -g 5 -tf 120 -b 0.7 -n 15.0 -it 4 -ot 8 -vt 0.6 -ki 200 50 -ko 100 15 -km 100.0 -v 3 -d 1.5
+
+[Thu Mar 23 22:57:43 2023]
+rule track:
+    input: intermediate/crop/7-7-21_21-BA2_2B/0/ROI_211.mp4
+    output: intermediate/track/7-7-21_21-BA2_2B/0/ROI_211.csv
+    jobid: 62
+    wildcards: video=7-7-21_21-BA2_2B, split=0, roi=211
+
+python scripts/track.py intermediate/crop/7-7-21_21-BA2_2B/0/ROI_211.mp4 intermediate/track/7-7-21_21-BA2_2B/0/ROI_211.csv -m 20 -c 10 -g 5 -tf 120 -b 0.7 -n 15.0 -it 4 -ot 8 -vt 0.6 -ki 200 50 -ko 100 15 -km 100.0 -v 3 -d 1.5
+
+[Thu Mar 23 22:57:43 2023]
+rule track:
+    input: intermediate/crop/7-7-21_21-BA2_2B/0/ROI_5.mp4
+    output: intermediate/track/7-7-21_21-BA2_2B/0/ROI_5.csv
+    jobid: 56
+    wildcards: video=7-7-21_21-BA2_2B, split=0, roi=5
+
+python scripts/track.py intermediate/crop/7-7-21_21-BA2_2B/0/ROI_5.mp4 intermediate/track/7-7-21_21-BA2_2B/0/ROI_5.csv -m 20 -c 10 -g 5 -tf 120 -b 0.7 -n 15.0 -it 4 -ot 8 -vt 0.6 -ki 200 50 -ko 100 15 -km 100.0 -v 3 -d 1.5
+
+[Thu Mar 23 22:57:43 2023]
+rule track:
+    input: intermediate/crop/7-7-21_21-BA2_2B/0/ROI_21.mp4
+    output: intermediate/track/7-7-21_21-BA2_2B/0/ROI_21.csv
+    jobid: 65
+    wildcards: video=7-7-21_21-BA2_2B, split=0, roi=21
+
+python scripts/track.py intermediate/crop/7-7-21_21-BA2_2B/0/ROI_21.mp4 intermediate/track/7-7-21_21-BA2_2B/0/ROI_21.csv -m 20 -c 10 -g 5 -tf 120 -b 0.7 -n 15.0 -it 4 -ot 8 -vt 0.6 -ki 200 50 -ko 100 15 -km 100.0 -v 3 -d 1.5
+
+[Thu Mar 23 22:57:43 2023]
+rule track:
+    input: intermediate/crop/7-7-21_21-BA2_2B/0/ROI_42.mp4
+    output: intermediate/track/7-7-21_21-BA2_2B/0/ROI_42.csv
+    jobid: 71
+    wildcards: video=7-7-21_21-BA2_2B, split=0, roi=42
+
+python scripts/track.py intermediate/crop/7-7-21_21-BA2_2B/0/ROI_42.mp4 intermediate/track/7-7-21_21-BA2_2B/0/ROI_42.csv -m 20 -c 10 -g 5 -tf 120 -b 0.7 -n 15.0 -it 4 -ot 8 -vt 0.6 -ki 200 50 -ko 100 15 -km 100.0 -v 3 -d 1.5
+
+[Thu Mar 23 22:57:43 2023]
+rule track:
+    input: intermediate/crop/7-7-21_21-BA2_2B/0/ROI_221.mp4
+    output: intermediate/track/7-7-21_21-BA2_2B/0/ROI_221.csv
+    jobid: 46
+    wildcards: video=7-7-21_21-BA2_2B, split=0, roi=221
+
+python scripts/track.py intermediate/crop/7-7-21_21-BA2_2B/0/ROI_221.mp4 intermediate/track/7-7-21_21-BA2_2B/0/ROI_221.csv -m 20 -c 10 -g 5 -tf 120 -b 0.7 -n 15.0 -it 4 -ot 8 -vt 0.6 -ki 200 50 -ko 100 15 -km 100.0 -v 3 -d 1.5
+
+[Thu Mar 23 22:57:44 2023]
+rule track:
+    input: intermediate/crop/7-7-21_21-BA2_2B/0/ROI_111.mp4
+    output: intermediate/track/7-7-21_21-BA2_2B/0/ROI_111.csv
+    jobid: 58
+    wildcards: video=7-7-21_21-BA2_2B, split=0, roi=111
+
+python scripts/track.py intermediate/crop/7-7-21_21-BA2_2B/0/ROI_111.mp4 intermediate/track/7-7-21_21-BA2_2B/0/ROI_111.csv -m 20 -c 10 -g 5 -tf 120 -b 0.7 -n 15.0 -it 4 -ot 8 -vt 0.6 -ki 200 50 -ko 100 15 -km 100.0 -v 3 -d 1.5
+
+[Thu Mar 23 22:57:44 2023]
+rule track:
+    input: intermediate/crop/7-7-21_21-BA2_2B/0/ROI_212.mp4
+    output: intermediate/track/7-7-21_21-BA2_2B/0/ROI_212.csv
+    jobid: 66
+    wildcards: video=7-7-21_21-BA2_2B, split=0, roi=212
+
+python scripts/track.py intermediate/crop/7-7-21_21-BA2_2B/0/ROI_212.mp4 intermediate/track/7-7-21_21-BA2_2B/0/ROI_212.csv -m 20 -c 10 -g 5 -tf 120 -b 0.7 -n 15.0 -it 4 -ot 8 -vt 0.6 -ki 200 50 -ko 100 15 -km 100.0 -v 3 -d 1.5
+
+[Thu Mar 23 22:57:44 2023]
+rule track:
+    input: intermediate/crop/7-7-21_21-BA2_2B/0/ROI_2.mp4
+    output: intermediate/track/7-7-21_21-BA2_2B/0/ROI_2.csv
+    jobid: 70
+    wildcards: video=7-7-21_21-BA2_2B, split=0, roi=2
+
+python scripts/track.py intermediate/crop/7-7-21_21-BA2_2B/0/ROI_2.mp4 intermediate/track/7-7-21_21-BA2_2B/0/ROI_2.csv -m 20 -c 10 -g 5 -tf 120 -b 0.7 -n 15.0 -it 4 -ot 8 -vt 0.6 -ki 200 50 -ko 100 15 -km 100.0 -v 3 -d 1.5
+
+[Thu Mar 23 22:57:44 2023]
+rule track:
+    input: intermediate/crop/7-7-21_21-BA2_2B/0/ROI_122.mp4
+    output: intermediate/track/7-7-21_21-BA2_2B/0/ROI_122.csv
+    jobid: 69
+    wildcards: video=7-7-21_21-BA2_2B, split=0, roi=122
+
+python scripts/track.py intermediate/crop/7-7-21_21-BA2_2B/0/ROI_122.mp4 intermediate/track/7-7-21_21-BA2_2B/0/ROI_122.csv -m 20 -c 10 -g 5 -tf 120 -b 0.7 -n 15.0 -it 4 -ot 8 -vt 0.6 -ki 200 50 -ko 100 15 -km 100.0 -v 3 -d 1.5
+
+[Thu Mar 23 22:57:44 2023]
+rule track:
+    input: intermediate/crop/7-7-21_21-BA2_2B/0/ROI_12.mp4
+    output: intermediate/track/7-7-21_21-BA2_2B/0/ROI_12.csv
+    jobid: 53
+    wildcards: video=7-7-21_21-BA2_2B, split=0, roi=12
+
+python scripts/track.py intermediate/crop/7-7-21_21-BA2_2B/0/ROI_12.mp4 intermediate/track/7-7-21_21-BA2_2B/0/ROI_12.csv -m 20 -c 10 -g 5 -tf 120 -b 0.7 -n 15.0 -it 4 -ot 8 -vt 0.6 -ki 200 50 -ko 100 15 -km 100.0 -v 3 -d 1.5
+
+[Thu Mar 23 22:57:44 2023]
+rule track:
+    input: intermediate/crop/7-7-21_21-BA2_2B/0/ROI_60.mp4
+    output: intermediate/track/7-7-21_21-BA2_2B/0/ROI_60.csv
+    jobid: 57
+    wildcards: video=7-7-21_21-BA2_2B, split=0, roi=60
+
+python scripts/track.py intermediate/crop/7-7-21_21-BA2_2B/0/ROI_60.mp4 intermediate/track/7-7-21_21-BA2_2B/0/ROI_60.csv -m 20 -c 10 -g 5 -tf 120 -b 0.7 -n 15.0 -it 4 -ot 8 -vt 0.6 -ki 200 50 -ko 100 15 -km 100.0 -v 3 -d 1.5
+
+[Thu Mar 23 22:57:44 2023]
+rule track:
+    input: intermediate/crop/7-7-21_21-BA2_2B/0/ROI_50.mp4
+    output: intermediate/track/7-7-21_21-BA2_2B/0/ROI_50.csv
+    jobid: 47
+    wildcards: video=7-7-21_21-BA2_2B, split=0, roi=50
+
+python scripts/track.py intermediate/crop/7-7-21_21-BA2_2B/0/ROI_50.mp4 intermediate/track/7-7-21_21-BA2_2B/0/ROI_50.csv -m 20 -c 10 -g 5 -tf 120 -b 0.7 -n 15.0 -it 4 -ot 8 -vt 0.6 -ki 200 50 -ko 100 15 -km 100.0 -v 3 -d 1.5
+
+[Thu Mar 23 22:57:44 2023]
+rule track:
+    input: intermediate/crop/7-7-21_21-BA2_2B/0/ROI_31.mp4
+    output: intermediate/track/7-7-21_21-BA2_2B/0/ROI_31.csv
+    jobid: 43
+    wildcards: video=7-7-21_21-BA2_2B, split=0, roi=31
+
+python scripts/track.py intermediate/crop/7-7-21_21-BA2_2B/0/ROI_31.mp4 intermediate/track/7-7-21_21-BA2_2B/0/ROI_31.csv -m 20 -c 10 -g 5 -tf 120 -b 0.7 -n 15.0 -it 4 -ot 8 -vt 0.6 -ki 200 50 -ko 100 15 -km 100.0 -v 3 -d 1.5
+
+[Thu Mar 23 22:57:44 2023]
+rule track:
+    input: intermediate/crop/7-7-21_21-BA2_2B/0/ROI_112.mp4
+    output: intermediate/track/7-7-21_21-BA2_2B/0/ROI_112.csv
+    jobid: 50
+    wildcards: video=7-7-21_21-BA2_2B, split=0, roi=112
+
+python scripts/track.py intermediate/crop/7-7-21_21-BA2_2B/0/ROI_112.mp4 intermediate/track/7-7-21_21-BA2_2B/0/ROI_112.csv -m 20 -c 10 -g 5 -tf 120 -b 0.7 -n 15.0 -it 4 -ot 8 -vt 0.6 -ki 200 50 -ko 100 15 -km 100.0 -v 3 -d 1.5
+
+[Thu Mar 23 22:57:44 2023]
+rule track:
+    input: intermediate/crop/7-7-21_21-BA2_2B/0/ROI_8.mp4
+    output: intermediate/track/7-7-21_21-BA2_2B/0/ROI_8.csv
+    jobid: 52
+    wildcards: video=7-7-21_21-BA2_2B, split=0, roi=8
+
+python scripts/track.py intermediate/crop/7-7-21_21-BA2_2B/0/ROI_8.mp4 intermediate/track/7-7-21_21-BA2_2B/0/ROI_8.csv -m 20 -c 10 -g 5 -tf 120 -b 0.7 -n 15.0 -it 4 -ot 8 -vt 0.6 -ki 200 50 -ko 100 15 -km 100.0 -v 3 -d 1.5
+
+[Thu Mar 23 22:57:45 2023]
+rule track:
+    input: intermediate/crop/7-7-21_21-BA2_2B/0/ROI_11.mp4
+    output: intermediate/track/7-7-21_21-BA2_2B/0/ROI_11.csv
+    jobid: 45
+    wildcards: video=7-7-21_21-BA2_2B, split=0, roi=11
+
+python scripts/track.py intermediate/crop/7-7-21_21-BA2_2B/0/ROI_11.mp4 intermediate/track/7-7-21_21-BA2_2B/0/ROI_11.csv -m 20 -c 10 -g 5 -tf 120 -b 0.7 -n 15.0 -it 4 -ot 8 -vt 0.6 -ki 200 50 -ko 100 15 -km 100.0 -v 3 -d 1.5
+
+[Thu Mar 23 22:57:45 2023]
+rule track:
+    input: intermediate/crop/7-7-21_21-BA2_2B/0/ROI_41.mp4
+    output: intermediate/track/7-7-21_21-BA2_2B/0/ROI_41.csv
+    jobid: 55
+    wildcards: video=7-7-21_21-BA2_2B, split=0, roi=41
+
+python scripts/track.py intermediate/crop/7-7-21_21-BA2_2B/0/ROI_41.mp4 intermediate/track/7-7-21_21-BA2_2B/0/ROI_41.csv -m 20 -c 10 -g 5 -tf 120 -b 0.7 -n 15.0 -it 4 -ot 8 -vt 0.6 -ki 200 50 -ko 100 15 -km 100.0 -v 3 -d 1.5
+
+[Thu Mar 23 22:57:45 2023]
+rule track:
+    input: intermediate/crop/7-7-21_21-BA2_2B/0/ROI_0.mp4
+    output: intermediate/track/7-7-21_21-BA2_2B/0/ROI_0.csv
+    jobid: 60
+    wildcards: video=7-7-21_21-BA2_2B, split=0, roi=0
+
+python scripts/track.py intermediate/crop/7-7-21_21-BA2_2B/0/ROI_0.mp4 intermediate/track/7-7-21_21-BA2_2B/0/ROI_0.csv -m 20 -c 10 -g 5 -tf 120 -b 0.7 -n 15.0 -it 4 -ot 8 -vt 0.6 -ki 200 50 -ko 100 15 -km 100.0 -v 3 -d 1.5
+
+[Thu Mar 23 22:57:45 2023]
+rule track:
+    input: intermediate/crop/7-7-21_21-BA2_2B/0/ROI_7.mp4
+    output: intermediate/track/7-7-21_21-BA2_2B/0/ROI_7.csv
+    jobid: 61
+    wildcards: video=7-7-21_21-BA2_2B, split=0, roi=7
+
+python scripts/track.py intermediate/crop/7-7-21_21-BA2_2B/0/ROI_7.mp4 intermediate/track/7-7-21_21-BA2_2B/0/ROI_7.csv -m 20 -c 10 -g 5 -tf 120 -b 0.7 -n 15.0 -it 4 -ot 8 -vt 0.6 -ki 200 50 -ko 100 15 -km 100.0 -v 3 -d 1.5
+
+[Thu Mar 23 22:57:45 2023]
+rule track:
+    input: intermediate/crop/7-7-21_21-BA2_2B/0/ROI_10.mp4
+    output: intermediate/track/7-7-21_21-BA2_2B/0/ROI_10.csv
+    jobid: 51
+    wildcards: video=7-7-21_21-BA2_2B, split=0, roi=10
+
+python scripts/track.py intermediate/crop/7-7-21_21-BA2_2B/0/ROI_10.mp4 intermediate/track/7-7-21_21-BA2_2B/0/ROI_10.csv -m 20 -c 10 -g 5 -tf 120 -b 0.7 -n 15.0 -it 4 -ot 8 -vt 0.6 -ki 200 50 -ko 100 15 -km 100.0 -v 3 -d 1.5
+
+[Thu Mar 23 22:57:45 2023]
+rule track:
+    input: intermediate/crop/7-7-21_21-BA2_2B/0/ROI_30.mp4
+    output: intermediate/track/7-7-21_21-BA2_2B/0/ROI_30.csv
+    jobid: 63
+    wildcards: video=7-7-21_21-BA2_2B, split=0, roi=30
+
+python scripts/track.py intermediate/crop/7-7-21_21-BA2_2B/0/ROI_30.mp4 intermediate/track/7-7-21_21-BA2_2B/0/ROI_30.csv -m 20 -c 10 -g 5 -tf 120 -b 0.7 -n 15.0 -it 4 -ot 8 -vt 0.6 -ki 200 50 -ko 100 15 -km 100.0 -v 3 -d 1.5
+
+[Thu Mar 23 22:57:45 2023]
+rule track:
+    input: intermediate/crop/7-7-21_21-BA2_2B/0/ROI_1.mp4
+    output: intermediate/track/7-7-21_21-BA2_2B/0/ROI_1.csv
+    jobid: 48
+    wildcards: video=7-7-21_21-BA2_2B, split=0, roi=1
+
+python scripts/track.py intermediate/crop/7-7-21_21-BA2_2B/0/ROI_1.mp4 intermediate/track/7-7-21_21-BA2_2B/0/ROI_1.csv -m 20 -c 10 -g 5 -tf 120 -b 0.7 -n 15.0 -it 4 -ot 8 -vt 0.6 -ki 200 50 -ko 100 15 -km 100.0 -v 3 -d 1.5
+
+[Thu Mar 23 22:57:45 2023]
+rule track:
+    input: intermediate/crop/7-7-21_21-BA2_2B/0/ROI_4.mp4
+    output: intermediate/track/7-7-21_21-BA2_2B/0/ROI_4.csv
+    jobid: 41
+    wildcards: video=7-7-21_21-BA2_2B, split=0, roi=4
+
+python scripts/track.py intermediate/crop/7-7-21_21-BA2_2B/0/ROI_4.mp4 intermediate/track/7-7-21_21-BA2_2B/0/ROI_4.csv -m 20 -c 10 -g 5 -tf 120 -b 0.7 -n 15.0 -it 4 -ot 8 -vt 0.6 -ki 200 50 -ko 100 15 -km 100.0 -v 3 -d 1.5
+
+[Thu Mar 23 22:57:45 2023]
+rule track:
+    input: intermediate/crop/7-7-21_21-BA2_2B/0/ROI_20.mp4
+    output: intermediate/track/7-7-21_21-BA2_2B/0/ROI_20.csv
+    jobid: 59
+    wildcards: video=7-7-21_21-BA2_2B, split=0, roi=20
+
+python scripts/track.py intermediate/crop/7-7-21_21-BA2_2B/0/ROI_20.mp4 intermediate/track/7-7-21_21-BA2_2B/0/ROI_20.csv -m 20 -c 10 -g 5 -tf 120 -b 0.7 -n 15.0 -it 4 -ot 8 -vt 0.6 -ki 200 50 -ko 100 15 -km 100.0 -v 3 -d 1.5
+
+[Thu Mar 23 22:57:45 2023]
+rule track:
+    input: intermediate/crop/7-7-21_21-BA2_2B/0/ROI_6.mp4
+    output: intermediate/track/7-7-21_21-BA2_2B/0/ROI_6.csv
+    jobid: 68
+    wildcards: video=7-7-21_21-BA2_2B, split=0, roi=6
+
+python scripts/track.py intermediate/crop/7-7-21_21-BA2_2B/0/ROI_6.mp4 intermediate/track/7-7-21_21-BA2_2B/0/ROI_6.csv -m 20 -c 10 -g 5 -tf 120 -b 0.7 -n 15.0 -it 4 -ot 8 -vt 0.6 -ki 200 50 -ko 100 15 -km 100.0 -v 3 -d 1.5
+
+[Thu Mar 23 22:57:46 2023]
+rule track:
+    input: intermediate/crop/7-7-21_21-BA2_2B/0/ROI_40.mp4
+    output: intermediate/track/7-7-21_21-BA2_2B/0/ROI_40.csv
+    jobid: 42
+    wildcards: video=7-7-21_21-BA2_2B, split=0, roi=40
+
+python scripts/track.py intermediate/crop/7-7-21_21-BA2_2B/0/ROI_40.mp4 intermediate/track/7-7-21_21-BA2_2B/0/ROI_40.csv -m 20 -c 10 -g 5 -tf 120 -b 0.7 -n 15.0 -it 4 -ot 8 -vt 0.6 -ki 200 50 -ko 100 15 -km 100.0 -v 3 -d 1.5
+Tracking ants in intermediate/crop/7-7-21_21-BA2_2B/0/ROI_211.mp4
+intermediate/crop/7-7-21_21-BA2_2B/0/ROI_211.mp4
+Tracking ants in intermediate/crop/7-7-21_21-BA2_2B/0/ROI_222.mp4
+Tracking ants in intermediate/crop/7-7-21_21-BA2_2B/0/ROI_121.mp4
+intermediate/crop/7-7-21_21-BA2_2B/0/ROI_222.mp4
+intermediate/crop/7-7-21_21-BA2_2B/0/ROI_121.mp4
+Tracking ants in intermediate/crop/7-7-21_21-BA2_2B/0/ROI_42.mp4
+intermediate/crop/7-7-21_21-BA2_2B/0/ROI_42.mp4
+Tracking ants in intermediate/crop/7-7-21_21-BA2_2B/0/ROI_221.mp4
+intermediate/crop/7-7-21_21-BA2_2B/0/ROI_221.mp4
+Tracking ants in intermediate/crop/7-7-21_21-BA2_2B/0/ROI_21.mp4
+Tracking ants in intermediate/crop/7-7-21_21-BA2_2B/0/ROI_22.mp4
+intermediate/crop/7-7-21_21-BA2_2B/0/ROI_21.mp4
+intermediate/crop/7-7-21_21-BA2_2B/0/ROI_22.mp4
+Tracking ants in intermediate/crop/7-7-21_21-BA2_2B/0/ROI_212.mp4
+intermediate/crop/7-7-21_21-BA2_2B/0/ROI_212.mp4
+Tracking ants in intermediate/crop/7-7-21_21-BA2_2B/0/ROI_3.mp4
+Tracking ants in intermediate/crop/7-7-21_21-BA2_2B/0/ROI_5.mp4
+intermediate/crop/7-7-21_21-BA2_2B/0/ROI_3.mp4
+intermediate/crop/7-7-21_21-BA2_2B/0/ROI_5.mp4
+Tracking ants in intermediate/crop/7-7-21_21-BA2_2B/0/ROI_32.mp4
+intermediate/crop/7-7-21_21-BA2_2B/0/ROI_32.mp4
+Tracking ants in intermediate/crop/7-7-21_21-BA2_2B/0/ROI_12.mp4
+intermediate/crop/7-7-21_21-BA2_2B/0/ROI_12.mp4
+Tracking ants in intermediate/crop/7-7-21_21-BA2_2B/0/ROI_60.mp4
+intermediate/crop/7-7-21_21-BA2_2B/0/ROI_60.mp4
+Tracking ants in intermediate/crop/7-7-21_21-BA2_2B/0/ROI_122.mp4
+intermediate/crop/7-7-21_21-BA2_2B/0/ROI_122.mp4
+Tracking ants in intermediate/crop/7-7-21_21-BA2_2B/0/ROI_8.mp4
+intermediate/crop/7-7-21_21-BA2_2B/0/ROI_8.mp4
+Tracking ants in intermediate/crop/7-7-21_21-BA2_2B/0/ROI_112.mp4
+intermediate/crop/7-7-21_21-BA2_2B/0/ROI_112.mp4
+Tracking ants in intermediate/crop/7-7-21_21-BA2_2B/0/ROI_2.mp4
+intermediate/crop/7-7-21_21-BA2_2B/0/ROI_2.mp4
+Tracking ants in intermediate/crop/7-7-21_21-BA2_2B/0/ROI_31.mp4
+intermediate/crop/7-7-21_21-BA2_2B/0/ROI_31.mp4
+Tracking ants in intermediate/crop/7-7-21_21-BA2_2B/0/ROI_50.mp4
+intermediate/crop/7-7-21_21-BA2_2B/0/ROI_50.mp4
+Tracking ants in intermediate/crop/7-7-21_21-BA2_2B/0/ROI_11.mp4
+intermediate/crop/7-7-21_21-BA2_2B/0/ROI_11.mp4
+Tracking ants in intermediate/crop/7-7-21_21-BA2_2B/0/ROI_30.mp4
+intermediate/crop/7-7-21_21-BA2_2B/0/ROI_30.mp4
+Tracking ants in intermediate/crop/7-7-21_21-BA2_2B/0/ROI_111.mp4
+intermediate/crop/7-7-21_21-BA2_2B/0/ROI_111.mp4
+Tracking ants in intermediate/crop/7-7-21_21-BA2_2B/0/ROI_7.mp4
+intermediate/crop/7-7-21_21-BA2_2B/0/ROI_7.mp4
+Tracking ants in intermediate/crop/7-7-21_21-BA2_2B/0/ROI_4.mp4
+intermediate/crop/7-7-21_21-BA2_2B/0/ROI_4.mp4
+Tracking ants in intermediate/crop/7-7-21_21-BA2_2B/0/ROI_20.mp4
+intermediate/crop/7-7-21_21-BA2_2B/0/ROI_20.mp4
+Tracking ants in intermediate/crop/7-7-21_21-BA2_2B/0/ROI_41.mp4
+intermediate/crop/7-7-21_21-BA2_2B/0/ROI_41.mp4
+Tracking ants in intermediate/crop/7-7-21_21-BA2_2B/0/ROI_0.mp4
+intermediate/crop/7-7-21_21-BA2_2B/0/ROI_0.mp4
+Tracking ants in intermediate/crop/7-7-21_21-BA2_2B/0/ROI_1.mp4
+intermediate/crop/7-7-21_21-BA2_2B/0/ROI_1.mp4
+Tracking ants in intermediate/crop/7-7-21_21-BA2_2B/0/ROI_10.mp4
+intermediate/crop/7-7-21_21-BA2_2B/0/ROI_10.mp4
+Tracking ants in intermediate/crop/7-7-21_21-BA2_2B/0/ROI_40.mp4
+intermediate/crop/7-7-21_21-BA2_2B/0/ROI_40.mp4
+Tracking ants in intermediate/crop/7-7-21_21-BA2_2B/0/ROI_6.mp4
+intermediate/crop/7-7-21_21-BA2_2B/0/ROI_6.mp4
+Traceback (most recent call last):
+  File "/mnt/biology/donaldson/hayley_daniela/ant_tracker_python/ant_tracker/scripts/track.py", line 268, in <module>
+    main()
+  File "/mnt/biology/donaldson/hayley_daniela/ant_tracker_python/ant_tracker/scripts/track.py", line 246, in main
+    track_result, raw_results = formatResults(results, args.source, args.min_duration)
+  File "/mnt/biology/donaldson/hayley_daniela/ant_tracker_python/ant_tracker/scripts/track.py", line 79, in formatResults
+    x = results[:,0]
+IndexError: too many indices for array
+Traceback (most recent call last):
+  File "/mnt/biology/donaldson/hayley_daniela/ant_tracker_python/ant_tracker/scripts/track.py", line 268, in <module>
+    main()
+  File "/mnt/biology/donaldson/hayley_daniela/ant_tracker_python/ant_tracker/scripts/track.py", line 246, in main
+    track_result, raw_results = formatResults(results, args.source, args.min_duration)
+  File "/mnt/biology/donaldson/hayley_daniela/ant_tracker_python/ant_tracker/scripts/track.py", line 79, in formatResults
+    x = results[:,0]
+IndexError: too many indices for array
+Traceback (most recent call last):
+  File "/mnt/biology/donaldson/hayley_daniela/ant_tracker_python/ant_tracker/scripts/track.py", line 268, in <module>
+    main()
+  File "/mnt/biology/donaldson/hayley_daniela/ant_tracker_python/ant_tracker/scripts/track.py", line 246, in main
+    track_result, raw_results = formatResults(results, args.source, args.min_duration)
+  File "/mnt/biology/donaldson/hayley_daniela/ant_tracker_python/ant_tracker/scripts/track.py", line 79, in formatResults
+    x = results[:,0]
+IndexError: too many indices for array
+[Thu Mar 23 23:00:44 2023]
+Finished job 54.
+1 of 65 steps (2%) done
+[Thu Mar 23 23:00:44 2023]
+Finished job 62.
+2 of 65 steps (3%) done
+
+[Thu Mar 23 23:00:44 2023]
+rule aggregate_splits:
+    input: intermediate/track/7-7-21_21-BA2_2B/0/ROI_211.csv
+    output: intermediate/aggregate/7-7-21_21-BA2_2B/ROI_211.csv
+    jobid: 31
+    wildcards: video=7-7-21_21-BA2_2B, roi=211
+
+python scripts/combinetrack.py intermediate/aggregate/7-7-21_21-BA2_2B/ROI_211.csv intermediate/track/7-7-21_21-BA2_2B/0/ROI_211.csv
+
+[Thu Mar 23 23:00:44 2023]
+rule aggregate_splits:
+    input: intermediate/track/7-7-21_21-BA2_2B/0/ROI_222.csv
+    output: intermediate/aggregate/7-7-21_21-BA2_2B/ROI_222.csv
+    jobid: 23
+    wildcards: video=7-7-21_21-BA2_2B, roi=222
+
+python scripts/combinetrack.py intermediate/aggregate/7-7-21_21-BA2_2B/ROI_222.csv intermediate/track/7-7-21_21-BA2_2B/0/ROI_222.csv
+Traceback (most recent call last):
+  File "/mnt/biology/donaldson/hayley_daniela/ant_tracker_python/ant_tracker/scripts/track.py", line 268, in <module>
+    main()
+  File "/mnt/biology/donaldson/hayley_daniela/ant_tracker_python/ant_tracker/scripts/track.py", line 246, in main
+    track_result, raw_results = formatResults(results, args.source, args.min_duration)
+  File "/mnt/biology/donaldson/hayley_daniela/ant_tracker_python/ant_tracker/scripts/track.py", line 79, in formatResults
+    x = results[:,0]
+IndexError: too many indices for array
+[Thu Mar 23 23:00:45 2023]
+Finished job 23.
+3 of 65 steps (5%) done
+[Thu Mar 23 23:00:45 2023]
+Finished job 31.
+4 of 65 steps (6%) done
+[Thu Mar 23 23:00:45 2023]
+Error in rule track:
+    jobid: 43
+    output: intermediate/track/7-7-21_21-BA2_2B/0/ROI_31.csv
+    shell:
+        python scripts/track.py intermediate/crop/7-7-21_21-BA2_2B/0/ROI_31.mp4 intermediate/track/7-7-21_21-BA2_2B/0/ROI_31.csv -m 20 -c 10 -g 5 -tf 120 -b 0.7 -n 15.0 -it 4 -ot 8 -vt 0.6 -ki 200 50 -ko 100 15 -km 100.0 -v 3 -d 1.5
+        (exited with non-zero exit code)
+
+Job failed, going on with independent jobs.
+[Thu Mar 23 23:00:45 2023]
+Error in rule track:
+    jobid: 50
+    output: intermediate/track/7-7-21_21-BA2_2B/0/ROI_112.csv
+    shell:
+        python scripts/track.py intermediate/crop/7-7-21_21-BA2_2B/0/ROI_112.mp4 intermediate/track/7-7-21_21-BA2_2B/0/ROI_112.csv -m 20 -c 10 -g 5 -tf 120 -b 0.7 -n 15.0 -it 4 -ot 8 -vt 0.6 -ki 200 50 -ko 100 15 -km 100.0 -v 3 -d 1.5
+        (exited with non-zero exit code)
+
+Job failed, going on with independent jobs.
+Traceback (most recent call last):
+  File "/mnt/biology/donaldson/hayley_daniela/ant_tracker_python/ant_tracker/scripts/track.py", line 268, in <module>
+    main()
+  File "/mnt/biology/donaldson/hayley_daniela/ant_tracker_python/ant_tracker/scripts/track.py", line 246, in main
+    track_result, raw_results = formatResults(results, args.source, args.min_duration)
+  File "/mnt/biology/donaldson/hayley_daniela/ant_tracker_python/ant_tracker/scripts/track.py", line 79, in formatResults
+    x = results[:,0]
+IndexError: too many indices for array
+[Thu Mar 23 23:00:45 2023]
+Error in rule track:
+    jobid: 46
+    output: intermediate/track/7-7-21_21-BA2_2B/0/ROI_221.csv
+    shell:
+        python scripts/track.py intermediate/crop/7-7-21_21-BA2_2B/0/ROI_221.mp4 intermediate/track/7-7-21_21-BA2_2B/0/ROI_221.csv -m 20 -c 10 -g 5 -tf 120 -b 0.7 -n 15.0 -it 4 -ot 8 -vt 0.6 -ki 200 50 -ko 100 15 -km 100.0 -v 3 -d 1.5
+        (exited with non-zero exit code)
+
+Job failed, going on with independent jobs.
+Traceback (most recent call last):
+  File "/mnt/biology/donaldson/hayley_daniela/ant_tracker_python/ant_tracker/scripts/track.py", line 268, in <module>
+    main()
+  File "/mnt/biology/donaldson/hayley_daniela/ant_tracker_python/ant_tracker/scripts/track.py", line 246, in main
+    track_result, raw_results = formatResults(results, args.source, args.min_duration)
+  File "/mnt/biology/donaldson/hayley_daniela/ant_tracker_python/ant_tracker/scripts/track.py", line 79, in formatResults
+    x = results[:,0]
+IndexError: too many indices for array
+[Thu Mar 23 23:00:45 2023]
+Finished job 56.
+5 of 65 steps (8%) done
+
+[Thu Mar 23 23:00:45 2023]
+rule aggregate_splits:
+    input: intermediate/track/7-7-21_21-BA2_2B/0/ROI_5.csv
+    output: intermediate/aggregate/7-7-21_21-BA2_2B/ROI_5.csv
+    jobid: 25
+    wildcards: video=7-7-21_21-BA2_2B, roi=5
+
+python scripts/combinetrack.py intermediate/aggregate/7-7-21_21-BA2_2B/ROI_5.csv intermediate/track/7-7-21_21-BA2_2B/0/ROI_5.csv
+Traceback (most recent call last):
+  File "/mnt/biology/donaldson/hayley_daniela/ant_tracker_python/ant_tracker/scripts/track.py", line 268, in <module>
+    main()
+  File "/mnt/biology/donaldson/hayley_daniela/ant_tracker_python/ant_tracker/scripts/track.py", line 246, in main
+    track_result, raw_results = formatResults(results, args.source, args.min_duration)
+  File "/mnt/biology/donaldson/hayley_daniela/ant_tracker_python/ant_tracker/scripts/track.py", line 79, in formatResults
+    x = results[:,0]
+IndexError: too many indices for array
+Traceback (most recent call last):
+  File "/mnt/biology/donaldson/hayley_daniela/ant_tracker_python/ant_tracker/scripts/track.py", line 268, in <module>
+    main()
+  File "/mnt/biology/donaldson/hayley_daniela/ant_tracker_python/ant_tracker/scripts/track.py", line 246, in main
+    track_result, raw_results = formatResults(results, args.source, args.min_duration)
+  File "/mnt/biology/donaldson/hayley_daniela/ant_tracker_python/ant_tracker/scripts/track.py", line 79, in formatResults
+    x = results[:,0]
+IndexError: too many indices for array
+Traceback (most recent call last):
+  File "/mnt/biology/donaldson/hayley_daniela/ant_tracker_python/ant_tracker/scripts/track.py", line 268, in <module>
+    main()
+  File "/mnt/biology/donaldson/hayley_daniela/ant_tracker_python/ant_tracker/scripts/track.py", line 246, in main
+    track_result, raw_results = formatResults(results, args.source, args.min_duration)
+  File "/mnt/biology/donaldson/hayley_daniela/ant_tracker_python/ant_tracker/scripts/track.py", line 79, in formatResults
+    x = results[:,0]
+IndexError: too many indices for array
+Traceback (most recent call last):
+  File "/mnt/biology/donaldson/hayley_daniela/ant_tracker_python/ant_tracker/scripts/track.py", line 268, in <module>
+    main()
+  File "/mnt/biology/donaldson/hayley_daniela/ant_tracker_python/ant_tracker/scripts/track.py", line 246, in main
+    track_result, raw_results = formatResults(results, args.source, args.min_duration)
+  File "/mnt/biology/donaldson/hayley_daniela/ant_tracker_python/ant_tracker/scripts/track.py", line 79, in formatResults
+    x = results[:,0]
+IndexError: too many indices for array
+[Thu Mar 23 23:00:45 2023]
+Finished job 25.
+6 of 65 steps (9%) done
+Traceback (most recent call last):
+  File "/mnt/biology/donaldson/hayley_daniela/ant_tracker_python/ant_tracker/scripts/track.py", line 268, in <module>
+    main()
+  File "/mnt/biology/donaldson/hayley_daniela/ant_tracker_python/ant_tracker/scripts/track.py", line 246, in main
+    track_result, raw_results = formatResults(results, args.source, args.min_duration)
+  File "/mnt/biology/donaldson/hayley_daniela/ant_tracker_python/ant_tracker/scripts/track.py", line 79, in formatResults
+    x = results[:,0]
+IndexError: too many indices for array
+Traceback (most recent call last):
+  File "/mnt/biology/donaldson/hayley_daniela/ant_tracker_python/ant_tracker/scripts/track.py", line 268, in <module>
+    main()
+  File "/mnt/biology/donaldson/hayley_daniela/ant_tracker_python/ant_tracker/scripts/track.py", line 246, in main
+    track_result, raw_results = formatResults(results, args.source, args.min_duration)
+  File "/mnt/biology/donaldson/hayley_daniela/ant_tracker_python/ant_tracker/scripts/track.py", line 79, in formatResults
+    x = results[:,0]
+IndexError: too many indices for array
+Traceback (most recent call last):
+  File "/mnt/biology/donaldson/hayley_daniela/ant_tracker_python/ant_tracker/scripts/track.py", line 268, in <module>
+    main()
+  File "/mnt/biology/donaldson/hayley_daniela/ant_tracker_python/ant_tracker/scripts/track.py", line 246, in main
+    track_result, raw_results = formatResults(results, args.source, args.min_duration)
+  File "/mnt/biology/donaldson/hayley_daniela/ant_tracker_python/ant_tracker/scripts/track.py", line 79, in formatResults
+    x = results[:,0]
+IndexError: too many indices for array
+[Thu Mar 23 23:00:46 2023]
+Error in rule track:
+    jobid: 69
+    output: intermediate/track/7-7-21_21-BA2_2B/0/ROI_122.csv
+    shell:
+        python scripts/track.py intermediate/crop/7-7-21_21-BA2_2B/0/ROI_122.mp4 intermediate/track/7-7-21_21-BA2_2B/0/ROI_122.csv -m 20 -c 10 -g 5 -tf 120 -b 0.7 -n 15.0 -it 4 -ot 8 -vt 0.6 -ki 200 50 -ko 100 15 -km 100.0 -v 3 -d 1.5
+        (exited with non-zero exit code)
+
+Job failed, going on with independent jobs.
+[Thu Mar 23 23:00:46 2023]
+Finished job 55.
+7 of 65 steps (11%) done
+
+[Thu Mar 23 23:00:46 2023]
+rule aggregate_splits:
+    input: intermediate/track/7-7-21_21-BA2_2B/0/ROI_41.csv
+    output: intermediate/aggregate/7-7-21_21-BA2_2B/ROI_41.csv
+    jobid: 24
+    wildcards: video=7-7-21_21-BA2_2B, roi=41
+
+python scripts/combinetrack.py intermediate/aggregate/7-7-21_21-BA2_2B/ROI_41.csv intermediate/track/7-7-21_21-BA2_2B/0/ROI_41.csv
+[Thu Mar 23 23:00:46 2023]
+Error in rule track:
+    jobid: 49
+    output: intermediate/track/7-7-21_21-BA2_2B/0/ROI_22.csv
+    shell:
+        python scripts/track.py intermediate/crop/7-7-21_21-BA2_2B/0/ROI_22.mp4 intermediate/track/7-7-21_21-BA2_2B/0/ROI_22.csv -m 20 -c 10 -g 5 -tf 120 -b 0.7 -n 15.0 -it 4 -ot 8 -vt 0.6 -ki 200 50 -ko 100 15 -km 100.0 -v 3 -d 1.5
+        (exited with non-zero exit code)
+
+Job failed, going on with independent jobs.
+[Thu Mar 23 23:00:46 2023]
+Finished job 24.
+8 of 65 steps (12%) done
+Traceback (most recent call last):
+  File "/mnt/biology/donaldson/hayley_daniela/ant_tracker_python/ant_tracker/scripts/track.py", line 268, in <module>
+    main()
+  File "/mnt/biology/donaldson/hayley_daniela/ant_tracker_python/ant_tracker/scripts/track.py", line 246, in main
+    track_result, raw_results = formatResults(results, args.source, args.min_duration)
+  File "/mnt/biology/donaldson/hayley_daniela/ant_tracker_python/ant_tracker/scripts/track.py", line 79, in formatResults
+    x = results[:,0]
+IndexError: too many indices for array
+[Thu Mar 23 23:00:46 2023]
+Error in rule track:
+    jobid: 45
+    output: intermediate/track/7-7-21_21-BA2_2B/0/ROI_11.csv
+    shell:
+        python scripts/track.py intermediate/crop/7-7-21_21-BA2_2B/0/ROI_11.mp4 intermediate/track/7-7-21_21-BA2_2B/0/ROI_11.csv -m 20 -c 10 -g 5 -tf 120 -b 0.7 -n 15.0 -it 4 -ot 8 -vt 0.6 -ki 200 50 -ko 100 15 -km 100.0 -v 3 -d 1.5
+        (exited with non-zero exit code)
+
+Job failed, going on with independent jobs.
+[Thu Mar 23 23:00:46 2023]
+Error in rule track:
+    jobid: 51
+    output: intermediate/track/7-7-21_21-BA2_2B/0/ROI_10.csv
+    shell:
+        python scripts/track.py intermediate/crop/7-7-21_21-BA2_2B/0/ROI_10.mp4 intermediate/track/7-7-21_21-BA2_2B/0/ROI_10.csv -m 20 -c 10 -g 5 -tf 120 -b 0.7 -n 15.0 -it 4 -ot 8 -vt 0.6 -ki 200 50 -ko 100 15 -km 100.0 -v 3 -d 1.5
+        (exited with non-zero exit code)
+
+Job failed, going on with independent jobs.
+[Thu Mar 23 23:00:46 2023]
+Error in rule track:
+    jobid: 44
+    output: intermediate/track/7-7-21_21-BA2_2B/0/ROI_32.csv
+    shell:
+        python scripts/track.py intermediate/crop/7-7-21_21-BA2_2B/0/ROI_32.mp4 intermediate/track/7-7-21_21-BA2_2B/0/ROI_32.csv -m 20 -c 10 -g 5 -tf 120 -b 0.7 -n 15.0 -it 4 -ot 8 -vt 0.6 -ki 200 50 -ko 100 15 -km 100.0 -v 3 -d 1.5
+        (exited with non-zero exit code)
+
+Job failed, going on with independent jobs.
+[Thu Mar 23 23:00:46 2023]
+Error in rule track:
+    jobid: 61
+    output: intermediate/track/7-7-21_21-BA2_2B/0/ROI_7.csv
+    shell:
+        python scripts/track.py intermediate/crop/7-7-21_21-BA2_2B/0/ROI_7.mp4 intermediate/track/7-7-21_21-BA2_2B/0/ROI_7.csv -m 20 -c 10 -g 5 -tf 120 -b 0.7 -n 15.0 -it 4 -ot 8 -vt 0.6 -ki 200 50 -ko 100 15 -km 100.0 -v 3 -d 1.5
+        (exited with non-zero exit code)
+
+Job failed, going on with independent jobs.
+Traceback (most recent call last):
+  File "/mnt/biology/donaldson/hayley_daniela/ant_tracker_python/ant_tracker/scripts/track.py", line 268, in <module>
+    main()
+  File "/mnt/biology/donaldson/hayley_daniela/ant_tracker_python/ant_tracker/scripts/track.py", line 246, in main
+    track_result, raw_results = formatResults(results, args.source, args.min_duration)
+  File "/mnt/biology/donaldson/hayley_daniela/ant_tracker_python/ant_tracker/scripts/track.py", line 79, in formatResults
+    x = results[:,0]
+IndexError: too many indices for array
+[Thu Mar 23 23:00:46 2023]
+Error in rule track:
+    jobid: 64
+    output: intermediate/track/7-7-21_21-BA2_2B/0/ROI_121.csv
+    shell:
+        python scripts/track.py intermediate/crop/7-7-21_21-BA2_2B/0/ROI_121.mp4 intermediate/track/7-7-21_21-BA2_2B/0/ROI_121.csv -m 20 -c 10 -g 5 -tf 120 -b 0.7 -n 15.0 -it 4 -ot 8 -vt 0.6 -ki 200 50 -ko 100 15 -km 100.0 -v 3 -d 1.5
+        (exited with non-zero exit code)
+
+Job failed, going on with independent jobs.
+[Thu Mar 23 23:00:47 2023]
+Error in rule track:
+    jobid: 53
+    output: intermediate/track/7-7-21_21-BA2_2B/0/ROI_12.csv
+    shell:
+        python scripts/track.py intermediate/crop/7-7-21_21-BA2_2B/0/ROI_12.mp4 intermediate/track/7-7-21_21-BA2_2B/0/ROI_12.csv -m 20 -c 10 -g 5 -tf 120 -b 0.7 -n 15.0 -it 4 -ot 8 -vt 0.6 -ki 200 50 -ko 100 15 -km 100.0 -v 3 -d 1.5
+        (exited with non-zero exit code)
+
+[Thu Mar 23 23:00:47 2023]
+Job failed, going on with independent jobs.
+Error in rule track:
+    jobid: 58
+    output: intermediate/track/7-7-21_21-BA2_2B/0/ROI_111.csv
+    shell:
+        python scripts/track.py intermediate/crop/7-7-21_21-BA2_2B/0/ROI_111.mp4 intermediate/track/7-7-21_21-BA2_2B/0/ROI_111.csv -m 20 -c 10 -g 5 -tf 120 -b 0.7 -n 15.0 -it 4 -ot 8 -vt 0.6 -ki 200 50 -ko 100 15 -km 100.0 -v 3 -d 1.5
+        (exited with non-zero exit code)
+
+Job failed, going on with independent jobs.
+[Thu Mar 23 23:00:47 2023]
+Error in rule track:
+    jobid: 71
+    output: intermediate/track/7-7-21_21-BA2_2B/0/ROI_42.csv
+    shell:
+        python scripts/track.py intermediate/crop/7-7-21_21-BA2_2B/0/ROI_42.mp4 intermediate/track/7-7-21_21-BA2_2B/0/ROI_42.csv -m 20 -c 10 -g 5 -tf 120 -b 0.7 -n 15.0 -it 4 -ot 8 -vt 0.6 -ki 200 50 -ko 100 15 -km 100.0 -v 3 -d 1.5
+        (exited with non-zero exit code)
+
+Job failed, going on with independent jobs.
+[Thu Mar 23 23:00:47 2023]
+Error in rule track:
+    jobid: 47
+    output: intermediate/track/7-7-21_21-BA2_2B/0/ROI_50.csv
+    shell:
+        python scripts/track.py intermediate/crop/7-7-21_21-BA2_2B/0/ROI_50.mp4 intermediate/track/7-7-21_21-BA2_2B/0/ROI_50.csv -m 20 -c 10 -g 5 -tf 120 -b 0.7 -n 15.0 -it 4 -ot 8 -vt 0.6 -ki 200 50 -ko 100 15 -km 100.0 -v 3 -d 1.5
+        (exited with non-zero exit code)
+
+Job failed, going on with independent jobs.
+[Thu Mar 23 23:00:47 2023]
+Finished job 66.
+9 of 65 steps (14%) done
+
+[Thu Mar 23 23:00:47 2023]
+rule aggregate_splits:
+    input: intermediate/track/7-7-21_21-BA2_2B/0/ROI_212.csv
+    output: intermediate/aggregate/7-7-21_21-BA2_2B/ROI_212.csv
+    jobid: 35
+    wildcards: video=7-7-21_21-BA2_2B, roi=212
+
+python scripts/combinetrack.py intermediate/aggregate/7-7-21_21-BA2_2B/ROI_212.csv intermediate/track/7-7-21_21-BA2_2B/0/ROI_212.csv
+[Thu Mar 23 23:00:47 2023]
+Error in rule track:
+    jobid: 63
+    output: intermediate/track/7-7-21_21-BA2_2B/0/ROI_30.csv
+    shell:
+        python scripts/track.py intermediate/crop/7-7-21_21-BA2_2B/0/ROI_30.mp4 intermediate/track/7-7-21_21-BA2_2B/0/ROI_30.csv -m 20 -c 10 -g 5 -tf 120 -b 0.7 -n 15.0 -it 4 -ot 8 -vt 0.6 -ki 200 50 -ko 100 15 -km 100.0 -v 3 -d 1.5
+        (exited with non-zero exit code)
+
+Job failed, going on with independent jobs.
+[Thu Mar 23 23:00:47 2023]
+Finished job 35.
+10 of 65 steps (15%) done
+[Thu Mar 23 23:00:47 2023]
+Finished job 42.
+11 of 65 steps (17%) done
+
+[Thu Mar 23 23:00:47 2023]
+rule aggregate_splits:
+    input: intermediate/track/7-7-21_21-BA2_2B/0/ROI_40.csv
+    output: intermediate/aggregate/7-7-21_21-BA2_2B/ROI_40.csv
+    jobid: 11
+    wildcards: video=7-7-21_21-BA2_2B, roi=40
+
+python scripts/combinetrack.py intermediate/aggregate/7-7-21_21-BA2_2B/ROI_40.csv intermediate/track/7-7-21_21-BA2_2B/0/ROI_40.csv
+[Thu Mar 23 23:00:48 2023]
+Finished job 11.
+12 of 65 steps (18%) done
+[Thu Mar 23 23:00:48 2023]
+Finished job 65.
+13 of 65 steps (20%) done
+[Thu Mar 23 23:00:48 2023]
+Finished job 41.
+14 of 65 steps (22%) done
+
+[Thu Mar 23 23:00:48 2023]
+rule aggregate_splits:
+    input: intermediate/track/7-7-21_21-BA2_2B/0/ROI_21.csv
+    output: intermediate/aggregate/7-7-21_21-BA2_2B/ROI_21.csv
+    jobid: 34
+    wildcards: video=7-7-21_21-BA2_2B, roi=21
+
+python scripts/combinetrack.py intermediate/aggregate/7-7-21_21-BA2_2B/ROI_21.csv intermediate/track/7-7-21_21-BA2_2B/0/ROI_21.csv
+[Thu Mar 23 23:00:48 2023]
+Finished job 57.
+15 of 65 steps (23%) done
+
+[Thu Mar 23 23:00:48 2023]
+rule aggregate_splits:
+    input: intermediate/track/7-7-21_21-BA2_2B/0/ROI_4.csv
+    output: intermediate/aggregate/7-7-21_21-BA2_2B/ROI_4.csv
+    jobid: 10
+    wildcards: video=7-7-21_21-BA2_2B, roi=4
+
+python scripts/combinetrack.py intermediate/aggregate/7-7-21_21-BA2_2B/ROI_4.csv intermediate/track/7-7-21_21-BA2_2B/0/ROI_4.csv
+
+[Thu Mar 23 23:00:48 2023]
+rule aggregate_splits:
+    input: intermediate/track/7-7-21_21-BA2_2B/0/ROI_60.csv
+    output: intermediate/aggregate/7-7-21_21-BA2_2B/ROI_60.csv
+    jobid: 26
+    wildcards: video=7-7-21_21-BA2_2B, roi=60
+
+python scripts/combinetrack.py intermediate/aggregate/7-7-21_21-BA2_2B/ROI_60.csv intermediate/track/7-7-21_21-BA2_2B/0/ROI_60.csv
+[Thu Mar 23 23:00:48 2023]
+Finished job 34.
+16 of 65 steps (25%) done
+[Thu Mar 23 23:00:48 2023]
+Finished job 10.
+17 of 65 steps (26%) done
+[Thu Mar 23 23:00:48 2023]
+Finished job 26.
+18 of 65 steps (28%) done
+[Thu Mar 23 23:00:48 2023]
+Finished job 52.
+19 of 65 steps (29%) done
+
+[Thu Mar 23 23:00:48 2023]
+rule aggregate_splits:
+    input: intermediate/track/7-7-21_21-BA2_2B/0/ROI_8.csv
+    output: intermediate/aggregate/7-7-21_21-BA2_2B/ROI_8.csv
+    jobid: 21
+    wildcards: video=7-7-21_21-BA2_2B, roi=8
+
+python scripts/combinetrack.py intermediate/aggregate/7-7-21_21-BA2_2B/ROI_8.csv intermediate/track/7-7-21_21-BA2_2B/0/ROI_8.csv
+[Thu Mar 23 23:00:48 2023]
+Finished job 21.
+20 of 65 steps (31%) done
+[Thu Mar 23 23:00:48 2023]
+Finished job 68.
+21 of 65 steps (32%) done
+
+[Thu Mar 23 23:00:48 2023]
+rule aggregate_splits:
+    input: intermediate/track/7-7-21_21-BA2_2B/0/ROI_6.csv
+    output: intermediate/aggregate/7-7-21_21-BA2_2B/ROI_6.csv
+    jobid: 37
+    wildcards: video=7-7-21_21-BA2_2B, roi=6
+
+python scripts/combinetrack.py intermediate/aggregate/7-7-21_21-BA2_2B/ROI_6.csv intermediate/track/7-7-21_21-BA2_2B/0/ROI_6.csv
+[Thu Mar 23 23:00:49 2023]
+Finished job 37.
+22 of 65 steps (34%) done
+[Thu Mar 23 23:00:49 2023]
+Finished job 70.
+23 of 65 steps (35%) done
+
+[Thu Mar 23 23:00:49 2023]
+rule aggregate_splits:
+    input: intermediate/track/7-7-21_21-BA2_2B/0/ROI_2.csv
+    output: intermediate/aggregate/7-7-21_21-BA2_2B/ROI_2.csv
+    jobid: 39
+    wildcards: video=7-7-21_21-BA2_2B, roi=2
+
+python scripts/combinetrack.py intermediate/aggregate/7-7-21_21-BA2_2B/ROI_2.csv intermediate/track/7-7-21_21-BA2_2B/0/ROI_2.csv
+[Thu Mar 23 23:00:49 2023]
+Finished job 39.
+24 of 65 steps (37%) done
+[Thu Mar 23 23:00:51 2023]
+Finished job 59.
+25 of 65 steps (38%) done
+
+[Thu Mar 23 23:00:51 2023]
+rule aggregate_splits:
+    input: intermediate/track/7-7-21_21-BA2_2B/0/ROI_20.csv
+    output: intermediate/aggregate/7-7-21_21-BA2_2B/ROI_20.csv
+    jobid: 28
+    wildcards: video=7-7-21_21-BA2_2B, roi=20
+
+python scripts/combinetrack.py intermediate/aggregate/7-7-21_21-BA2_2B/ROI_20.csv intermediate/track/7-7-21_21-BA2_2B/0/ROI_20.csv
+[Thu Mar 23 23:00:51 2023]
+Finished job 28.
+26 of 65 steps (40%) done
+[Thu Mar 23 23:00:53 2023]
+Finished job 67.
+27 of 65 steps (42%) done
+
+[Thu Mar 23 23:00:53 2023]
+rule aggregate_splits:
+    input: intermediate/track/7-7-21_21-BA2_2B/0/ROI_3.csv
+    output: intermediate/aggregate/7-7-21_21-BA2_2B/ROI_3.csv
+    jobid: 36
+    wildcards: video=7-7-21_21-BA2_2B, roi=3
+
+python scripts/combinetrack.py intermediate/aggregate/7-7-21_21-BA2_2B/ROI_3.csv intermediate/track/7-7-21_21-BA2_2B/0/ROI_3.csv
+[Thu Mar 23 23:00:53 2023]
+Finished job 36.
+28 of 65 steps (43%) done
