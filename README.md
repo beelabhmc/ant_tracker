@@ -99,6 +99,6 @@ An explanation of all of the different code files in the project, WIP:
    This is used for the manual labeling of regions of interest.
  - [split.py](scripts/split.py) Code which splits up videos into smaller chunks
    based on time (I recommend 10 minutes).
- - [track.py](scripts/track.py) Python code which interfaces with ant_tracking.m
-   and saves the data that it outputs into a file in a nice format.
+ - [track.py](scripts/track.py) Python code which interfaces with ant_tracking.py
+   and saves the data that it outputs into a file in a csv file.
 
