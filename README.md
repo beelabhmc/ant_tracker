@@ -45,9 +45,9 @@ If you are using a miniconda environment to run the pipeline, you can use the fo
 
 An explanation of all of the different code files in the project, WIP:
 
- - [ant_traking.m](scripts/ant_tracking.m) This file contains matlab code
-   which takes footage of the ROIs and returns a dataframe containing all
-   the ants which it saw and how they move. This script is called by track.py.
+ - [ant_traking.py](scripts/ant_tracking.py) This file contains python code
+   for detecting and tracking ants in the ROI videos. This script is called 
+   by track.py.
  - [bbox.py](scripts/bbox.py) This file contains some functions which deal with
    regions of interest and bounding boxes and are used by several different
    scripts in the pipeline.
