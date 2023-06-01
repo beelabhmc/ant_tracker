@@ -1,5 +1,6 @@
 configfile: 'config.yaml'
 
+### ORIGINAL
 rule convert_mov_to_mp4:
     input:
         'input/{video}.mov'
@@ -17,6 +18,23 @@ rule trim:
         'intermediate/trim/{video}.mp4'
     shell:
         'ffmpeg -i {input} -ss 5 -c copy {output}'
+
+### MINE
+# rule mov_to_mp4:
+#     input:
+#         'input/{video}.mov'
+#     output:
+#         'input/{video}.mp4'
+#     shell:
+#         'python scripts/mov_to_mp4.py {input} {output}'      
+
+# rule video_trimmer:
+#     input:
+#         'input/{video}.mp4'
+#     output:
+#         'intermediate/trim/{video}.mp4'
+#     shell:
+#         'python scripts/video_trimmer.py {input} {output}'
 
 rule roidetect:
     input:

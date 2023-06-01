@@ -3,6 +3,8 @@ import argparse
 import shlex
 import subprocess
 import os, os.path
+# os.environ['OPENBLAS_NUM_THREADS'] = '17'  # PLEASE CHANGE ME!
+
 
 def path_split(path):
     """Takes a path and splits it into a list, where the last item is

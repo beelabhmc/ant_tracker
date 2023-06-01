@@ -1,4 +1,7 @@
 from networkx.algorithms.link_prediction import cn_soundarajan_hopcroft
+import os
+# os.environ['OPENBLAS_NUM_THREADS'] = '17'  # PLEASE CHANGE ME!
+
 import numpy as np
 import cv2
 from numpy.lib.function_base import append
@@ -10,7 +13,7 @@ import networkx as nx
 from sklearn.cluster import KMeans
 from cv2 import aruco
 import argparse
-import os
+
 import bbox
 
 
@@ -198,15 +201,18 @@ def main():
                                  'ROI detection (default=1)',
                            )
 
+
     args = arg_parser.parse_args()
+
     # Read in first frame of video as an image
     if not os.path.isfile(args.video):
         arg_parser.error(f'{args.video} is not a valid file.')
+
     video = cv2.VideoCapture(args.video)
     ret, frame = video.read()
-    gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
     if not ret:
         arg_parser.error('The video only has {} frames.'.format(args.frame-1))
+    gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
 
     # Load in relevant reference coordinates
     coord1 = np.array(np.loadtxt("templates/tag_coordinates.txt")).astype(int)
