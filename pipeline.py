@@ -49,7 +49,7 @@ def main():
                                    'label the ROIs.')
     parser.add_argument('-s', '--snakemake-arguments',
                         dest='args',
-                        default='-pk --cores=32',
+                        default='-pk --cores=1',
                         help='Any arguments to pass into snakemake, default = '
                              "'-pk --cores=32'")
     args = parser.parse_args()

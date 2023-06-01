@@ -9,15 +9,23 @@ rule convert_mov_to_mp4:
     shell:
         'ffmpeg -i {input} -vcodec h264 -acodec mp2 {output}'
 
-
-# Video shakes at the beginning, so we trim the first 5 seconds to ensure consistency
+# Video shakes at the beginning AND THE END. We trim first and last 5 seconds to ensure consistency.
 rule trim:
     input:
         'input/{video}.mp4'
     output:
         'intermediate/trim/{video}.mp4'
     shell:
-        'ffmpeg -i {input} -ss 5 -c copy {output}'
+        'ffmpeg -i {input} -ss 5 -t %(duration)s -ss %(start)s -c copy {output}'
+
+# # Video shakes at the beginning, so we trim the first 5 seconds to ensure consistency
+# rule trim:
+#     input:
+#         'input/{video}.mp4'
+#     output:
+#         'intermediate/trim/{video}.mp4'
+#     shell:
+#         'ffmpeg -i {input} -ss 5 -c copy {output}'
 
 ### MINE
 # rule mov_to_mp4:
@@ -83,7 +91,8 @@ rule track:
     output:
         'intermediate/track/{video}/{split}/ROI_{roi}.csv'
     shell:
-        'python3.7 scripts/track.py {{input}} {{output}} -m {} -c {} -g {} -tf '
+    # replaced python 3.7 with python
+        'python scripts/track.py {{input}} {{output}} -m {} -c {} -g {} -tf '
         '{} -b {} -n {} -it {} -ot {} -vt {} -ki {} -ko {} -km {} -v {} -d {}' \
         .format(*(config['tracks'][x]
                   for x in ['min-blob', 'count-warning-threshold',
