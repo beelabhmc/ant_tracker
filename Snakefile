@@ -9,23 +9,33 @@ rule convert_mov_to_mp4:
     shell:
         'ffmpeg -i {input} -vcodec h264 -acodec mp2 {output}'
 
-# Video shakes at the beginning AND THE END. We trim first and last 5 seconds to ensure consistency.
-rule trim:
-    input:
-        'input/{video}.mp4'
-    output:
-        'intermediate/trim/{video}.mp4'
-    shell:
-        'ffmpeg -i {input} -ss 5 -t %(duration)s -ss %(start)s -c copy {output}'
-
-# # Video shakes at the beginning, so we trim the first 5 seconds to ensure consistency
+# # Video shakes at the beginning AND THE END. We trim first and last 5 seconds to ensure consistency.
 # rule trim:
 #     input:
 #         'input/{video}.mp4'
 #     output:
 #         'intermediate/trim/{video}.mp4'
 #     shell:
-#         'ffmpeg -i {input} -ss 5 -c copy {output}'
+#         'ffmpeg -i {input} -ss 5 -t %(duration)s -ss %(start)s -c copy {output}'
+
+# Video shakes at the beginning, so we trim the first 5 seconds to ensure consistency
+rule trim_begin:
+    input:
+        'input/{video}.mp4'
+    output:
+        'intermediate/trim/{video}.mp4'
+    shell:
+        'ffmpeg -i {input} -ss 5 -c copy {output}'
+
+# Remove last 5 seconds from video
+rule trim_end:
+    input:
+        'intermediate/trim/{video}.mp4'
+    output:
+        'intermediate/trim/{video}.mp4'
+    shell:
+        'ffmpeg -i {input} -ss 3 -i {input} -c copy -map 1:0 -map 0 -shortest -f nut - | ffmpeg -f nut -i - -map 0 -map -0:0 -c copy out.mp4'
+
 
 ### MINE
 # rule mov_to_mp4:
@@ -90,6 +100,9 @@ rule track:
         track_input
     output:
         'intermediate/track/{video}/{split}/ROI_{roi}.csv'
+    # resources:
+    #     cores=1  # breaks with higher core counts
+    threads: 32
     shell:
     # replaced python 3.7 with python
         'python scripts/track.py {{input}} {{output}} -m {} -c {} -g {} -tf '

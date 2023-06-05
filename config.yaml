@@ -21,7 +21,7 @@ tracks:
                                         # in 5 seconds, throw a warning
                                         # and flag offending tracks.
 
-    num-gaussians: 5                    # The number of Guassians to use
+    num-gaussians: 5                    # The number of Guassians to use  # UPDATE TO 3
                                         # in fitting the background
     num-training-frames: 120            # The number of frames of the
                                         # video to use to identify the
@@ -68,6 +68,13 @@ tracks:
     min-duration: 1.5                   # The minimum duration for which
                                         # a track must persist to be
                                         # saved as an ant.
+
+    # NEW ARGUMENTS FOR TRACK BEGIN HERE
+
+    # DETECTOR.PY
+      # Epsilon Enclosures (62): 0.05
+
+
 
 roi-detection:
     # Parameters used by the ROI detection code

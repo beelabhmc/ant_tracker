@@ -2,6 +2,8 @@ import numpy as np
 import argparse
 from track_one_clip import trackOneClip
 import constants
+import os
+# os.environ['OPENBLAS_NUM_THREADS'] = '1'
 
 COLUMN_NAMES = [['filename', 'id', 'x0', 'y0', 't0', 'x1', 'y1', 't1',
                  'number_warning', 'broken_track']]

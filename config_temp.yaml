@@ -1,0 +1,156 @@
+---
+INPUT_DIR: /biology/donaldson/ant_videos
+# The framerate to assume if given a .h264 file
+# Changed framerate from 32 to 24 (videos are in 24 fps)
+h264-framerate: 24
+label:
+    # Parameters used by the roilabel file
+    insignificant-vertices: True        # If true, will draw all vertices
+split:
+    segment-length: 600     # The duration (in seconds) of each split segment
+    min-segment-length: 20  # The minimum length of a split segment to keep
+
+croprot:
+    # Parameters used by the croprotate file
+    cores: 5        # The number of cores to use for this step
+tracks:
+    # Parameters used by the ant tracking code (there's a lot of them)
+    min-blob: 1                        # The smallest size of blob  # UPDATE TO 1
+                                        # which is interpreted as an ant
+
+    count-warning-threshold: 10         # If more ants than this are seen
+                                        # in 5 seconds, throw a warning
+                                        # and flag offending tracks.
+
+    num-gaussians: 3                    # The number of Guassians to use  # UPDATE TO 3
+                                        # in fitting the background
+    num-training-frames: 120            # The number of frames of the
+                                        # video to use to identify the
+                                        # background
+
+    minimum-background-ratio: 0.70      # The fraction of frames which
+                                        # must be matched by the
+                                        # background detection
+ 
+    cost-of-nonassignment: 15.0         # The cost of not assigning a
+                                        # detection to an existing track.
+                                        # Decreasing this makes it more
+                                        # likely to assign two ants to
+                                        # one track.
+
+    invisible-threshold: 5              # If a newly-detected track is  # UPDATE TO 5
+                                        # missing for this many frames,
+                                        # then assume that it was a fake
+                                        # track and forget it.
+ 
+    old-age-threshold: 8                # If a track exists for this many
+                                        # frames, then it becomes immune
+                                        # to the above effect
+
+    visibility-threshold: 0.6           # The minimum fraction of frames
+                                        # during an ant's lifetime for
+                                        # which it must be visible.
+
+    kalman-initial-error: '200 50'      # The margin of error for the
+                                        # Kalman filter, on the initial
+                                        # position and velocity
+
+    kalman-motion-noise:  '100 15'      # The amount of variation in
+                                        # position and velocity
+                                        # which the Kalman filter tolerates
+
+    kalman-measurement-noise: 100.0     # The expected deviation in actual
+                                        # measurements
+
+    min-visible-count: 3                # The number of frames for which
+                                        # an ant must be spotted for its
+                                        # track to be recorded
+
+    min-duration: 1.5                   # The minimum duration for which  # Update to a smaller number
+                                        # a track must persist to be
+                                        # saved as an ant.
+
+    # NEW ARGUMENTS FOR TRACK BEGIN HERE
+
+    # DETECTOR.PY
+    canny-threshold-one: 50             # The lower threshold value. Any 
+                                        # gradient magnitude below this 
+                                        # threshold will be considered as 
+                                        # not an edge
+
+    canny-threshold-two: 200            # The higher threshold value. Any 
+                                        # gradient magnitude above this 
+                                        # threshold will be considered as 
+                                        # an edge
+
+    canny-aperture-size: 3              # Defines the Sobel kernel size 
+                                        # for gradient computation. 
+
+    thresholding-threshold: 88          # A grayscale value above 127  
+                                        # turns to 255 (white), below  
+                                        # turns to 0 (black)
+
+                                        # Note: tree branch greyscale
+                                        # value is around 200. The ant is
+                                        # around 78-85. The floor (behind
+                                        # branch) is around 90-110.
+
+    dilating-matrix: 3                  # The shape of structuring
+                                        # element. It is an elliptical
+                                        # shape in this case
+
+    # TRACK_ONE_CLIP.PY
+    tracker-distance-threshold: 10      # The distance threshold. When
+                                        # the threshold is exceeded, the
+                                        # track will be deleted and a new
+                                        # track will be created
+
+    tracker-trace-length: 10            # Trace path history length (good
+                                        # for debugging purposes)
+
+    no_ant_counter_frames: 100          # If the ant isn't detected for 
+                                        # 100 frames, we can safely assume
+                                        # it has left the track
+
+    edge_border: 10                     # Creates a border around the ROI.
+                                        # If the ant disappears within the
+                                        # border, we can assume it has 
+                                        # left an edge. Otherwise, the ant
+                                        # "disappeared" on the middle of 
+                                        # the track, which doesn't make 
+                                        # sense. The ant will be removed.
+
+      # Tracker Distance Threshold: 10
+      # Tracker Max Trace Length: 10
+      # no_ant_counter_frames: 100 
+
+
+
+roi-detection:
+    # Parameters used by the ROI detection code
+    # HSV is the color model used by the code. Information on it can be
+    # found here: https://en.wikipedia.org/wiki/HSL_and_HSV
+    hsv-hue-tolerance: 25   # How far from pure red the hue can deviate
+
+    hsv-sat-minimum: 55     # The minimum saturation
+
+    hsv-value-minimum: 60   # The minimum value
+
+    smooth-open-size: 1     # The amount by which to "open" the mask
+                            # This removes small details.
+
+    smooth-dilate-size: 3   # The amount by which to "dilate" the mask,
+                            # expanding detected details.
+
+    smooth-close-size: 3    # The amount by which to "close" the mask,
+                            # filling in small holes.
+
+    polygon-epsilon: 0.035  # The amount of wiggle-room in turning
+                            # contours into polygons.
+
+    roi-bbox-padding: 2     # The amount of padding around polygons to
+                            # include in the ROI.
+
+    force-convex: true      # Force the polygons for each ROI to be convex
+...
+
