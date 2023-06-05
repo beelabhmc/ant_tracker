@@ -34,7 +34,7 @@ rule trim_end:
     output:
         'intermediate/trim/{video}.mp4'
     shell:
-        'ffmpeg -i {input} -ss 3 -i {input} -c copy -map 1:0 -map 0 -shortest -f nut - | ffmpeg -f nut -i - -map 0 -map -0:0 -c copy out.mp4'
+        'ffmpeg -i {input} -ss 3 -i {input} -c copy -map 1:0 -map 0 -shortest -f nut - | ffmpeg -f nut -i - -map 0 -map -0:0 -c copy {output}'
 
 
 ### MINE
@@ -105,16 +105,15 @@ rule track:
     threads: 32
     shell:
     # replaced python 3.7 with python
-        'python scripts/track.py {{input}} {{output}} -m {} -c {} -g {} -tf '
-        '{} -b {} -n {} -it {} -ot {} -vt {} -ki {} -ko {} -km {} -v {} -d {}' \
+        'python scripts/track.py {{input}} {{output}} -m {} -c {} -g {} -it {} -d {} -cto {} -ctt {} -cas {} -tt {} -dm {} -tdt {} -ttl {} -nac {} -eb {}' \
         .format(*(config['tracks'][x]
                   for x in ['min-blob', 'count-warning-threshold',
-                            'num-gaussians', 'num-training-frames',
-                            'minimum-background-ratio', 'cost-of-nonassignment',
-                            'invisible-threshold', 'old-age-threshold',
-                            'visibility-threshold', 'kalman-initial-error',
-                            'kalman-motion-noise', 'kalman-measurement-noise',
-                            'min-visible-count', 'min-duration']))
+                            'num-gaussians', 'invisible-threshold', 'min-duration',
+                            'canny-threshold-one', 'canny-threshold-two', 
+                            'canny-aperture-size', 'thresholding-threshold',
+                            'dilating-matrix', 'tracker-distance-threshold',
+                            'tracker-trace-length', 'no-ant-counter-frames-total',
+                            'edge-border']))
 
 
 def aggregate_splits_input(wildcards):

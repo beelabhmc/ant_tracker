@@ -1,10 +1,13 @@
+# Borrowed Heavily From Srini Ananthakrishnan's Multi Object Tracking Model
+# https://github.com/srianant/kalman_filter_multi_object_tracking
+
 import numpy as np
 import cv2
 
-debug = False  # displays video
+dis_vid = False
 toDisplay = False
 
-# displays video. makes it bigger so you can see it
+
 def display(frame, desc, final=False):
 
     try:
@@ -12,20 +15,29 @@ def display(frame, desc, final=False):
     except:
         height, width, _ = frame.shape
 
-    new_width = width * 4
-    new_height = height * 4
+    scaler = 4
+
+    new_width = width * scaler
+    new_height = height * scaler
     resized_frame = cv2.resize(frame, (new_width, new_height))
 
-    if debug or final:
+    if dis_vid or final:
         cv2.imshow(desc, resized_frame)
 
 
 class Detector(object):
-
-    def __init__(self, minBlob, num_gaussians):
+    def __init__(self, minBlob, num_gaussians, canny_threshold_one, canny_threshold_two, canny_aperture_size, thresholding_threshold, dilating_matrix, debug):
         self.backRemove = cv2.createBackgroundSubtractorKNN()
         self.minBlob = minBlob
         self.num_gaussians = num_gaussians
+        self.canny_threshold_one = canny_threshold_one
+        self.canny_threshold_two = canny_threshold_two
+        self.canny_aperture_size = canny_aperture_size
+        self.thresholding_threshold = thresholding_threshold
+        self.dilating_matrix = dilating_matrix
+
+        global dis_vid
+        dis_vid = debug
 
     def Detect(self, frame):
         gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)  # grayscale
@@ -38,38 +50,45 @@ class Detector(object):
             backSub, (self.num_gaussians, self.num_gaussians), 0)  # blur  # should be 3
         display(img_blur, "blur")
 
-        edges = cv2.Canny(img_blur, 50, 200, 3)  # edge detection
+        edges = cv2.Canny(img_blur, self.canny_threshold_one,
+                          self.canny_threshold_two, self.canny_aperture_size)  # edge detection
         display(edges, "edges")
 
-        ret, thresh = cv2.threshold(edges, 127, 255, 0)  # thresholding
+        _, thresh = cv2.threshold(
+            edges, self.thresholding_threshold, 255, 0)  # thresholding
         display(thresh, "thresh")
 
-        contours, hierarchy = cv2.findContours(thresh,
-                                               cv2.RETR_EXTERNAL,
-                                               cv2.CHAIN_APPROX_SIMPLE)  # contours
+        kernel = cv2.getStructuringElement(
+            cv2.MORPH_ELLIPSE, (self.dilating_matrix, self.dilating_matrix))  # dilating (closing contours)
+        dilated = cv2.dilate(thresh, kernel)
+        dilated = thresh
+
+        contours, _ = cv2.findContours(dilated,
+                                       cv2.RETR_EXTERNAL,
+                                       cv2.CHAIN_APPROX_SIMPLE)  # contours
         image_with_contours = frame.copy()
 
         centers = []  # center of mass of ant
-        area_thresh = self.minBlob  # area of contour  # should be 0
 
         for cnt in contours:
             try:
-                # makes more enclosures
-                epsilon = 0.05 * cv2.arcLength(cnt, True)
-                approx = cv2.approxPolyDP(cnt, epsilon, True)
 
-                (x, y), radius = cv2.minEnclosingCircle(approx)
-                area = cv2.contourArea(approx)
-                centeroid = (int(x), int(y))
-                radius = int(radius)
-                if (area > area_thresh):
+                (x, y), radius = cv2.minEnclosingCircle(
+                    cnt)  # draws circle around contour
+                area = cv2.contourArea(cnt)  # gets area of contour
+                centeroid, radius = (int(x), int(y)), int(radius)
+
+                red = (0, 0, 255)  # bgr
+                if (area > self.minBlob):  # the area has to be at least minBlob
                     cv2.circle(image_with_contours, centeroid,
-                               radius, (0, 0, 255), 1)
+                               radius, red, 1)
                     b = np.array([[x], [y]])
                     centers.append(np.round(b))
             except ZeroDivisionError:
                 pass
-            cv2.drawContours(image_with_contours, [approx], 0, (0, 255, 0), 1)
+
+            green = (0, 255, 0)  # bgr
+            cv2.drawContours(image_with_contours, [cnt], 0, green, 1)
         display(image_with_contours, "contours and circles")
 
         return centers

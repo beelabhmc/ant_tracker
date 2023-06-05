@@ -1,3 +1,6 @@
+# Borrowed Heavily From Srini Ananthakrishnan's Multi Object Tracking Model
+# https://github.com/srianant/kalman_filter_multi_object_tracking
+
 import numpy as np
 from kalman_filter import KalmanFilter
 from scipy.optimize import linear_sum_assignment
@@ -32,10 +35,7 @@ class Tracker(object):
 
     def getTrackID(self):
         return self.trackIdCount
-    
-    def __str__(self):
-        return str(self.trackIdCount)
-    
+
     def incrementID(self):
         self.trackIdCount += 1
 
@@ -97,7 +97,7 @@ class Tracker(object):
                 if id < len(self.tracks):
                     del self.tracks[id]
                     del assignment[id]
-                    # print("deleted! It appeared for too little!")
+                    print("deleted! It appeared for too little!")
                 else:
                     print("ERROR: id is greater than length of tracks")
 
