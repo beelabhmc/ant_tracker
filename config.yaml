@@ -15,56 +15,56 @@ croprot:
     cores: 5        # The number of cores to use for this step
 tracks:
     # Parameters used by the ant tracking code (there's a lot of them)
-    min-blob: 1                         # The smallest size of blob  # UPDATE TO 1
+    min-blob: 10                         # The smallest size of blob  # UPDATE TO 1
                                         # which is interpreted as an ant
 
-    count-warning-threshold: 10         # If more ants than this are seen
+    count-warning-threshold: 5         # If more ants than this are seen
                                         # in 5 seconds, throw a warning
                                         # and flag offending tracks.
 
-    num-gaussians: 3                    # Gaussian Blur
+    num-gaussians: 3                    # The number of Guassians to use  # UPDATE TO 3
+                                        # in fitting the background
+    num-training-frames: 120            # The number of frames of the
+                                        # video to use to identify the
+                                        # background
 
-    # num-training-frames: 120            # The number of frames of the
-    #                                     # video to use to identify the
-    #                                     # background
-
-    # minimum-background-ratio: 0.70      # The fraction of frames which
-    #                                     # must be matched by the
-    #                                     # background detection
+    minimum-background-ratio: 0.70      # The fraction of frames which
+                                        # must be matched by the
+                                        # background detection
  
-    # cost-of-nonassignment: 15.0         # The cost of not assigning a
-    #                                     # detection to an existing track.
-    #                                     # Decreasing this makes it more
-    #                                     # likely to assign two ants to
-    #                                     # one track.
+    cost-of-nonassignment: 15.0         # The cost of not assigning a
+                                        # detection to an existing track.
+                                        # Decreasing this makes it more
+                                        # likely to assign two ants to
+                                        # one track.
 
     invisible-threshold: 5              # If a newly-detected track is  # UPDATE TO 5
                                         # missing for this many frames,
                                         # then assume that it was a fake
                                         # track and forget it.
  
-    # old-age-threshold: 8                # If a track exists for this many
-    #                                     # frames, then it becomes immune
-    #                                     # to the above effect
+    old-age-threshold: 8                # If a track exists for this many
+                                        # frames, then it becomes immune
+                                        # to the above effect
 
-    # visibility-threshold: 0.6           # The minimum fraction of frames
-    #                                     # during an ant's lifetime for
-    #                                     # which it must be visible.
+    visibility-threshold: 0.6           # The minimum fraction of frames
+                                        # during an ant's lifetime for
+                                        # which it must be visible.
 
-    # kalman-initial-error: '200 50'      # The margin of error for the
-    #                                     # Kalman filter, on the initial
-    #                                     # position and velocity
+    kalman-initial-error: '200 50'      # The margin of error for the
+                                        # Kalman filter, on the initial
+                                        # position and velocity
 
-    # kalman-motion-noise:  '100 15'      # The amount of variation in
-    #                                     # position and velocity
-    #                                     # which the Kalman filter tolerates
+    kalman-motion-noise:  '100 15'      # The amount of variation in
+                                        # position and velocity
+                                        # which the Kalman filter tolerates
 
-    # kalman-measurement-noise: 100.0     # The expected deviation in actual
-    #                                     # measurements
+    kalman-measurement-noise: 100.0     # The expected deviation in actual
+                                        # measurements
 
-    # min-visible-count: 3                # The number of frames for which
-    #                                     # an ant must be spotted for its
-    #                                     # track to be recorded
+    min-visible-count: 3                # The number of frames for which
+                                        # an ant must be spotted for its
+                                        # track to be recorded
 
     min-duration: 1.0                   # The minimum duration for which  # Update to a smaller number
                                         # a track must persist to be
@@ -95,7 +95,7 @@ tracks:
                                         # around 78-85. The floor (behind
                                         # branch) is around 90-110.
 
-    dilating-matrix: 3                  # The shape of structuring
+    dilating-matrix: 2                  # The shape of structuring
                                         # element. It is an elliptical
                                         # shape in this case
 

@@ -10,24 +10,20 @@ import os
 
 
 def trackOneClip(
-        vidPath, vidExport, result_path, minBlob, count_warning_threshold,
+        source, vidPath, vidExport, result_path, minBlob, count_warning_threshold,
         num_gaussians, invisible_threshold, min_duration,
         canny_threshold_one, canny_threshold_two, canny_aperture_size,
         thresholding_threshold, dilating_matrix, tracker_distance_threshold,
         tracker_trace_length, no_ant_counter_frames_total, edge_border, debug):
 
     # Delete me!
-    print("HELLOFJWOEFIJAWOEFIJ", vidPath, vidExport, result_path, minBlob, count_warning_threshold,
-        num_gaussians, invisible_threshold, min_duration, debug,
+    print("ALL METRICS:", source, vidPath, vidExport, result_path, minBlob, count_warning_threshold,
+        num_gaussians, invisible_threshold, min_duration,
         canny_threshold_one, canny_threshold_two, canny_aperture_size,
         thresholding_threshold, dilating_matrix, tracker_distance_threshold,
         tracker_trace_length, no_ant_counter_frames_total, edge_border, debug)
-
-    print("the vidPath is", vidPath)
-    print("the result_path is", result_path)
-    print("the vidExport is", vidExport)
-
-    cap = cv2.VideoCapture(vidPath)
+    
+    cap = cv2.VideoCapture(source)
 
     width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
     height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
@@ -40,6 +36,11 @@ def trackOneClip(
     first_coord = False
     last_coord = False
     no_ant_counter_frames = 0
+    global delete_last_entry
+    delete_last_entry = False
+
+    x_bound_left, x_bound_right = edge_border, width - edge_border
+    y_bound_bottom, y_bound_top = edge_border, height - edge_border
 
     track_colors = [(255, 0, 0), (0, 255, 0), (0, 0, 255), (255, 255, 0),
                     (0, 255, 255), (255, 0, 255), (255, 127, 255),
@@ -54,9 +55,9 @@ def trackOneClip(
     filename, ant_id, x0, y0, t0, x1, y1, t1, number_warning, broken_track = [], \
         [], [], [], [], [], [], [], [], []
 
-    # get relative path of vidPath
+    # get relative path of source
     start = os.path.abspath(__file__)
-    relative_path = os.path.relpath(vidPath, start)
+    relative_path = os.path.relpath(source, start)
 
     # displayed Track ID
     displayTrackID = tracker.getTrackID() + 1  # automatically increment by one
@@ -64,14 +65,12 @@ def trackOneClip(
     if vidExport:
         fourcc = cv2.VideoWriter_fourcc(*'mp4v')  # Codec for MP4 video
         # fourcc = cv2.VideoWriter_fourcc(*'H264')  # H264 codec
-        video_writer = cv2.VideoWriter(os.path.join(
-            result_path, os.path.basename(vidPath)), fourcc, fps, size)
-        print(os.path.join(result_path, os.path.basename(vidPath)))
+        video_writer = cv2.VideoWriter(vidPath, fourcc, fps, size)
 
     while (True):
         ret, frame = cap.read()  # read frame
         if not ret:
-            break  # done with vidPath
+            break  # done with source
 
         # detect ants
         centers = detector.Detect(frame)
@@ -80,14 +79,11 @@ def trackOneClip(
         if no_ant_counter_frames > no_ant_counter_frames_total and not last_coord and len(history) > 0:
             try:
                 last_seen_time = seconds
-                print(
-                    f"Ant was last seen on coordinates {history[-1]} at time {last_seen_time}")
+                print(f"Ant {tracker.getTrackID()} last seen {history[-1]} at time {last_seen_time}")
                 
-                x_bound_left, x_bound_right = edge_border, width - edge_border
-                y_bound_bottom, y_bound_top = edge_border, height - edge_border
                 if x_bound_left <= history[-1][0] <= x_bound_right and y_bound_bottom <= history[-1][1] <= y_bound_top:
-                    print(
-                        "And by the way, the ant disappeared in the middle of the track")
+                    print(f"WARNING: Ant {tracker.getTrackID()} disappeared in the middle")
+                    delete_last_entry = True
 
                 x1.append(history[-1][0])
                 y1.append(history[-1][1])
@@ -95,10 +91,18 @@ def trackOneClip(
 
                 history = []
                 if last_seen_time - first_seen_time <= min_duration:
-                    print(f'Ant {displayTrackID} did not exist for a while')
-                    # delete the ant data in question
+                    print(f'WARNING: Ant {displayTrackID} did not exist for a minimum duration '
+                          f'of {min_duration} seconds. Instead, it appeared for '
+                          f'{last_seen_time - first_seen_time} seconds')
+                    delete_last_entry = True
+                
+                if delete_last_entry:
                     for each_list in (filename, ant_id, x0, y0, t0, x1, y1, t1, number_warning, broken_track):
                         each_list.pop()
+                    print(f"DELETED: Ant {tracker.getTrackID()}")
+                    delete_last_entry = False
+                else:
+                    print(f"Recorded ant {tracker.getTrackID()}")
 
             except:
                 pass
@@ -114,11 +118,12 @@ def trackOneClip(
         if len(centers) > 0:
             # threshold for too many ants  # should be 10
             if len(centers) > count_warning_threshold:
-                print("There are a lot of ants")
+                print(f"WARNING: {len(centers)} ants detected at time {seconds}")
 
             tracker.Update(centers)  # track using Kalman
 
             # store ant location (past 10 frames) into memory
+            # YOU MUST FIX THIS FOR MULTIPLE ANTS
             for ant in centers:
                 history.append((int(ant[0][0]), int(ant[1][0])))
                 if len(history) > 100:
@@ -137,10 +142,13 @@ def trackOneClip(
             # also stores filename, timestamp, id, etc.
             if not first_coord:
                 first_seen_time = seconds
-                print(
-                    f"Ant was first seen on coordinates ({int(ant[0][0])}, {int(ant[1][0])}) at time {first_seen_time}")
+                print(f"Ant {tracker.getTrackID()} first seen: ({int(ant[0][0])}, {int(ant[1][0])}) at time {first_seen_time}")
                 first_coord = True
                 last_coord = False
+
+                if x_bound_left <= int(ant[0][0]) <= x_bound_right and y_bound_bottom <= int(ant[1][0]) <= y_bound_top:
+                    print(f"WARNING: Ant {tracker.getTrackID()} appeared in the middle")
+                    delete_last_entry = True
 
                 filename.append(relative_path)
                 ant_id.append(tracker.getTrackID())
@@ -149,6 +157,7 @@ def trackOneClip(
                 t0.append(seconds)
                 number_warning.append(0)
                 broken_track.append(0)
+
 
             if debug or vidExport:
                 # tracking line
@@ -172,9 +181,11 @@ def trackOneClip(
                 # display final output
                 display(frame, "Tracking", final=True)
 
-                # how fast vidPath plays. 42 is normal speed
-                k = cv2.waitKey(1)
-                if k == 27:  # esc for end vidPath
+                video_writer.write(frame)
+
+                speed_of_playback = 1
+                k = cv2.waitKey(speed_of_playback)  # changes speed of displayed video
+                if k == 27:  # esc for end source
                     break
                 if k == 112:  # p for pause
                     pause = not pause
@@ -188,14 +199,11 @@ def trackOneClip(
                                 break
                             if k == 27:
                                 break
-        else:
+        else:  # cases where ants were not detected
             no_ant_counter_frames += 1
 
-        if vidExport:
-            video_writer.write(frame)
 
-    # destroy windows when done
-    cap.release()
+    cap.release()  # destroy windows when done
     cv2.destroyAllWindows()
     if vidExport:
         video_writer.release()
@@ -203,7 +211,6 @@ def trackOneClip(
     # making csv
     full_list = list(zip(filename, ant_id, x0, y0, t0, x1,
                          y1, t1, number_warning, broken_track))
-    # filename:0, ant_id:1, x0:2, y0:3, t0:4, x1:5, y1:6, t1:7, number_warning:8, broken_track:9
 
     # determine number_warning
     times = collections.deque()
@@ -214,19 +221,20 @@ def trackOneClip(
             times.popleft()
         if len(times) >= count_warning_threshold:
             print('Warning: detected an unexpected number of tracks at '
-                  f't={t1} in {vidPath}')
+                  f't={t1} in {source}')
             for t, index in times:
                 full_list[index, 8] = 1
 
+    # for purves
     headers = ["filename", "id", "x0", "y0", "t0", "x1",
                "y1", "t1", "number_warning", "broken_track"]
-    script_directory = os.path.dirname(os.path.abspath(__file__))
-    csv_file_path = os.path.join(script_directory, "data.csv")
-    csv_file_path = csv_file_path = os.path.join(
-        result_path, os.path.splitext(os.path.basename(vidPath))[0] + '.csv')
-    print("csv_file_path is", csv_file_path)
+    # script_directory = os.path.dirname(os.path.abspath(__file__))
+    # csv_file_path = os.path.join(script_directory, "data.csv")
+    # csv_file_path = csv_file_path = os.path.join(
+    #     result_path, os.path.splitext(os.path.basename(source))[0] + '.csv')
+    print("csv_file_path is", result_path)
 
-    with open(csv_file_path, "w", newline="") as csvfile:
+    with open(result_path, "w", newline="") as csvfile:
         writer = csv.writer(csvfile)
         writer.writerow(headers)  # Write the headers
         writer.writerows(full_list)  # Write the data rows

@@ -210,7 +210,7 @@ def main():
         args.video_path = ''
 
     # print("The result path is", args.result_path)
-    trackOneClip(args.source, export, args.result_path,
+    trackOneClip(args.source, args.video_path, export, args.result_path,
                  args.min_blob, args.count_threshold, args.gaussians,
                  args.invisible_threshold, args.min_duration,
                  args.canny_threshold_one, args.canny_threshold_two,

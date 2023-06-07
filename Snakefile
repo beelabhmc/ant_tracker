@@ -34,7 +34,9 @@ rule trim_end:
     output:
         'intermediate/trim/{video}.mp4'
     shell:
-        'ffmpeg -i {input} -ss 3 -i {input} -c copy -map 1:0 -map 0 -shortest -f nut - | ffmpeg -f nut -i - -map 0 -map -0:0 -c copy {output}'
+        'duration=$(ffprobe -v error -show_entries format=duration -of default=noprint_wrappers=1:nokey=1 {input})'
+        'new_duration=$(bc <<< "$duration - 5")'
+        'ffmpeg -i {input} -c copy -t $new_duration {output}'
 
 
 ### MINE

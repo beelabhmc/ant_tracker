@@ -4,6 +4,7 @@
 import numpy as np
 from kalman_filter import KalmanFilter
 from scipy.optimize import linear_sum_assignment
+import track_one_clip
 
 
 class Track(object):
@@ -38,15 +39,18 @@ class Tracker(object):
 
     def incrementID(self):
         self.trackIdCount += 1
+        print("Incrementing trackIDCount to", self.trackIdCount)
+        print("")
 
     def Update(self, detections):
         # Create tracks if no tracks vector found
+        # print("The len(self.tracks) is", len(self.tracks))
         if (len(self.tracks) == 0):
             for i in range(len(detections)):
                 track = Track(detections[i], self.trackIdCount)
                 self.trackIdCount += 1
+                print("Incremented trackIdCount to", self.trackIdCount, "due to no tracks vectors being found")
                 self.tracks.append(track)
-                # print("I'm working here")
 
         # Calculate cost using sum of square distance between
         # predicted vs detected centroids
@@ -81,6 +85,8 @@ class Tracker(object):
                 if (cost[i][assignment[i]] > self.dist_thresh):
                     assignment[i] = -1
                     un_assigned_tracks.append(i)
+                    self.trackIdCount -= 1
+                    print("Unassigned Tracks appended")
                 pass
             else:
                 self.tracks[i].skipped_frames += 1
@@ -97,7 +103,8 @@ class Tracker(object):
                 if id < len(self.tracks):
                     del self.tracks[id]
                     del assignment[id]
-                    print("deleted! It appeared for too little!")
+                    print(f"WARNING: Ant {self.getTrackID()} was timed out")
+                    # track_one_clip.delete_last_entry = True
                 else:
                     print("ERROR: id is greater than length of tracks")
 

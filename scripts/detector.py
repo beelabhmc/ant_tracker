@@ -4,7 +4,7 @@
 import numpy as np
 import cv2
 
-dis_vid = False
+dis_vid = True
 toDisplay = False
 
 
@@ -14,6 +14,8 @@ def display(frame, desc, final=False):
         height, width = frame.shape
     except:
         height, width, _ = frame.shape
+
+    dis_vid = False  # use True only when local
 
     scaler = 4
 
@@ -36,10 +38,9 @@ class Detector(object):
         self.thresholding_threshold = thresholding_threshold
         self.dilating_matrix = dilating_matrix
 
-        global dis_vid
-        dis_vid = debug
-
     def Detect(self, frame):
+        display(frame, "original")
+
         gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)  # grayscale
         display(gray, "grayscale")
 
@@ -50,7 +51,12 @@ class Detector(object):
             backSub, (self.num_gaussians, self.num_gaussians), 0)  # blur  # should be 3
         display(img_blur, "blur")
 
-        edges = cv2.Canny(img_blur, self.canny_threshold_one,
+        kernel = cv2.getStructuringElement(
+            cv2.MORPH_ELLIPSE, (self.dilating_matrix, self.dilating_matrix))  # dilating (closing contours)
+        dilated = cv2.dilate(img_blur, kernel)
+        display(dilated, "dilated")
+
+        edges = cv2.Canny(dilated, self.canny_threshold_one,
                           self.canny_threshold_two, self.canny_aperture_size)  # edge detection
         display(edges, "edges")
 
@@ -58,14 +64,10 @@ class Detector(object):
             edges, self.thresholding_threshold, 255, 0)  # thresholding
         display(thresh, "thresh")
 
-        kernel = cv2.getStructuringElement(
-            cv2.MORPH_ELLIPSE, (self.dilating_matrix, self.dilating_matrix))  # dilating (closing contours)
-        dilated = cv2.dilate(thresh, kernel)
-        dilated = thresh
-
         contours, _ = cv2.findContours(dilated,
                                        cv2.RETR_EXTERNAL,
                                        cv2.CHAIN_APPROX_SIMPLE)  # contours
+        
         image_with_contours = frame.copy()
 
         centers = []  # center of mass of ant

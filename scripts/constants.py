@@ -19,10 +19,10 @@ PADDING = 10                    # This constant was buried in the antTracker.py
                                 # can't find out where or if it is ever used by
                                 # the code.
 
-MIN_BLOB = 1                    # The smallest size of blob which is interpreted
+MIN_BLOB = 10                    # The smallest size of blob which is interpreted
                                 # as an ant
 
-COUNT_WARNING_THRESHOLD = 10    # If more ants than this are detected in the
+COUNT_WARNING_THRESHOLD = 5    # If more ants than this are detected in the
                                 # span of 5 seconds, throw a warning and flag
                                 # the offending tracks
 
@@ -65,7 +65,7 @@ KALMAN_MEASUREMENT_NOISE = 100. # The expected margin of error in the
 MIN_VISIBLE_COUNT = 3           # The minimum number of frames for which an ant
                                 # must be spotted for its track to be displayed
 
-MIN_DURATION = 1.5              # The minimum duration for which  
+MIN_DURATION = 1.0              # The minimum duration for which  
                                 # a track must persist to be
                                 # saved as an ant.
 
@@ -91,7 +91,7 @@ THRESHOLDING_THRESHOLD = 88     # A grayscale value above 127
                                 # around 78-85. The floor (behind
                                 # branch) is around 90-110.
 
-DILATING_MATRIX = 3             # The shape of structuring
+DILATING_MATRIX = 2             # The shape of structuring
                                 # element. It is an elliptical
                                 # shape in this case
 
