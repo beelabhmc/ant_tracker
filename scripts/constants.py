@@ -103,9 +103,9 @@ TRACKER_DISTANCE_THRESHOLD = 10 # The distance threshold. When
 TRACKER_TRACE_LENGTH = 10       # Trace path history length (good
                                 # for debugging purposes)
 
-NO_ANT_COUNTER_FRAMES_TOTAL = 100     # If the ant isn't detected for 
-                                # 100 frames, we can safely assume
-                                # it has left the track
+NO_ANT_COUNTER_FRAMES_TOTAL = 24     # If the ant isn't detected for 
+                                # this many frames, we can safely 
+                                # assume it has left the track
 
 EDGE_BORDER = 10                # Creates a border around the ROI.
                                 # If the ant disappears within the

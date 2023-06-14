@@ -56,7 +56,7 @@ def warp(frame, coord1):
     # Warp query image using ARTag coordinates
     coord2 = np.array([x[1] for x in pair]).astype(int)
 
-    M ,status = cv2.findHomography(coord2, coord1)
+    M, _ = cv2.findHomography(coord2, coord1)
     result = cv2.warpPerspective(frame, M, (w,h))
     return M, result
 
@@ -69,7 +69,7 @@ def mask(frame):
             structure from the background
     """
     thresh = 160 # Might need to adjust this number if lighting conditions call for it (lower for dimmer arenas)
-    ret1,th1 = cv2.threshold(frame,thresh,255,cv2.THRESH_BINARY)
+    _, th1 = cv2.threshold(frame,thresh,255,cv2.THRESH_BINARY)
 
     # Clean up mask with morphological operations
     open_kernel = np.ones((8, 8), np.uint8)
@@ -137,7 +137,7 @@ def contour(mask):
     """
     # Find and draw only the largest contour in image. This will be the tree structure
     cont = np.zeros_like(mask)
-    contours, heir = cv2.findContours(mask, cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)
+    contours, _ = cv2.findContours(mask, cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)
     contours = max(contours, key = cv2.contourArea)
     cv2.drawContours(cont, contours, -1, [255,255,255])
     return cont

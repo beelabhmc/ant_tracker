@@ -102,12 +102,10 @@ rule track:
         track_input
     output:
         'intermediate/track/{video}/{split}/ROI_{roi}.csv'
-    # resources:
-    #     cores=1  # breaks with higher core counts
     threads: 32
     shell:
-    # replaced python 3.7 with python
-        'python scripts/track.py {{input}} {{output}} -m {} -c {} -g {} -it {} -d {} -cto {} -ctt {} -cas {} -tt {} -dm {} -tdt {} -ttl {} -nac {} -eb {}' \
+        'python scripts/track.py {{input}} {{output}} -m {} -c {} -g {} -it {} -d {} '
+        '-cto {} -ctt {} -cas {} -tt {} -dm {} -tdt {} -ttl {} -nac {} -eb {}' \
         .format(*(config['tracks'][x]
                   for x in ['min-blob', 'count-warning-threshold',
                             'num-gaussians', 'invisible-threshold', 'min-duration',

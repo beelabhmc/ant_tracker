@@ -17,7 +17,7 @@ def display(frame, desc, final=False):
 
     dis_vid = False  # use True only when local
 
-    scaler = 4
+    scaler = 5
 
     new_width = width * scaler
     new_height = height * scaler
@@ -27,7 +27,7 @@ def display(frame, desc, final=False):
         cv2.imshow(desc, resized_frame)
 
 
-class Detector(object):
+class Detector:
     def __init__(self, minBlob, num_gaussians, canny_threshold_one, canny_threshold_two, canny_aperture_size, thresholding_threshold, dilating_matrix, debug):
         self.backRemove = cv2.createBackgroundSubtractorKNN()
         self.minBlob = minBlob
@@ -51,10 +51,11 @@ class Detector(object):
             backSub, (self.num_gaussians, self.num_gaussians), 0)  # blur  # should be 3
         display(img_blur, "blur")
 
-        kernel = cv2.getStructuringElement(
-            cv2.MORPH_ELLIPSE, (self.dilating_matrix, self.dilating_matrix))  # dilating (closing contours)
-        dilated = cv2.dilate(img_blur, kernel)
-        display(dilated, "dilated")
+        # kernel = cv2.getStructuringElement(
+        #     cv2.MORPH_ELLIPSE, (self.dilating_matrix, self.dilating_matrix))  # dilating (closing contours)
+        # dilated = cv2.dilate(img_blur, kernel)
+        # display(dilated, "dilated")
+        dilated = img_blur
 
         edges = cv2.Canny(dilated, self.canny_threshold_one,
                           self.canny_threshold_two, self.canny_aperture_size)  # edge detection

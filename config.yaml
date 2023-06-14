@@ -109,7 +109,7 @@ tracks:
                                         # for debugging purposes)
 
     no-ant-counter-frames-total: 100    # If the ant is not detected for 
-                                        # 100 frames, we can safely assume
+                                        # this frames, we can safely assume
                                         # it has left the track
 
     edge-border: 10                     # Creates a border around the ROI.
