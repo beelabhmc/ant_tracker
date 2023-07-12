@@ -3,7 +3,7 @@ import argparse
 import shlex
 import subprocess
 import os, os.path
-# os.environ['OPENBLAS_NUM_THREADS'] = '17'  # PLEASE CHANGE ME!
+# os.environ['OPENBLAS_NUM_THREADS'] = '1'  # PLEASE CHANGE ME!
 
 
 def path_split(path):

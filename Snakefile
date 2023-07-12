@@ -1,6 +1,5 @@
 configfile: 'config.yaml'
 
-### ORIGINAL
 rule convert_mov_to_mp4:
     input:
         'input/{video}.mov'
@@ -9,52 +8,20 @@ rule convert_mov_to_mp4:
     shell:
         'ffmpeg -i {input} -vcodec h264 -acodec mp2 {output}'
 
-# # Video shakes at the beginning AND THE END. We trim first and last 5 seconds to ensure consistency.
-# rule trim:
-#     input:
-#         'input/{video}.mp4'
-#     output:
-#         'intermediate/trim/{video}.mp4'
-#     shell:
-#         'ffmpeg -i {input} -ss 5 -t %(duration)s -ss %(start)s -c copy {output}'
 
-# Video shakes at the beginning, so we trim the first 5 seconds to ensure consistency
-rule trim_begin:
+# Video shakes at the beginning and end, so we trim the first and last 5 seconds to ensure consistency
+rule trim:
     input:
         'input/{video}.mp4'
     output:
         'intermediate/trim/{video}.mp4'
     shell:
-        'ffmpeg -i {input} -ss 5 -c copy {output}'
-
-# Remove last 5 seconds from video
-rule trim_end:
-    input:
-        'intermediate/trim/{video}.mp4'
-    output:
-        'intermediate/trim/{video}.mp4'
-    shell:
-        'duration=$(ffprobe -v error -show_entries format=duration -of default=noprint_wrappers=1:nokey=1 {input})'
-        'new_duration=$(bc <<< "$duration - 5")'
-        'ffmpeg -i {input} -c copy -t $new_duration {output}'
-
-
-### MINE
-# rule mov_to_mp4:
-#     input:
-#         'input/{video}.mov'
-#     output:
-#         'input/{video}.mp4'
-#     shell:
-#         'python scripts/mov_to_mp4.py {input} {output}'      
-
-# rule video_trimmer:
-#     input:
-#         'input/{video}.mp4'
-#     output:
-#         'intermediate/trim/{video}.mp4'
-#     shell:
-#         'python scripts/video_trimmer.py {input} {output}'
+        '''
+        duration=$(ffprobe -v error -show_entries format=duration -of csv=p=0 {input}); \
+        duration=$(bc <<< "$duration - 5"); \
+        echo $duration; \
+        ffmpeg -ss 00:00:05 -to $duration -i {input} -c copy {output}
+        '''
 
 rule roidetect:
     input:
@@ -62,7 +29,7 @@ rule roidetect:
     output:
         'intermediate/rois/{video}.txt'
     shell:
-        'python scripts/roidetect.py {input} {output}'
+        'python scripts/roidetect.py {input} {output} -y ' + str(config["roidetect"]["year"])
 
 checkpoint split:
     input:
@@ -172,5 +139,5 @@ rule roi_label:
     output:
         'output/{video}/labels.png'
     shell:
-        'python scripts/roilabel.py {input[0]} {input[1]} {output}'
+        'python scripts/roilabel.py {input[0]} {input[1]} {output} -y ' + str(config["roidetect"]["year"])
         + (' -i' if config['label']['insignificant-vertices'] else '')

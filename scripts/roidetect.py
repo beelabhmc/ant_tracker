@@ -12,6 +12,7 @@ import matplotlib as mpl
 import networkx as nx
 from sklearn.cluster import KMeans
 from cv2 import aruco
+import csv
 import argparse
 
 import bbox
@@ -127,6 +128,8 @@ def centers(reference, ps):
     newpoints = np.array(newpoints)
     return newpoints    
 
+
+# DILATION! CHANGME
 def contour(mask):
     """
     Inputs 
@@ -135,15 +138,20 @@ def contour(mask):
         cont -- rather than a skeletonized representation, return a contour image of the tree.
             We will use this to find the vertices of the rois
     """
-    # Find and draw only the largest contour in image. This will be the tree structure
+    # Find and draw only the largest contour in the image. This will be the tree structure
     cont = np.zeros_like(mask)
     contours, _ = cv2.findContours(mask, cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)
-    contours = max(contours, key = cv2.contourArea)
-    cv2.drawContours(cont, contours, -1, [255,255,255])
+    contours = max(contours, key=cv2.contourArea)
+    cv2.drawContours(cont, contours, -1, [255, 255, 255])
+
+    # Dilate the contours to make the lines thicker
+    # kernel = np.ones((3, 3), np.uint8)
+    # cont = cv2.dilate(cont, kernel, iterations=1)
+
     return cont
 
 
-def vertices(cont, newpoints, Dict):
+def vertices(cont, newpoints, Dict, Orientation):
     """
     Inputs
         cont -- contour image of tree structure
@@ -152,13 +160,20 @@ def vertices(cont, newpoints, Dict):
     Outputs
         verts -- vertices of each roi, consistently ordered
     """
-    #h, w = frame.shape
     conn = []
+    cont_test = cont.copy()
+
     for i in range(len(newpoints)):
         # Points of intersection between circle and contour image represent vertices of an roi
         circle = np.zeros_like(cont)
         cv2.circle(circle, (newpoints[i, 1], newpoints[i, 0]), 40, [255,255,255], 2)
+
+        # # test circle on contour
+        cv2.circle(cont_test, (newpoints[i, 1], newpoints[i, 0]), 40, [255,255,255], 2)
+        cv2.imwrite('detect_images/the_circles_new.png', cont_test)
+
         inter = cv2.bitwise_and(cont, circle)
+        # cv2.imwrite('detect_images/bitwise_' + str(i) + '.png', inter)
         index = np.array(cv2.findNonZero(inter))
         index = np.array([index[i][0] for i in range(len(index))])
         # At times one point of intersection will be detected as two closely positioned points.
@@ -176,10 +191,17 @@ def vertices(cont, newpoints, Dict):
         roll = np.roll(poly, -index, axis = 0)
 
         # Reorder right junctions so they have the same labelling as left junctions
-        if Dict[i] in {5,3,0,2,6,50,32,20,212,211,60,41,42,121,122,111,112}:
+        right_set = set()
+        for tag, ori in Orientation:
+            if ori == "R":
+                right_set.add(int(tag))
+
+        if Dict[i] in right_set:
             roll = np.roll(roll, 2, axis = 0)
         conn.append(roll)
+
     conn = np.array(conn)
+    
     return conn
 
 def main():
@@ -200,6 +222,11 @@ def main():
                             help='The frame number in the video to use for '
                                  'ROI detection (default=1)',
                            )
+    arg_parser.add_argument('-y', '--year',
+                            dest='year',
+                            type=str,
+                            help='The year the video was taken',
+                           )
 
 
     args = arg_parser.parse_args()
@@ -215,9 +242,29 @@ def main():
     gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
 
     # Load in relevant reference coordinates
-    coord1 = np.array(np.loadtxt("templates/tag_coordinates.txt")).astype(int)
-    reference = np.array(np.loadtxt("templates/center_coordinates.txt")).astype(int)
-    Dict = {0:42, 1:122, 2:121, 3:41, 4:12, 5:40, 6:112, 7:8, 8:11, 9:6, 10:10, 11:4, 12:111, 13:2, 14:60, 15:0, 16:1, 17:3, 18:20, 19:7, 20:5, 21:211, 22:31, 23:21, 24:22, 25:30, 26:50, 27:212, 28:222, 29:221, 30:32}
+    coord1 = np.array(np.loadtxt("templates/tag_coordinates.txt")).astype(int)  # Aruco detection (preferably all 7 visible)
+    # reference = np.array(np.loadtxt("templates/center_coordinates.txt")).astype(int)  # Center coordinates. data depends on year
+
+    if args.year == "2021":
+        reference = np.array(np.loadtxt("templates/center_coordinates_2021.txt")).astype(int)  # Center coordinates. data depends on year
+        csv_file = "templates/dictionary_2021.csv"
+    elif args.year == "2023":
+        reference = np.array(np.loadtxt("templates/center_coordinates_2023.txt")).astype(int)  # Center coordinates. data depends on year
+        csv_file = "templates/dictionary_2023.csv"
+
+    Dict = {}
+    Orientation = []
+
+    with open(csv_file, 'r') as file:
+        reader = csv.reader(file)
+
+        # Skip the header
+        next(reader)
+
+        # make Dict
+        for index, row in enumerate(reader):
+            Dict[int(index)] = int(row[0])
+            Orientation.append(tuple(row))
     
     M, result = warp(gray, coord1)
     frame_mask = mask(result)
@@ -233,11 +280,12 @@ def main():
 
 
     cont = contour(frame_mask)
-    verts = vertices(cont, newpoints, Dict)
+    verts = vertices(cont, newpoints, Dict, Orientation)
 
     # Undo transformation to get vertices coordinates in original frame
     pts2 = np.array(verts, np.float32)
     polys = np.array(cv2.perspectiveTransform(pts2, np.linalg.pinv(M))).astype(int)
+
 
     """
     # Testing

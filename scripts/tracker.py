@@ -111,21 +111,8 @@ class Tracker:
                     # self.trackIdCount -= 1
                     print("Distance Threshold Triggered")
                     print()
-                # Otherwise check time threshold
-                # elif track_one_clip.frame_counter - self.tracks[i].frame_last_seen > self.no_ant_counter_frames_total:  # replace 10
-                #     assignment[i] = -1
-                #     un_assigned_tracks.append(i)
-                #     # Not sure why we have to do this only for time...
-                #     self.tracks[i].track_id += 1
-                #     # self.trackIdCount -= 1
-                #     print("Time Threshold Triggered")
-                #     print()
                 self.tracks[i].frame_last_seen = track_one_clip.frame_counter
                 self.tracks[i].time_last_seen = track_one_clip.current_timestamp
-            # else:
-            #     # self.tracks[i].skipped_frames += 1  # POTENTIALLY MOVE THIS TO TRACK_ONE_CLIP
-            #     # self.tracks[i].frame_last_seen = track_one_clip.frame_counter
-            #     pass
 
         # Deletion of tracks done in track_one_clip
 

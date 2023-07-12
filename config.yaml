@@ -13,6 +13,11 @@ split:
 croprot:
     # Parameters used by the croprotate file
     cores: 5        # The number of cores to use for this step
+
+roidetect:
+    # Parameters used by the roidetect file
+    year: 2021      # The year the videos were taken
+
 tracks:
     # Parameters used by the ant tracking code (there's a lot of them)
     min-blob: 10                         # The smallest size of blob  # UPDATE TO 1
