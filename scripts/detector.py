@@ -23,12 +23,12 @@ def display(frame, desc, final=False):
     new_height = height * scaler
     resized_frame = cv2.resize(frame, (new_width, new_height))
 
-    if dis_vid or final:
-        cv2.imshow(desc, resized_frame)
+    # if dis_vid or final:
+    #     cv2.imshow(desc, resized_frame)
 
 
 class Detector:
-    def __init__(self, minBlob, num_gaussians, canny_threshold_one, canny_threshold_two, canny_aperture_size, thresholding_threshold, dilating_matrix, debug):
+    def __init__(self, minBlob, num_gaussians, canny_threshold_one, canny_threshold_two, canny_aperture_size, thresholding_threshold, dilating_matrix):
         self.backRemove = cv2.createBackgroundSubtractorKNN()
         self.minBlob = minBlob
         self.num_gaussians = num_gaussians
@@ -39,17 +39,16 @@ class Detector:
         self.dilating_matrix = dilating_matrix
 
     def Detect(self, frame):
-        display(frame, "original")
+        # display(frame, "original")
 
         gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)  # grayscale
-        display(gray, "grayscale")
+        # display(gray, "grayscale")
 
         backSub = self.backRemove.apply(gray)  # background subs
-        display(backSub, "background substitution")
+        # display(backSub, "background substitution")
 
-        img_blur = cv2.GaussianBlur(
-            backSub, (self.num_gaussians, self.num_gaussians), 0)  # blur  # should be 3
-        display(img_blur, "blur")
+        img_blur = cv2.GaussianBlur(backSub, (self.num_gaussians, self.num_gaussians), 0)  # blur  # should be 3
+        # display(img_blur, "blur")
 
         # kernel = cv2.getStructuringElement(
         #     cv2.MORPH_ELLIPSE, (self.dilating_matrix, self.dilating_matrix))  # dilating (closing contours)
@@ -57,21 +56,18 @@ class Detector:
         # display(dilated, "dilated")
         dilated = img_blur
 
-        edges = cv2.Canny(dilated, self.canny_threshold_one,
-                          self.canny_threshold_two, self.canny_aperture_size)  # edge detection
-        display(edges, "edges")
+        edges = cv2.Canny(dilated, self.canny_threshold_one, self.canny_threshold_two, self.canny_aperture_size)  # edge detection
+        # display(edges, "edges")
 
-        _, thresh = cv2.threshold(
-            edges, self.thresholding_threshold, 255, 0)  # thresholding
-        display(thresh, "thresh")
+        _, thresh = cv2.threshold(edges, self.thresholding_threshold, 255, 0)  # thresholding
+        # display(thresh, "thresh", final=True)
 
-        contours, _ = cv2.findContours(dilated,
-                                       cv2.RETR_EXTERNAL,
-                                       cv2.CHAIN_APPROX_SIMPLE)  # contours
+        contours, _ = cv2.findContours(dilated, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)  # contours
         
         image_with_contours = frame.copy()
 
         centers = []  # center of mass of ant
+        areas = []  # area of the center of mass of ant
 
         for cnt in contours:
             try:
@@ -82,16 +78,18 @@ class Detector:
                 centeroid, radius = (int(x), int(y)), int(radius)
 
                 red = (0, 0, 255)  # bgr
-                if (area > self.minBlob):  # the area has to be at least minBlob
+                if (500 > area > self.minBlob):  # the area has to be at least minBlob  # 1000 is like a hard limit
+                    # anything more than 500 is definitely NOT an ant and definitely isn't a merger of ants
                     cv2.circle(image_with_contours, centeroid,
                                radius, red, 1)
                     b = np.array([[x], [y]])
                     centers.append(np.round(b))
+                    areas.append(area)
             except ZeroDivisionError:
                 pass
 
             green = (0, 255, 0)  # bgr
             cv2.drawContours(image_with_contours, [cnt], 0, green, 1)
-        display(image_with_contours, "contours and circles")
+        # display(image_with_contours, "contours and circles")
 
-        return centers
+        return centers, areas

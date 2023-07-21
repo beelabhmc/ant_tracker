@@ -56,8 +56,31 @@ def warp(frame, coord1):
 
     # Warp query image using ARTag coordinates
     coord2 = np.array([x[1] for x in pair]).astype(int)
+    coord1_copy = coord1
 
-    M, _ = cv2.findHomography(coord2, coord1)
+    max_determinant = 0
+    final_i = 0
+
+    # WARNING
+    # It is possible the number of detect ArUco tags is not 7 (which is the usual)
+    # We can still run the pipeline with less than 7, as long as we correctly identify
+    # which ArUco tag is missing
+    if len(coord1_copy) > len(coord2):
+        for i in range(len(coord1)):
+            new_coord1 = np.delete(coord1, i, axis=0)
+            M, _ = cv2.findHomography(coord2, new_coord1)
+            determinant = np.linalg.det(M)  # find determinant
+            if determinant > max_determinant:
+                max_determinant = determinant
+                final_i = i
+
+        new_coord1 = np.delete(coord1, final_i, axis=0)
+        M, _ = cv2.findHomography(coord2, new_coord1)
+    
+    else:
+        M, _ = cv2.findHomography(coord2, coord1)
+
+
     result = cv2.warpPerspective(frame, M, (w,h))
     return M, result
 
@@ -199,6 +222,7 @@ def vertices(cont, newpoints, Dict, Orientation):
         if Dict[i] in right_set:
             roll = np.roll(roll, 2, axis = 0)
         conn.append(roll)
+        print(i, len(roll))
 
     conn = np.array(conn)
     
@@ -235,11 +259,13 @@ def main():
     if not os.path.isfile(args.video):
         arg_parser.error(f'{args.video} is not a valid file.')
 
+
     video = cv2.VideoCapture(args.video)
     ret, frame = video.read()
     if not ret:
         arg_parser.error('The video only has {} frames.'.format(args.frame-1))
     gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+
 
     # Load in relevant reference coordinates
     coord1 = np.array(np.loadtxt("templates/tag_coordinates.txt")).astype(int)  # Aruco detection (preferably all 7 visible)
@@ -251,6 +277,7 @@ def main():
     elif args.year == "2023":
         reference = np.array(np.loadtxt("templates/center_coordinates_2023.txt")).astype(int)  # Center coordinates. data depends on year
         csv_file = "templates/dictionary_2023.csv"
+
 
     Dict = {}
     Orientation = []
@@ -283,6 +310,7 @@ def main():
     verts = vertices(cont, newpoints, Dict, Orientation)
 
     # Undo transformation to get vertices coordinates in original frame
+    print(verts)
     pts2 = np.array(verts, np.float32)
     polys = np.array(cv2.perspectiveTransform(pts2, np.linalg.pinv(M))).astype(int)
 

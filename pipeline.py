@@ -3,8 +3,6 @@ import argparse
 import shlex
 import subprocess
 import os, os.path
-# os.environ['OPENBLAS_NUM_THREADS'] = '1'  # PLEASE CHANGE ME!
-
 
 def path_split(path):
     """Takes a path and splits it into a list, where the last item is
@@ -22,7 +20,7 @@ def path_split(path):
             return folders[::-1]
 
 def run_pipeline(args, files):
-    snakemake = shlex.split('python3.7 -m snakemake')
+    snakemake = shlex.split('python3.7 -m snakemake --latency-wait 20')
     process = subprocess.Popen(snakemake+args+files)
     process.wait()
 
@@ -63,4 +61,3 @@ def main():
 
 if __name__ == '__main__':
     main()
-

@@ -16,14 +16,14 @@ croprot:
 
 roidetect:
     # Parameters used by the roidetect file
-    year: 2021      # The year the videos were taken
+    year: 2023      # The year the videos were taken
 
 tracks:
     # Parameters used by the ant tracking code (there's a lot of them)
-    min-blob: 10                         # The smallest size of blob  # UPDATE TO 1
+    min-blob: 15                         # The smallest size of blob  # UPDATE TO 1
                                         # which is interpreted as an ant
 
-    count-warning-threshold: 5         # If more ants than this are seen
+    count-warning-threshold: 10         # If more ants than this are seen
                                         # in 5 seconds, throw a warning
                                         # and flag offending tracks.
 
@@ -113,17 +113,21 @@ tracks:
     tracker-trace-length: 10            # Trace path history length (good
                                         # for debugging purposes)
 
-    no-ant-counter-frames-total: 100    # If the ant is not detected for 
+    no-ant-counter-frames-total: 24    # If the ant is not detected for 
                                         # this frames, we can safely assume
                                         # it has left the track
 
-    edge-border: 10                     # Creates a border around the ROI.
+    edge-border: 5                     # Creates a border around the ROI.
                                         # If the ant disappears within the
                                         # border, we can assume it has 
                                         # left an edge. Otherwise, the ant
                                         # "disappeared" on the middle of 
                                         # the track, which doesn't make 
                                         # sense. The ant will be removed.
+
+    merge-distance: 10                 # The maximum distance allowed
+                                        # between two existing tracks
+                                        # for it to be considered a merger.
 
 # NOT UTILIZED
 roi-detection:

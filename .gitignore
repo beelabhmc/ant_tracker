@@ -3,6 +3,7 @@ output/
 archive/
 input/*
 intermediate/*
+saved_crops/*
 miniconda3/*
 tests/*
 nohup.out

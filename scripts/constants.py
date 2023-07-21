@@ -19,10 +19,10 @@ PADDING = 10                    # This constant was buried in the antTracker.py
                                 # can't find out where or if it is ever used by
                                 # the code.
 
-MIN_BLOB = 10                    # The smallest size of blob which is interpreted
+MIN_BLOB = 15                    # The smallest size of blob which is interpreted
                                 # as an ant
 
-COUNT_WARNING_THRESHOLD = 5    # If more ants than this are detected in the
+COUNT_WARNING_THRESHOLD = 10    # If more ants than this are detected in the
                                 # span of 5 seconds, throw a warning and flag
                                 # the offending tracks
 
@@ -95,7 +95,7 @@ DILATING_MATRIX = 2             # The shape of structuring
                                 # element. It is an elliptical
                                 # shape in this case
 
-TRACKER_DISTANCE_THRESHOLD = 10 # The distance threshold. When
+TRACKER_DISTANCE_THRESHOLD = 15 # The distance threshold. When
                                 # the threshold is exceeded, the
                                 # track will be deleted and a new
                                 # track will be created
@@ -103,17 +103,23 @@ TRACKER_DISTANCE_THRESHOLD = 10 # The distance threshold. When
 TRACKER_TRACE_LENGTH = 10       # Trace path history length (good
                                 # for debugging purposes)
 
+ID_START = 0                    # The number ID-ing starts
+
 NO_ANT_COUNTER_FRAMES_TOTAL = 24     # If the ant isn't detected for 
                                 # this many frames, we can safely 
                                 # assume it has left the track
 
-EDGE_BORDER = 10                # Creates a border around the ROI.
+EDGE_BORDER = 5                # Creates a border around the ROI.
                                 # If the ant disappears within the
                                 # border, we can assume it has 
                                 # left an edge. Otherwise, the ant
                                 # "disappeared" on the middle of 
                                 # the track, which doesn't make 
                                 # sense. The ant will be removed.
+
+MERGE_DISTANCE = 10            # The maximum distance allowed
+                                # between two existing tracks
+                                # for it to be considered a merger.
 
 
 # Parameters used in detecting bridges automatically via looking for red

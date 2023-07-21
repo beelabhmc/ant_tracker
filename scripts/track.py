@@ -1,10 +1,7 @@
 import numpy as np
 import argparse
-from track_one_clip import trackOneClip
+from track_one_clip import *
 import constants
-
-COLUMN_NAMES = [['filename', 'id', 'x0', 'y0', 't0', 'x1', 'y1', 't1',
-                 'number_warning', 'broken_track']]
 
 
 def main():
@@ -13,32 +10,23 @@ def main():
                             type=str,
                             help='The path to a video file in which we want to '
                                  'track the ants.')
-    arg_parser.add_argument('result_path',
+    arg_parser.add_argument('history_path',
                             type=str,
                             help='The path to a directory in which to save the '
-                                 'results of tracking ants.')
+                                 'history csv.')
     arg_parser.add_argument('video_path',
                             type=str,
                             nargs='?',
                             default=None,
                             help='The path to a directory in which to dump'
-                                 'result videos. If no path is given, then it '
+                                 'annotated result videos. If no path is given, then it '
                                  'does not export videos.')
-    arg_parser.add_argument('raw_results',
-                            type=str,
-                            default='',
-                            nargs='?',
-                            help='Path of array of raw results to output. '
-                                 'If no path is given, then it does not save '
-                                 'the raw results.')
-    # contour area
     arg_parser.add_argument('-m', '--min-blob',
                             dest='min_blob',
                             type=int,
                             default=constants.MIN_BLOB,
                             help='minimum blob area in pixels (default = '
                             '%d)' % constants.MIN_BLOB)
-    # can just count number of centers
     arg_parser.add_argument('-c', '--count-threshold',
                             dest='count_threshold',
                             type=int,
@@ -47,94 +35,23 @@ def main():
                                  'ants are seen in 5 seconds, causes the code '
                                  'to output a warning and flag the offending '
                                  'ants.')
-    # guassian blur?
     arg_parser.add_argument('-g', '--num-gaussians',
                             dest='gaussians',
                             type=int,
                             default=constants.NUM_GAUSSIANS,
-                            help='The number of gaussians to use when fitting '
-                                 'the background.')
-    # no
-    # arg_parser.add_argument('-tf', '--training-frames',
-    #                         dest='training_frames',
-    #                         type=int,
-    #                         default=constants.NUM_TRAINING_FRAMES,
-    #                         help='The number of frames to use to fit the '
-    #                              'backgrond.')
-    # no
-    # arg_parser.add_argument('-b', '--min-background',
-    #                         dest='background',
-    #                         type=float,
-    #                         default=constants.MINIMUM_BACKGROUND_RATIO,
-    #                         help='The minimum portion of frames which must '
-    #                              'be included in the background.')
-    # not sure what this is
-    # arg_parser.add_argument('-n', '--nonassignment-cost',
-    #                         dest='nonassignment_cost',
-    #                         type=float,
-    #                         default=constants.COST_OF_NONASSIGNMENT,
-    #                         help='The cost of not assigning a detection to '
-    #                              'an existing track.')
-    # max_frames_to_skip  # could possibly rename
+                            help='Guassian blur')
     arg_parser.add_argument('-it', '--invisible-threshold',
                             dest='invisible_threshold',
                             type=int,
                             default=constants.INVISIBLE_FOR_TOO_LONG,
                             help='The number of frames after which to forget '
                                  'a new, missing track.')
-    # no (probably)
-    # arg_parser.add_argument('-ot', '--old-age-threshold',
-    #                         dest='old_age_threshold',
-    #                         type=int,
-    #                         default=constants.OLD_AGE_THRESHOLD,
-    #                         help='The number of frames after which to make a '
-    #                              'track immune to the invisible theshold.')
-    # huh?
-    # arg_parser.add_argument('-vt', '--visibility-threshold',
-    #                         dest='visibility_threshold',
-    #                         type=float,
-    #                         default=constants.VISIBILITY_THRESHOLD,
-    #                         help='The minimum fraction of frames which an ant '
-    #                              'must appear in for its track to be counted.')
-    # no
-    # arg_parser.add_argument('-ki', '--kalman-initial',
-    #                         dest='kalman_initial',
-    #                         type=int,
-    #                         nargs=2,
-    #                         default=constants.KALMAN_INITIAL_ERROR,
-    #                         help='The margin of error on the initial position '
-    #                              'and velocity for the kalman filter.')
-    # no
-    # arg_parser.add_argument('-ko', '--kalman-motion',
-    #                         dest='kalman_motion',
-    #                         type=int,
-    #                         nargs=2,
-    #                         default=constants.KALMAN_MOTION_NOISE,
-    #                         help='The amount of variation in position and '
-    #                              'velocity expected by the kalman filter.')
-    # no
-    # arg_parser.add_argument('-km', '--kalman-measurement',
-    #                         dest='kalman_measurement',
-    #                         type=float,
-    #                         default=constants.KALMAN_MEASUREMENT_NOISE,
-    #                         help='The expected deviation of measurements from '
-    #                              'the actual position.')
-    # no (similar functionality to invisible for too long)
-    # arg_parser.add_argument('-v', '--min-visible-count',
-    #                         dest='min_visible',
-    #                         type=int,
-    #                         default=constants.MIN_VISIBLE_COUNT,
-    #                         help='The number of frames which a track must have '
-    #                              'already appeared in to be output.')
-    # no  # maybe
     arg_parser.add_argument('-d', '--min-duration',
                             dest='min_duration',
                             type=float,
                             default=constants.MIN_DURATION,
                             help='The minimum duration (in seconds) for which '
-                                 'a track must be present to be recorded '
-                                 '(default 1.5 seconds).')
-    # detector.py
+                                 'a track must be present to be recorded ')
     arg_parser.add_argument('-cto', '--canny-threshold-one',
                             dest='canny_threshold_one',
                             type=int,
@@ -191,6 +108,19 @@ def main():
                             "disappears within the border, we can assume it has left an "
                             "edge. Otherwise, the ant disappeared on the middle of the "
                             "track, which doesn't make sense. The ant will be removed.")
+    arg_parser.add_argument('-md', '--merge-distance',
+                            dest='merge_distance',
+                            type=int,
+                            default=constants.MERGE_DISTANCE,
+                            help="The maximum distance allowed between two existing tracks"
+                            "for it to be considered a merger.")
+    arg_parser.add_argument('-au', '--auto',
+                            dest='automatic',
+                            action='store_const',
+                            const=True,
+                            default=False,
+                            help='Determines whether or not unmerging will be done automatically. '
+                            'Warning: Prone to falsities for multiple ants')
     arg_parser.add_argument('-db', '--debug',
                             dest='debug',
                             action='store_const',
@@ -200,24 +130,38 @@ def main():
                             'mask. Useful for debugging.')
     args = arg_parser.parse_args()
 
-    # track ants in each of the cropped videos
-    _ = np.array(COLUMN_NAMES)
     print('Tracking ants in', args.source)
     # call matlab to track ants in a single cropped video
     export = args.video_path is not None
-    print("videoPath is", args.video_path, "export is", export)
+
     if args.video_path == None:
         args.video_path = ''
 
     # print("The result path is", args.result_path)
-    trackOneClip(args.source, args.video_path, export, args.result_path,
-                 args.min_blob, args.count_threshold, args.gaussians,
-                 args.invisible_threshold, args.min_duration,
+    tracker_object = trackOneClip(args.source, args.video_path, export,
+                 args.min_blob, args.gaussians,
                  args.canny_threshold_one, args.canny_threshold_two,
                  args.canny_aperture_size, args.thresholding_threshold, 
                  args.dilating_matrix, args.tracker_distance_threshold,
                  args.tracker_trace_length, args.no_ant_counter_frames_total,
-                 args.edge_border, args.debug)
+                 args.edge_border, args.merge_distance)
+
+    split = os.path.dirname(args.history_path)
+    video = os.path.dirname(split)
+    intermediate = os.path.dirname(os.path.dirname(video))
+
+    split = split.split('/')[-1]
+    video = video.split('/')[-1]
+
+    merger_dir = os.path.join(os.path.join(os.path.join(intermediate, "merger"), video), split)
+    merger_annotated_dir = os.path.join(os.path.join(os.path.join(intermediate, "merger_annotated"), video), split)
+
+
+
+        
+    final_result_path_history = make_history_CSV(tracker_object, args.history_path)
+    make_merge_vids(final_result_path_history, args.source, args.video_path, merger_dir, merger_annotated_dir)
+
 
 if __name__ == '__main__':
     main()

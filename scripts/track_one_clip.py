@@ -12,156 +12,189 @@ from math import floor, ceil
 
 
 def trackOneClip(
-        source, vidPath, vidExport, result_path, minBlob, count_warning_threshold,
-        num_gaussians, invisible_threshold, min_duration,
+        source, vidPath, vidExport, minBlob, num_gaussians,
         canny_threshold_one, canny_threshold_two, canny_aperture_size,
         thresholding_threshold, dilating_matrix, tracker_distance_threshold,
-        tracker_trace_length, no_ant_counter_frames_total, edge_border, debug):
+        tracker_trace_length, no_ant_counter_frames_total, edge_border, 
+        merge_distance):
     
-    cap = cv2.VideoCapture(source)
+    cap = cv2.VideoCapture(source)  # create video reader object
 
-    global fps
-    width, height, fps = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH)), int(cap.get(
-        cv2.CAP_PROP_FRAME_HEIGHT)), int(cap.get(cv2.CAP_PROP_FPS))
+    # we use these variables in different python files, hence we make it global
+    global width, height, fps, frame_counter, x_bound_left, x_bound_right, y_bound_bottom, y_bound_top
+
+    # get width, height, and frames per second of video
+    width, height, fps = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH)), int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT)), cap.get(cv2.CAP_PROP_FPS)
     size = (width, height)
-    print("The size of the video is", size)
 
-    detector = Detector(minBlob, num_gaussians, canny_threshold_one, canny_threshold_two,
-                        canny_aperture_size, thresholding_threshold, dilating_matrix, debug)
-    
-    tracker_object = Tracker(tracker_distance_threshold, tracker_trace_length, 
-                             0, no_ant_counter_frames_total)
+    # create detector object
+    detector_object = Detector(minBlob, num_gaussians, canny_threshold_one, canny_threshold_two, canny_aperture_size, thresholding_threshold, dilating_matrix)
 
-    global frame_counter
-    frame_counter = 0
+    # create tracker object
+    tracker_object = Tracker(tracker_distance_threshold, tracker_trace_length, merge_distance)
 
+    frame_counter = 0  # counts number of frames have been read by video reader
+
+    # gets coordinates of borders of videos (this value is set by edge_border)
     x_bound_left, x_bound_right = edge_border, width - edge_border
     y_bound_bottom, y_bound_top = edge_border, height - edge_border
-    print(f"The borders are {(x_bound_left, y_bound_bottom)} to {(x_bound_right, y_bound_top)}\n")
 
+    # each track gets displayed in a different color (avoids confusion)
+    # remember we use bgr not rgb
     track_colors = [(255, 0, 0), (0, 255, 0), (0, 0, 255), (255, 255, 0),
                     (0, 255, 255), (255, 0, 255), (255, 127, 255),
                     (127, 0, 255), (127, 0, 127)]
 
-    pause, seconds = False, 0.00
+    # used for debugging (local use only)
+    pause = False
 
-    multiple_ant_detector = []
-    multiple_ant_start = 0.00
-    multiple_ant_end = 0.00
-    multiple_lock = False
-
+    # if we are exporting the video, we also create a video writer
     if vidExport:  # saves video
         fourcc = cv2.VideoWriter_fourcc(*'mp4v')  # codec
-        vidPath = os.path.join(vidPath, os.path.splitext(os.path.basename(source))[0] + '.mp4')
-        print("The video path is", vidPath)
-        video_writer = cv2.VideoWriter(vidPath, fourcc, fps, size)
-        
+        video_writer_full = cv2.VideoWriter(vidPath, fourcc, fps, size)
 
+
+    # current timestamp returns the time passed in the video.
+    # weirdly, doing frame_counter / fps doesn't give us the same answer as current timestamp
+    # so just use current timestamp for consistency sake
+    global current_timestamp
+    current_timestamp = 0.0
+
+
+    # don't touch first_go. without it, you might get exit times that are less than
+    # entry times (due to how the current pipeline works)
+    first_go = False
     while (True):
-        ret, frame = cap.read()  # read frame
+        ret, frame = cap.read()  # read one frame
         if not ret:
-            break  # done with source
+            break  # frame is invalid or we are done with entire video
 
-        global current_timestamp
-        current_timestamp = round(cap.get(cv2.CAP_PROP_POS_MSEC) / 1000, 2)  # current timestamp in seconds
+        # this avoids weird negative times
+        temp_timestamp = round(cap.get(cv2.CAP_PROP_POS_MSEC) / 1000, 2)
+        if temp_timestamp == 0 and not first_go:
+            first_go = True
+            current_timestamp = temp_timestamp
+        elif temp_timestamp == 0 and first_go:
+            pass
+        else:
+            current_timestamp = temp_timestamp
 
-        centers = detector.Detect(frame)  # each ant
 
-        # LAST SEEN
+        # returns ant centers and ant areas in frame (if detected)
+        centers, areas = detector_object.Detect(frame)  # each ant
+
+        # put timestamp on video
+        cv2.putText(frame, str(current_timestamp), (0, 10), cv2.FONT_HERSHEY_SIMPLEX, .4, (0, 255, 0), 2)
+
+        # checks if ant has left the frame
         for i in range(len(tracker_object.tracks)):
             try:
-                # if active ant hasn't been seen in a while
-                if frame_counter - tracker_object.tracks[i].frame_last_seen > no_ant_counter_frames_total:
-                    time_last_seen = round(current_timestamp - no_ant_counter_frames_total / fps, 2)
-                    place_last_seen = tuple(int(value[0]) for value in tracker_object.tracks[i].trace[-1])
-                    track_id = tracker_object.tracks[i].track_id
+                track_id = tracker_object.tracks[i].track_id
 
+                # checks if ant is seen on the frame at the moment.
+                # note this might trigger if an ant has "blipped" out of existence for one frame.
+                if frame_counter - tracker_object.tracks[i].frame_last_seen > 0:
+                    tracker_object.tracks[i].exists_on_frame = False
+
+                place_last_seen = tuple(int(value[0]) for value in tracker_object.tracks[i].trace[-1])
+
+                # if the ant disappeared near the edge, we will give it no_ant_counter_frames_total number of frames 
+                # to reappear. otherwise, it will be considered gone and the active track will be deleted (it will
+                # still remain in the history)
+                if x_bound_left <= place_last_seen[0] <= x_bound_right and y_bound_bottom <= place_last_seen[1] <= y_bound_top:  # by the border
+                    gone_frames = no_ant_counter_frames_total * 1  # change scalar
+
+                # if the ant disappeared in the middle, we will be more generous and give it no_ant_counter_frames_total
+                # times 2 frames to reappear. otherwise it will be considered gone and will be flagged as "end_middle"
+                # PLEASE FEEL FREE TO CHANGE THE SCALAR --> IT DOESN'T HAVE TO BE * 2
+                else:  # disappeared in the middle:
+                    gone_frames = no_ant_counter_frames_total * 2  # change scalar
+                    
+                # the ant hasn't been seen in awhile, so we will now delete its corresponding active track
+                if frame_counter - tracker_object.tracks[i].frame_last_seen > gone_frames:
+                    time_last_seen = round(current_timestamp - gone_frames / fps, 2)
+                    place_last_seen = tuple(int(value[0]) for value in tracker_object.tracks[i].trace[-1])
+                    
                     print(f"Ant {track_id} last seen {place_last_seen} at time {time_last_seen}")
 
-                    tracker_object.histories[track_id].x1 = place_last_seen[0]
-                    tracker_object.histories[track_id].y1 = place_last_seen[1]
-                    tracker_object.histories[track_id].t1 = time_last_seen
+                    tracker_object.tracks[i].x1 = place_last_seen[0]
+                    tracker_object.tracks[i].y1 = place_last_seen[1]
+                    tracker_object.tracks[i].t1 = time_last_seen
 
+                    # if the ant disappeared within the borders of the frame dictated by edge_border
                     if x_bound_left <= place_last_seen[0] <= x_bound_right and y_bound_bottom <= place_last_seen[1] <= y_bound_top:
-                        print(f"CAUSE FOR DELETION: Ant {track_id} disappeared in the middle")
-                        tracker_object.histories[track_id].do_not_include = True
+                        print(f"WARNING: Ant {track_id} disappeared in the middle")
 
-                    # MIN DURATION
-                    time_first_seen = tracker_object.tracks[i].time_first_seen
-                    if time_last_seen - time_first_seen <= min_duration:
-                        print(f'CAUSE FOR DELETION: Ant {track_id} did not exist for a minimum duration '
-                              f'of {min_duration} seconds. Instead, it appeared for '
-                              f'{round(time_last_seen - time_first_seen, 2)} seconds')
-                        tracker_object.histories[track_id].do_not_include = True
-                        
-                    print("Number of Histories", tracker.History.history_num)
+                        tracker_object.tracks[i].appear_middle_end = True  # this will flag "end_middle" as true
 
-                    # DELETE THE TRACK!!!
-                    print(f"Removed ant {tracker_object.tracks[i].track_id} from tracks list\n")
+
+                    # it is possible an ant leaves while merged with another ant
+                    # we will assume the ants eventually unmerged, so the new unmerge time will be the time
+                    # the ant was last seen
+                    if tracker_object.tracks[i].attached_to_me > 0:
+                        print(f"Merged ant {tracker_object.tracks[i].track_id} left. There was no unmerger")
+                        tracker_object.tracks[i].unmerge_time.append(time_last_seen)
+
+
+                    # we want to copy this information to its corresponding history
+                    # remember every active track has its corresponding history object. 
+                    # the active track's id is the SAME as the index of the histories list. 
+                    Tracker.copy_track_to_history(tracker_object.histories[track_id], tracker_object.tracks[i])
+
+                    # delete now obselete active track
+                    print(f"Removed ant {tracker_object.tracks[i].track_id} from active tracks list\n")
                     del tracker_object.tracks[i]
                     del tracker.assignment[i]
             except:
                 pass
 
-        # for when ants are detected
+        # if ants were detected on frame
         if len(centers) > 0:
 
+            # make new updated predictions with given coordinates
+            tracker_object.Update(centers, areas)
 
-            tracker_object.Update(centers)  # track using Kalman
-
-            seconds = round(frame_counter / fps, 2)
-            timestamp_text = f"{seconds}"
-
-            # threshold for too many ants
-
-            if len(centers) > 1 and not multiple_lock:
-                print(f"Multiple ants detected at time {current_timestamp}: Please make sure everything looks right!")
-                multiple_ant_start = current_timestamp
-                multiple_lock = True
-            elif len(centers) == 1 and multiple_lock:
-                print(f"Multiple ants no longer detected starting from time {current_timestamp}")
-                multiple_ant_end = current_timestamp
-                multiple_ant_detector.append((multiple_ant_start, multiple_ant_end))
-                multiple_lock = False
-
-            if len(centers) > count_warning_threshold:
-                print(f"WARNING: {len(centers)} ants detected at time {current_timestamp}")
-
-            if debug or vidExport:
-                cv2.putText(frame, str(current_timestamp), (10, 30),
-                            cv2.FONT_HERSHEY_SIMPLEX, .4, (0, 255, 0), 2)
-                
-
-            ### NEW FIRST SEEN
+            # when ants are detected for the first time (they entered the frame for the first time)
             for i in range(len(tracker_object.tracks)):
                 try:
+                    # first_shoutout checks if initial information was already gathered
+                    # if it has, don't gather it again (as it will override the correct information)
                     if tracker_object.tracks[i].first_shoutout:
                         continue
                     else:
                         time_first_seen = current_timestamp
-                        place_first_seen = tuple(int(value[0]) for value in tracker_object.tracks[i].trace[3])  # we don't do trace[0] because of weird glitch
+
+                        # IMPORTANT: the place_first seen is actually NOT set to trace[0]. this is because the tracker
+                        # sets the initial position quite far away from the actual ant, and takes around 2 frames
+                        # for the tracker to properly adjust the position, hence trace[2]
+                        place_first_seen = tuple(int(value[0]) for value in tracker_object.tracks[i].trace[2])  # we don't do trace[0] because of weird glitch
                         track_id = tracker_object.tracks[i].track_id
 
                         print(f"Ant {track_id} first seen: {place_first_seen} at time {time_first_seen}")
                         tracker_object.tracks[i].first_shoutout = True
 
+                        # detects if the ant appeared in the middle (threshold determined by edge_border)
                         if x_bound_left <= place_first_seen[0] <= x_bound_right and y_bound_bottom <= place_first_seen[1] <= y_bound_top:
-                            print(f"CAUSE FOR DELETION: Ant {track_id} appeared in the middle")
-                            tracker_object.histories[track_id].do_not_include = True
+                            print(f"WARNING: Ant {track_id} appeared in the middle")
+                            tracker_object.tracks[i].appear_middle_begin = True
 
                         start = os.path.abspath(__file__)   # relative path of source
                         relative_path = os.path.relpath(source, start)
 
-                        tracker_object.histories[track_id].filename = relative_path
-                        tracker_object.histories[track_id].x0 = place_first_seen[0]
-                        tracker_object.histories[track_id].y0 = place_first_seen[1]
-                        tracker_object.histories[track_id].t0 = time_first_seen
+                        # store relevant information
+                        tracker_object.tracks[i].filename = relative_path
+                        tracker_object.tracks[i].x0 = place_first_seen[0]
+                        tracker_object.tracks[i].y0 = place_first_seen[1]
+                        tracker_object.tracks[i].t0 = time_first_seen
+
+                        # copy active track information to corresponding history object
+                        Tracker.copy_track_to_history(tracker_object.histories[track_id], tracker_object.tracks[i])
                                                 
                 except:                                           
                     pass
 
-            if debug or vidExport:
-                # tracking line
+            # we draw the id on top of the ant as well as the trace
+            if vidExport:
                 for i in range(len(tracker_object.tracks)):
                     if (len(tracker_object.tracks[i].trace) > 1):
                         for j in range(len(tracker_object.tracks[i].trace)-1):
@@ -172,23 +205,24 @@ def trackOneClip(
                             y2 = tracker_object.tracks[i].trace[j+1][1][0]
                             clr = tracker_object.tracks[i].track_id % 9
                             cv2.line(frame, (int(x1_trace), int(y1_trace)), (int(x2), int(y2)),
-                                     track_colors[clr], 1)
+                                        track_colors[clr], 1)
 
                             text = tracker_object.tracks[i].track_id  # track_id
                             # text = tuple(int(value[0]) for value in tracker_object.tracks[i].trace[-1])  # coordinates
+                            # text = tracker_object.tracks[i].area  # area
                             
                             cv2.putText(frame, str(text), (int(x2), int(
                                 y2)), cv2.FONT_HERSHEY_SIMPLEX, .5, track_colors[clr], 1, cv2.LINE_AA)
 
-                display(frame, "Tracking", final=True)  # final
-
-                video_writer.write(frame)
+                # this won't work on the server, as there is no display corresponding to the server
+                # you will need to "connect" your display with the server (you will have to look this up)
+                # display(frame, "Tracking", final=True)  # good for debug
 
                 speed_of_playback = 1
                 k = cv2.waitKey(speed_of_playback)  # playback speed
-                if k == 27:  # esc: terminate
+                if k == 27:  # esc key: terminate
                     break
-                if k == 112:  # p: pause
+                if k == 112:  # p key: pause
                     pause = not pause
                     if pause:
                         print("paused")
@@ -200,108 +234,101 @@ def trackOneClip(
                                 break
                             if k == 27:
                                 break
-        frame_counter += 1
+        
+        frame_counter += 1  # an advancement of a frame
+        video_writer_full.write(frame)  # save frame into video writer
 
-    cap.release()  # destroy windows
-    cv2.destroyAllWindows()
+
+    cap.release()  # releases video reader
+    cv2.destroyAllWindows() 
     if vidExport:
-        video_writer.release()
+        video_writer_full.release()  # saves contents of video writer
 
-    # determine number_warning
-    full_list = []
+
+    return tracker_object  # tracker_object contains histories
+
+
+# this function writes and saves the contents of histories into a csv file
+def make_history_CSV(tracker_object, history_path):
+    full_list_history = []
     for history in tracker_object.histories:
+        merge_id = ' '.join(str(element) for element in history.merge_list)
+        merge_time = ' '.join(str(element) for element in history.merge_time)
+        unmerge_id = ' '.join(str(element) for element in history.unmerge_list)
+        unmerge_time = ' '.join(str(element) for element in history.unmerge_time)
 
-        # make this look prettier
-        begin_val = history.x0 == -1 or history.y0 == -1 or history.t0 == -1.00
-        end_val = history.x1 == -1 or history.y1 == -1 or history.t1 == -1.00
-        if begin_val or end_val or history.do_not_include:
-            print(f"DELETED: Ant {history.id}")
-            if begin_val:
-                print(f"Looks like Ant {history.id}'s track was way too short.")
-            continue
-        full_list.append([history.filename, history.id, history.x0, history.y0,
-                         history.t0, history.x1, history.y1, history.t1,
-                         history.number_warning, history.broken_track])
+        middle_begin = 1 if history.appear_middle_begin == True else 0
+        middle_end = 1 if history.appear_middle_end == True else 0
 
-
-    # determine number_warning
-    times = collections.deque()
-    for i in range(1, len(full_list)):
-        _, _, _, _, _, _, _, t1, _, _ = full_list[i]
-        times.append((float(t1), i))
-        while times[0][0] <= float(t1)-5:
-            times.popleft()
-        if len(times) >= count_warning_threshold:
-            print('Warning: detected an unexpected number of tracks at '
-                  f't={t1} in {source}')
-            for t, index in times:
-                full_list[index, 8] = 1
-
-    # for LINUX
+        full_list_history.append([history.filename, history.id, history.x0, history.y0, history.t0, 
+                    history.x1, history.y1, history.t1, middle_begin, middle_end, merge_id, merge_time,
+                    unmerge_id, unmerge_time, history.number_warning, history.broken_track])
+        
     headers = ["filename", "id", "x0", "y0", "t0", "x1",
-               "y1", "t1", "number_warning", "broken_track"]
-    print("csv_file_path is", result_path)
+               "y1", "t1", "begin_middle", "end_middle", "merge_id", "merge_time", 
+               "unmerge_id", "unmerge_time", "number_warning", "broken_track"]
+            
+    print("The csv_history_file_path is", history_path)
 
-    with open(result_path, "w", newline="") as csvfile:
+    if not os.path.exists(os.path.dirname(history_path)):
+        os.makedirs(os.path.dirname(history_path))
+
+    with open(history_path, "w", newline="") as csvfile:
         writer = csv.writer(csvfile)
         writer.writerow(headers)  # Write the headers
-        writer.writerows(full_list)  # Write the data rows
+        writer.writerows(full_list_history)  # Write the data rows
 
-    if len(multiple_ant_detector) != 0:
-        merged_multiple_times = merge_times(multiple_ant_detector, min_duration)
-        adjusted_merged_times = adjust_time(merged_multiple_times)
-
-        video = result_path.split("/")[2].split(".")[0]
-        multi_vid_output = f"intermediate/multiples/{video}/"
-        save_multi_videos(adjusted_merged_times, source, multi_vid_output)
-    else:
-        print("Congrats: No Multiple Ants")
+    return history_path
 
 
-def merge_times(times, time_of_multiple):
-    merged_times = []
-    threshold = 3  # within 3 seconds for merge
-    start_time, end_time = times[0]
+# outputs parts of the video where mergers were detected
+# there are two outputs: one annotated and one without
+# this won't run if there were no merges detected
+def make_merge_vids(history_csv, video_source, annotated_video_source, result_path, annotated_result_path):
 
-    for i in range(1, len(times)):
-        next_start_time, next_end_time = times[i]
+    # the goal is to "combine" relatively similar times
+    with open(history_csv, 'r') as file:
+        reader = csv.DictReader(file)
+        range_of_times = []
 
-        if next_start_time - end_time <= threshold:
-            end_time = max(end_time, next_end_time)  # Update the end time if the next interval's end time is later
-        else:
-            merged_times.append((start_time, end_time))
-            start_time, end_time = next_start_time, next_end_time
+        for row in reader:
+            merge_time = row.get('merge_time').split()
+            unmerge_time = row.get('unmerge_time').split()
 
-    merged_times.append((start_time, end_time))  # Append the last merged time
+            id = row.get('id')
 
-    for i in range(len(merged_times)):
-        time_of_multiple = 0.25
-        start, end = merged_times[0]
-        if end - start <= time_of_multiple:
-            print("Removed instance of multiple ants (probably a blip)")
-            del merged_times[i]
-            i -= 1
+            if len(merge_time) > 0 and len(unmerge_time) > 0:
+                first_one = True
+                begin_time = 0
 
-    print(merged_times)
-    return merged_times
+                for unmerge in unmerge_time:
+                    unmerge = float(unmerge)
+                    for merge in merge_time:
+                        merge = float(merge)
+                        if first_one:
+                            first_one = False
+                            begin_time = merge
 
+                        if merge > unmerge:
+                            merge_time = merge_time[merge_time.index(str(merge)):]
+                            # first_one = True
+                            break
 
-def adjust_time(list_of_times):
-    adjusted_time = []
-    for start_time, end_time in list_of_times:
-        start_time = floor(start_time) - 1
-        end_time = ceil(end_time) + 1
-        adjusted_time.append((start_time, end_time))
-    return adjusted_time
+                    first_one = True
+                    range_of_times.append((floor(begin_time) - 5, ceil(unmerge) + 5))
 
+                # crops times
+                if range_of_times != []:
+                    for index, time in enumerate(range_of_times):
+                        from_time, to_time = time
 
-def save_multi_videos(adjusted_times, vid_input, multi_vid_output):  # using ffmpeg
-    counter = 0
-    for time in adjusted_times:
-        final_multi_output = multi_vid_output + f"multiple_{str(counter)}.mp4"
-        from_time, to_time = time
-        ffmpeg_command = f'ffmpeg -i {vid_input} -ss {from_time} -to {to_time} -c copy -loglevel error {final_multi_output}'
-        print("Saving parts of the video with multiple ants in", final_multi_output)
-        os.system(ffmpeg_command)
+                        # calls ffmpeg to trim videos at specific times
+                        final_result_path = os.path.join(result_path, id + '_' + str(index) + '.mp4')
+                        ffmpeg_command = f'ffmpeg -y -i {video_source} -ss {from_time} -to {to_time} -c copy -loglevel error {final_result_path}'
+                        os.system(ffmpeg_command)
 
-        counter += 1
+                        final_annotated_result_path = os.path.join(annotated_result_path, id + '_' + str(index) + '.mp4')
+                        ffmpeg_command = f'ffmpeg -y -i {annotated_video_source} -ss {from_time} -to {to_time} -c copy -loglevel error {final_annotated_result_path}'
+                        os.system(ffmpeg_command)
+
+                range_of_times = []
