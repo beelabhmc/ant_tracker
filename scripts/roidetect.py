@@ -11,6 +11,7 @@ import matplotlib.pyplot as plt
 import matplotlib as mpl
 import networkx as nx
 from sklearn.cluster import KMeans
+import copy
 from cv2 import aruco
 import csv
 import argparse
@@ -56,29 +57,14 @@ def warp(frame, coord1):
 
     # Warp query image using ARTag coordinates
     coord2 = np.array([x[1] for x in pair]).astype(int)
-    coord1_copy = coord1
-
-    max_determinant = 0
-    final_i = 0
+    print(coord2)
 
     # WARNING
     # It is possible the number of detect ArUco tags is not 7 (which is the usual)
     # We can still run the pipeline with less than 7, as long as we correctly identify
-    # which ArUco tag is missing
-    if len(coord1_copy) > len(coord2):
-        for i in range(len(coord1)):
-            new_coord1 = np.delete(coord1, i, axis=0)
-            M, _ = cv2.findHomography(coord2, new_coord1)
-            determinant = np.linalg.det(M)  # find determinant
-            if determinant > max_determinant:
-                max_determinant = determinant
-                final_i = i
+    # which ArUco tag is missing. Please write software that is able to do so...
 
-        new_coord1 = np.delete(coord1, final_i, axis=0)
-        M, _ = cv2.findHomography(coord2, new_coord1)
-    
-    else:
-        M, _ = cv2.findHomography(coord2, coord1)
+    M, _ = cv2.findHomography(coord2, coord1)
 
 
     result = cv2.warpPerspective(frame, M, (w,h))
@@ -184,16 +170,22 @@ def vertices(cont, newpoints, Dict, Orientation):
         verts -- vertices of each roi, consistently ordered
     """
     conn = []
-    cont_test = cont.copy()
+    
 
     for i in range(len(newpoints)):
+        cont_test = cont.copy()
+
         # Points of intersection between circle and contour image represent vertices of an roi
         circle = np.zeros_like(cont)
         cv2.circle(circle, (newpoints[i, 1], newpoints[i, 0]), 40, [255,255,255], 2)
 
         # # test circle on contour
-        cv2.circle(cont_test, (newpoints[i, 1], newpoints[i, 0]), 40, [255,255,255], 2)
-        cv2.imwrite('detect_images/the_circles_new.png', cont_test)
+        # current_directory = os.getcwd()
+        # save_location = os.path.join(os.path.join(current_directory, "contour_and_circle"), "the_circles_new_ROI_" + str(Dict[i]) + '.png')
+        # print(save_location)
+        # cv2.circle(cont_test, (newpoints[i, 1], newpoints[i, 0]), 40, [255,255,255], 2)
+        # if not cv2.imwrite(save_location, cont_test):
+        #     print("ERROR: Contour and Circle image was not saved")
 
         inter = cv2.bitwise_and(cont, circle)
         # cv2.imwrite('detect_images/bitwise_' + str(i) + '.png', inter)
@@ -222,7 +214,7 @@ def vertices(cont, newpoints, Dict, Orientation):
         if Dict[i] in right_set:
             roll = np.roll(roll, 2, axis = 0)
         conn.append(roll)
-        print(i, len(roll))
+        print(i, Dict[i], len(poly))
 
     conn = np.array(conn)
     
@@ -259,17 +251,15 @@ def main():
     if not os.path.isfile(args.video):
         arg_parser.error(f'{args.video} is not a valid file.')
 
-
     video = cv2.VideoCapture(args.video)
     ret, frame = video.read()
     if not ret:
         arg_parser.error('The video only has {} frames.'.format(args.frame-1))
+    
     gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-
 
     # Load in relevant reference coordinates
     coord1 = np.array(np.loadtxt("templates/tag_coordinates.txt")).astype(int)  # Aruco detection (preferably all 7 visible)
-    # reference = np.array(np.loadtxt("templates/center_coordinates.txt")).astype(int)  # Center coordinates. data depends on year
 
     if args.year == "2021":
         reference = np.array(np.loadtxt("templates/center_coordinates_2021.txt")).astype(int)  # Center coordinates. data depends on year
@@ -298,15 +288,21 @@ def main():
     query = nodes(frame_mask)
     newpoints = centers(reference, query)
 
-    """# Testing
-    print(newpoints)
-    for i in range(len(newpoints)):
-            cv2.circle(result,(newpoints[i][1],newpoints[i][0]),3,[255,0,0],3)
-    plt.imshow(result)
-    plt.show()"""
-
+    # Testing
+    # print(newpoints)
+    # for i in range(len(newpoints)):
+    #         cv2.circle(result,(newpoints[i][1],newpoints[i][0]),3,[255,0,0],3)
+    # plt.imshow(result)
+    # plt.show()
 
     cont = contour(frame_mask)
+
+    # contour picture testing
+    current_directory = os.getcwd()
+    save_location = os.path.join(current_directory, "contour.png")
+    cv2.imwrite(save_location, cont)
+
+
     verts = vertices(cont, newpoints, Dict, Orientation)
 
     # Undo transformation to get vertices coordinates in original frame
@@ -315,14 +311,13 @@ def main():
     polys = np.array(cv2.perspectiveTransform(pts2, np.linalg.pinv(M))).astype(int)
 
 
-    """
     # Testing
-    print(polys)
-    for i in range(len(polys)):
-        for j in range(6):
-            cv2.circle(frame,(polys[i][j][0],polys[i][j][1]),3,[255,0,0],3)
-    plt.imshow(frame)
-    plt.show()"""
+    # print(polys)
+    # for i in range(len(polys)):
+    #     for j in range(6):
+    #         cv2.circle(frame,(polys[i][j][0],polys[i][j][1]),3,[255,0,0],3)
+    # plt.imshow(frame)
+    # plt.show()
 
     # Save vertices to outfile
     rois = [bbox.BBox.from_verts(poly, 3) for poly in polys]

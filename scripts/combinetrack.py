@@ -56,11 +56,16 @@ def combine_split_track(tracks, outfile, min_duration, count_warning_threshold, 
                 for _ in times:
                     line[14] = '1'  # set number warning to 1
 
+            # IMPORTANT! THIS IS WHERE YOU DEAL WITH MERGERS AND UNMERGERS!!!
+            # TODO: WRITE CODE HERE!!!
+
             t0 = round(split_length*i + float(line[4]), 2)
             t1 = round(split_length*i + float(line[7]), 2)
             line[4] = "{minute0}.{second0:02d}".format(minute0 = int(t0//60), second0 = int(t0%60))
             line[7] = "{minute1}.{second1:02d}".format(minute1 = int(t1//60), second1 = int(t1%60))
 
+            # we remove begin_middle, end_middle, merge_id, merge_time, unmerge_id, and unmerge_time
+            # as these don't appear in the final output
             line = line[:8] + line[14:]      
             line = ','.join(line)
             f.write(line)

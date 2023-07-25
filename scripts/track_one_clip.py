@@ -64,6 +64,7 @@ def trackOneClip(
     # don't touch first_go. without it, you might get exit times that are less than
     # entry times (due to how the current pipeline works)
     first_go = False
+    
     while (True):
         ret, frame = cap.read()  # read one frame
         if not ret:
@@ -216,7 +217,7 @@ def trackOneClip(
 
                 # this won't work on the server, as there is no display corresponding to the server
                 # you will need to "connect" your display with the server (you will have to look this up)
-                # display(frame, "Tracking", final=True)  # good for debug
+                # display(frame, "Tracking")  # good for debug
 
                 speed_of_playback = 1
                 k = cv2.waitKey(speed_of_playback)  # playback speed
@@ -252,14 +253,17 @@ def trackOneClip(
 def make_history_CSV(tracker_object, history_path):
     full_list_history = []
     for history in tracker_object.histories:
+        # seperate different times with a space (not a comma, remember we are using a csv)
         merge_id = ' '.join(str(element) for element in history.merge_list)
         merge_time = ' '.join(str(element) for element in history.merge_time)
         unmerge_id = ' '.join(str(element) for element in history.unmerge_list)
         unmerge_time = ' '.join(str(element) for element in history.unmerge_time)
 
+        # set to one if middle_begin or middle_end is true
         middle_begin = 1 if history.appear_middle_begin == True else 0
         middle_end = 1 if history.appear_middle_end == True else 0
 
+        # append row by row
         full_list_history.append([history.filename, history.id, history.x0, history.y0, history.t0, 
                     history.x1, history.y1, history.t1, middle_begin, middle_end, merge_id, merge_time,
                     unmerge_id, unmerge_time, history.number_warning, history.broken_track])
@@ -292,6 +296,7 @@ def make_merge_vids(history_csv, video_source, annotated_video_source, result_pa
         range_of_times = []
 
         for row in reader:
+            # return merge_time and unmerger_time as a list
             merge_time = row.get('merge_time').split()
             unmerge_time = row.get('unmerge_time').split()
 
@@ -309,13 +314,14 @@ def make_merge_vids(history_csv, video_source, annotated_video_source, result_pa
                             first_one = False
                             begin_time = merge
 
+                        # obviously this isn't possible, so we break
                         if merge > unmerge:
                             merge_time = merge_time[merge_time.index(str(merge)):]
                             # first_one = True
                             break
 
                     first_one = True
-                    range_of_times.append((floor(begin_time) - 5, ceil(unmerge) + 5))
+                    range_of_times.append((floor(begin_time) - 5, ceil(unmerge) + 5))  # we will add 5 seconds of padding
 
                 # crops times
                 if range_of_times != []:
@@ -332,3 +338,6 @@ def make_merge_vids(history_csv, video_source, annotated_video_source, result_pa
                         os.system(ffmpeg_command)
 
                 range_of_times = []
+
+            else:
+                print("Uh oh, there are more unmerge times and merge times. I don't know what to do!")

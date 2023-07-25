@@ -8,14 +8,16 @@ dis_vid = True
 toDisplay = False
 
 
-def display(frame, desc, final=False):
+# please use this when running locally or connected server to your display
+# this function displays a frame, but with its resolution multiplied
+# this is because the original videos are extremely small. with this you
+# can see properly
+def display(frame, description):
 
     try:
         height, width = frame.shape
     except:
         height, width, _ = frame.shape
-
-    dis_vid = False  # use True only when local
 
     scaler = 5
 
@@ -23,8 +25,7 @@ def display(frame, desc, final=False):
     new_height = height * scaler
     resized_frame = cv2.resize(frame, (new_width, new_height))
 
-    # if dis_vid or final:
-    #     cv2.imshow(desc, resized_frame)
+    cv2.imshow(description, resized_frame)
 
 
 class Detector:
@@ -50,17 +51,20 @@ class Detector:
         img_blur = cv2.GaussianBlur(backSub, (self.num_gaussians, self.num_gaussians), 0)  # blur  # should be 3
         # display(img_blur, "blur")
 
+        # THERE IS A DILATION STEP BELOW THAT WAS IMPLEMENTED BUT NOT USED
+        # SOURCE: https://docs.opencv.org/3.4/db/df6/tutorial_erosion_dilatation.html
         # kernel = cv2.getStructuringElement(
         #     cv2.MORPH_ELLIPSE, (self.dilating_matrix, self.dilating_matrix))  # dilating (closing contours)
         # dilated = cv2.dilate(img_blur, kernel)
         # display(dilated, "dilated")
-        dilated = img_blur
+        
+        dilated = img_blur  # if using dilation step, remove this
 
         edges = cv2.Canny(dilated, self.canny_threshold_one, self.canny_threshold_two, self.canny_aperture_size)  # edge detection
         # display(edges, "edges")
 
         _, thresh = cv2.threshold(edges, self.thresholding_threshold, 255, 0)  # thresholding
-        # display(thresh, "thresh", final=True)
+        # display(thresh, "thresh")
 
         contours, _ = cv2.findContours(dilated, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)  # contours
         

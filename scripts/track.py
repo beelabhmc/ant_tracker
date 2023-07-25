@@ -137,7 +137,6 @@ def main():
     if args.video_path == None:
         args.video_path = ''
 
-    # print("The result path is", args.result_path)
     tracker_object = trackOneClip(args.source, args.video_path, export,
                  args.min_blob, args.gaussians,
                  args.canny_threshold_one, args.canny_threshold_two,
@@ -146,6 +145,10 @@ def main():
                  args.tracker_trace_length, args.no_ant_counter_frames_total,
                  args.edge_border, args.merge_distance)
 
+    # makes the history csvs
+    final_result_path_history = make_history_CSV(tracker_object, args.history_path)
+
+    # this makes the intermediate directories "merger" and "merger_annotated"
     split = os.path.dirname(args.history_path)
     video = os.path.dirname(split)
     intermediate = os.path.dirname(os.path.dirname(video))
@@ -156,16 +159,9 @@ def main():
     merger_dir = os.path.join(os.path.join(os.path.join(intermediate, "merger"), video), split)
     merger_annotated_dir = os.path.join(os.path.join(os.path.join(intermediate, "merger_annotated"), video), split)
 
-
-
-        
-    final_result_path_history = make_history_CSV(tracker_object, args.history_path)
+    # makes the merge videos
     make_merge_vids(final_result_path_history, args.source, args.video_path, merger_dir, merger_annotated_dir)
 
 
 if __name__ == '__main__':
     main()
-
-# source: C:\Users\brian\Desktop\Ant\kalman_filter_multi_object_tracking-master\rois\0 indiv\ROI_1.mp4
-# result_path: C:\Users\brian\Desktop\Ant\kalman_filter_multi_object_tracking-master\my_attempt
-# python .\transition.py "C:\Users\brian\Desktop\Ant\kalman_filter_multi_object_tracking-master\rois_from_default_video\ROI_20.mp4" "C:\Users\brian\Desktop\Ant\kalman_filter_multi_object_tracking-master\current_integration\" "C:\Users\brian\Desktop\Ant\kalman_filter_multi_object_tracking-master\current_integration\"
