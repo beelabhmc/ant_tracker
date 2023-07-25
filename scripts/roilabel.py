@@ -3,6 +3,7 @@ import os, os.path
 import numpy as np
 from math import cos, sin
 import argparse
+import csv
 
 import bbox
 
@@ -85,10 +86,32 @@ def main():
                       action='store_true',
                       help='If specified, all edges are labeled. Otherwise, '
                            'only significant edges are labeled.')
+    args.add_argument('-y', '--year',
+                            dest='year',
+                            type=str,
+                            help='The year the video was taken',
+                           )
+    
     args = args.parse_args()
-    Dict = {0:42, 1:122, 2:121, 3:41, 4:12, 5:40, 6:112, 7:8, 8:11, 9:6, 10:10, 11:4, 12:111, 13:2, 14:60, 15:0, 16:1, 17:3, 18:20, 19:7, 20:5, 21:211, 22:31, 23:21, 24:22, 25:30, 26:50, 27:212, 28:222, 29:221, 30:32}
-    label_rois(Dict, args.video, args.roifile, args.outfile,
-               insignificant_edges=args.insig)
+
+    if args.year == "2021":
+        csv_file = "templates/dictionary_2021.csv"
+    elif args.year == "2023":
+        csv_file = "templates/dictionary_2023.csv"
+
+    Dict = {}
+
+    with open(csv_file, 'r') as file:
+        reader = csv.reader(file)
+
+        # Skip the header
+        next(reader)
+
+        # make Dict
+        for index, row in enumerate(reader):
+            Dict[int(index)] = int(row[0])
+        
+    label_rois(Dict, args.video, args.roifile, args.outfile, insignificant_edges=args.insig)
 
 if __name__ == '__main__':
     main()

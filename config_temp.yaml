@@ -13,14 +13,9 @@ split:
 croprot:
     # Parameters used by the croprotate file
     cores: 5        # The number of cores to use for this step
-
-roidetect:
-    # Parameters used by the roidetect file
-    year: 2023      # The year the videos were taken
-
 tracks:
     # Parameters used by the ant tracking code (there's a lot of them)
-    min-blob: 15                         # The smallest size of blob  # UPDATE TO 1
+    min-blob: 1                        # The smallest size of blob  # UPDATE TO 1
                                         # which is interpreted as an ant
 
     count-warning-threshold: 10         # If more ants than this are seen
@@ -71,7 +66,7 @@ tracks:
                                         # an ant must be spotted for its
                                         # track to be recorded
 
-    min-duration: 1.0                   # The minimum duration for which  # Update to a smaller number
+    min-duration: 1.5                   # The minimum duration for which  # Update to a smaller number
                                         # a track must persist to be
                                         # saved as an ant.
 
@@ -100,7 +95,7 @@ tracks:
                                         # around 78-85. The floor (behind
                                         # branch) is around 90-110.
 
-    dilating-matrix: 2                  # The shape of structuring
+    dilating-matrix: 3                  # The shape of structuring
                                         # element. It is an elliptical
                                         # shape in this case
 
@@ -113,11 +108,11 @@ tracks:
     tracker-trace-length: 10            # Trace path history length (good
                                         # for debugging purposes)
 
-    no-ant-counter-frames-total: 24    # If the ant is not detected for 
-                                        # this frames, we can safely assume
+    no_ant_counter_frames: 100          # If the ant isn't detected for 
+                                        # 100 frames, we can safely assume
                                         # it has left the track
 
-    edge-border: 5                     # Creates a border around the ROI.
+    edge_border: 10                     # Creates a border around the ROI.
                                         # If the ant disappears within the
                                         # border, we can assume it has 
                                         # left an edge. Otherwise, the ant
@@ -125,11 +120,12 @@ tracks:
                                         # the track, which doesn't make 
                                         # sense. The ant will be removed.
 
-    merge-distance: 10                 # The maximum distance allowed
-                                        # between two existing tracks
-                                        # for it to be considered a merger.
+      # Tracker Distance Threshold: 10
+      # Tracker Max Trace Length: 10
+      # no_ant_counter_frames: 100 
 
-# NOT UTILIZED
+
+
 roi-detection:
     # Parameters used by the ROI detection code
     # HSV is the color model used by the code. Information on it can be
