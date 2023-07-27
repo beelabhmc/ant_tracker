@@ -329,11 +329,11 @@ def make_merge_vids(history_csv, video_source, annotated_video_source, result_pa
                         from_time, to_time = time
 
                         # calls ffmpeg to trim videos at specific times
-                        final_result_path = os.path.join(result_path, id + '_' + str(index) + '.mp4')
+                        final_result_path = os.path.join(result_path, 'ROI_' + id + '_part_' + str(index) + '.mp4')
                         ffmpeg_command = f'ffmpeg -y -i {video_source} -ss {from_time} -to {to_time} -c copy -loglevel error {final_result_path}'
                         os.system(ffmpeg_command)
 
-                        final_annotated_result_path = os.path.join(annotated_result_path, id + '_' + str(index) + '.mp4')
+                        final_annotated_result_path = os.path.join(annotated_result_path, 'ROI_' + id + '_part_' + str(index) + '.mp4')
                         ffmpeg_command = f'ffmpeg -y -i {annotated_video_source} -ss {from_time} -to {to_time} -c copy -loglevel error {final_annotated_result_path}'
                         os.system(ffmpeg_command)
 
