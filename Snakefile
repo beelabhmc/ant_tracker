@@ -96,13 +96,15 @@ def track_input(wildcards):
 # The reason why the third and fourth outputs are not under the outputs section in the snakefile
 # is because the third and fourth outputs are occasional (it depends on merged ants being detected)
 # but output one and two will always occur
+
+# If you would like to read documentation, please go to this website:
+# https://docs.google.com/document/d/1htbx2V9Csv76w_K1VIHraufgfp67IIGRi2dBFt5XDXk/edit
 rule track:
     input:
         track_input
     output:
         'intermediate/track/{video}/{split}/ROI_{roi}.csv',
         'intermediate/full_annotation/{video}/{split}/ROI_{roi}.mp4'
-    threads: 32
     shell:
         'python scripts/track.py {{input}} {{output[0]}} {{output[1]}} -m {} -c {} -g {} -it {} -d {} '
         '-cto {} -ctt {} -cas {} -tt {} -dm {} -tdt {} -ttl {} -nac {} -eb {} -md {}' \

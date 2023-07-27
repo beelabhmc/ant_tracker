@@ -16,7 +16,7 @@ croprot:
 
 roidetect:
     # Parameters used by the roidetect file
-    year: 2023      # The year the videos were taken
+    year: 2021      # The year the videos were taken
 
 tracks:
     # Parameters used by the ant tracking code (there's a lot of them)

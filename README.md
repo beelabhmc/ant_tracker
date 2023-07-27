@@ -1,7 +1,17 @@
 # Ant Tracker
 These scripts can be used to count ants moving across a video. The pipeline works by identifying "Regions of Interest", which are choke points through which the ants must cross to travel from one area to another area, and then recording in which ways the ants cross the regions during the video.
 
-If you're just interested in running the pipeline, look at [this first-time setup page](https://github.com/beelabhmc/ant_tracker/wiki/For-People-Looking-to-Run-the-Pipeline)
+If you're just interested in running the pipeline, look at [this page](https://github.com/beelabhmc/ant_tracker/wiki/For-People-Looking-to-Run-the-Pipeline)
+
+If you are setting up for the first time, look at [this page](https://docs.google.com/document/d/1vBJpCwjm6bfbJYo0IxgfqCFsbu47Me12t4APdEw7pwY/edit?usp=sharing)
+
+## Helpful Documentation
+If you need help understanding Snakemake and the snakefile, look at [this page](https://docs.google.com/document/d/18K1qKKSpdPqdQ-ddlEnm8RjRbvceNAT6yDO5jZh_WUE/edit?usp=sharing)
+
+If you need help understanding the new ant tracking step (replacing the old Matlab step), look at [this page](https://docs.google.com/document/d/1htbx2V9Csv76w_K1VIHraufgfp67IIGRi2dBFt5XDXk/edit?usp=sharing)
+
+For new students working on the Ant Tracking Lab, please read this [results page](https://docs.google.com/document/d/1rZHOHLOKqhvtuS834OMr8Y4np2HkSCZdD45LdZn-9Nk/edit). This page will show what progress has been made during Summer 2023 as well as what you will likely work on yourself. This page also documents the common issues that were faced. Please add onto it if you can. 
+
 
 ## Dependencies
 The code in this repository runs on Python >= 3.9.0.

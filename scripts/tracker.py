@@ -131,7 +131,6 @@ class Tracker:
         self.max_trace_length = max_trace_length
         self.merge_distance = merge_distance
         self.tracks = []  # ACTIVE TRACKS
-        
         self.histories = []
         self.trackIdCount = 0
 
