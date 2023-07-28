@@ -137,6 +137,7 @@ def main():
     if args.video_path == None:
         args.video_path = ''
 
+    print(args.history_path)
     tracker_object = trackOneClip(args.source, args.video_path, export,
                  args.min_blob, args.gaussians,
                  args.canny_threshold_one, args.canny_threshold_two,
@@ -149,6 +150,7 @@ def main():
     final_result_path_history = make_history_CSV(tracker_object, args.history_path)
 
     # this makes the intermediate directories "merger" and "merger_annotated"
+    roi = os.path.splitext(os.path.basename(args.history_path))[0]
     split = os.path.dirname(args.history_path)
     video = os.path.dirname(split)
     intermediate = os.path.dirname(os.path.dirname(video))
@@ -156,8 +158,8 @@ def main():
     split = split.split('/')[-1]
     video = video.split('/')[-1]
 
-    merger_dir = os.path.join(os.path.join(os.path.join(intermediate, "merger"), video), split)
-    merger_annotated_dir = os.path.join(os.path.join(os.path.join(intermediate, "merger_annotated"), video), split)
+    merger_dir = os.path.join(os.path.join(os.path.join(os.path.join(intermediate, "merger"), video), split), roi)
+    merger_annotated_dir = os.path.join(os.path.join(os.path.join(os.path.join(intermediate, "merger_annotated"), video), split), roi)
 
     # makes the merge videos
     make_merge_vids(final_result_path_history, args.source, args.video_path, merger_dir, merger_annotated_dir)
