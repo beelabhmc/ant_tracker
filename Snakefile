@@ -102,6 +102,7 @@ def track_input(wildcards):
 rule track:
     input:
         track_input
+    threads: 32
     output:
         'intermediate/track/{video}/{split}/ROI_{roi}.csv',
         'intermediate/full_annotation/{video}/{split}/ROI_{roi}.mp4'
