@@ -29,9 +29,19 @@ def merge_boxes(boxes, args):
 
 def delete_boxes(boxes, args):
     """Takes a list of boxes and returns a new list of boxes which has
-    removed the boxes at indices specified by nums.
+    removed the boxes at indices specified by delete.
     """
     return [boxes[i] for i in range(len(boxes)) if i not in args.delete]
+
+def replace_boxes(boxes, args):
+    """Takes a list of boxes and returns a new list of boxes which has
+    replaces the boxes at indices specified by replace with boxes 
+    contained in the file specified by replacefile.
+    """
+
+    i,filename = args.replace
+    boxes[int(i)] = bbox.read_bboxes(filename)[0]
+    return boxes 
 
 def important_edges(boxes, args):
     """Updates boxes by defining important edges."""
@@ -52,6 +62,17 @@ def main():
                         nargs='*',
                         help='The ROI(s) to delete.')
     delete.set_defaults(func=delete_boxes);
+    replace = subcommands.add_parser('replace', help='Replace existing ROIs.')
+    replace.add_argument('replace',
+                        type=str, 
+                        nargs='*',
+                        help='The ROI number to replace and the filename to read a new ROI from.')
+    replace.set_defaults(func=replace_boxes);
+    # replacefile = subcommands.add_parser('replacefile', help='To be used with replace.')
+    # replacefile.add_argument('replacefile',
+    #                     type=str, 
+    #                     nargs='*',
+    #                     help='File containing new ROIs to replace old ROIs')
     create = subcommands.add_parser('add', help='Create new ROIs.')
     create.add_argument('create',
                         type=str,
