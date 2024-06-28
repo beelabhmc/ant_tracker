@@ -157,42 +157,45 @@ def trackOneClip(
 
             # when ants are detected for the first time (they entered the frame for the first time)
             for i in range(len(tracker_object.tracks)):
-                try:
-                    # first_shoutout checks if initial information was already gathered
-                    # if it has, don't gather it again (as it will override the correct information)
-                    if tracker_object.tracks[i].first_shoutout:
-                        continue
+                # first_shoutout checks if initial information was already gathered
+                # if it has, don't gather it again (as it will override the correct information)
+                if tracker_object.tracks[i].first_shoutout:
+                    continue
+                else:
+                    time_first_seen = current_timestamp
+
+                    start = os.path.abspath(__file__)   # relative path of source
+                    relative_path = os.path.relpath(source, start)
+
+                    track_id = tracker_object.tracks[i].track_id
+                    
+                    # IMPORTANT: the place_first seen is actually NOT set to trace[0]. this is because the tracker
+                    # sets the initial position quite far away from the actual ant, and takes around 2 frames
+                    # for the tracker to properly adjust the position
+                    # We set all info for trace[0] and trace[1] in case the trace never gets that long, and then
+                    # when we get to trace[2] we call that the first time the ant was seen (set first_shoutout)
+
+                    if len(tracker_object.tracks[i].trace) == 0:
+                        place_first_seen = (-1,-1)
                     else:
-                        time_first_seen = current_timestamp
-
-                        # IMPORTANT: the place_first seen is actually NOT set to trace[0]. this is because the tracker
-                        # sets the initial position quite far away from the actual ant, and takes around 2 frames
-                        # for the tracker to properly adjust the position, hence trace[2]
-                        place_first_seen = tuple(int(value[0]) for value in tracker_object.tracks[i].trace[2])  # we don't do trace[0] because of weird glitch
-                        track_id = tracker_object.tracks[i].track_id
-
+                        place_first_seen = tuple(int(value[0]) for value in tracker_object.tracks[i].trace[-1])
+                    if len(tracker_object.tracks[i].trace) == 3:
                         print(f"Ant {track_id} first seen: {place_first_seen} at time {time_first_seen}")
                         tracker_object.tracks[i].first_shoutout = True
 
-                        # detects if the ant appeared in the middle (threshold determined by edge_border)
-                        if x_bound_left <= place_first_seen[0] <= x_bound_right and y_bound_bottom <= place_first_seen[1] <= y_bound_top:
-                            print(f"WARNING: Ant {track_id} appeared in the middle")
-                            tracker_object.tracks[i].appear_middle_begin = True
+                    # detects if the ant appeared in the middle (threshold determined by edge_border)
+                    if x_bound_left <= place_first_seen[0] <= x_bound_right and y_bound_bottom <= place_first_seen[1] <= y_bound_top:
+                        print(f"WARNING: Ant {track_id} appeared in the middle")
+                        tracker_object.tracks[i].appear_middle_begin = True
 
-                        start = os.path.abspath(__file__)   # relative path of source
-                        relative_path = os.path.relpath(source, start)
+                    # store relevant information
+                    tracker_object.tracks[i].filename = relative_path
+                    tracker_object.tracks[i].x0 = place_first_seen[0]
+                    tracker_object.tracks[i].y0 = place_first_seen[1]
+                    tracker_object.tracks[i].t0 = time_first_seen
 
-                        # store relevant information
-                        tracker_object.tracks[i].filename = relative_path
-                        tracker_object.tracks[i].x0 = place_first_seen[0]
-                        tracker_object.tracks[i].y0 = place_first_seen[1]
-                        tracker_object.tracks[i].t0 = time_first_seen
-
-                        # copy active track information to corresponding history object
-                        Tracker.copy_track_to_history(tracker_object.histories[track_id], tracker_object.tracks[i])
-                                                
-                except:                                           
-                    pass
+                    # copy active track information to corresponding history object
+                    Tracker.copy_track_to_history(tracker_object.histories[track_id], tracker_object.tracks[i])
 
             # we draw the id on top of the ant as well as the trace
             if vidExport:

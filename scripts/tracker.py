@@ -292,29 +292,33 @@ class Tracker:
                 # this ant may still be considered an active track, it just wasn't seen
                 for j in range(len(self.tracks)):
                     if fps > track_one_clip.frame_counter - self.tracks[j].frame_last_seen > fps // 4: 
-                        lost_location = tuple(int(value[0]) for value in self.tracks[j].trace[-1])
+                        if len(self.tracks[j].trace) == 0: # occasionally trace does not exist, because this ant just appeared?
+                            print(f"WARNING: In search of merger for Ant {self.tracks[i].track_id}, no trace for Ant  {self.tracks[j].track_id}")
+                        else:
+                            lost_location = tuple(int(value[0]) for value in self.tracks[j].trace[-1])
 
-                        x = abs(change_location[0] - lost_location[0])
-                        y = abs(change_location[1] - lost_location[1])
-                        # calculate distance between existing ant and ant that just disappeared
-                        distance = sqrt(x**2 + y**2)
+                            x = abs(change_location[0] - lost_location[0])
+                            y = abs(change_location[1] - lost_location[1])
+                            # calculate distance between existing ant and ant that just disappeared
+                            distance = sqrt(x**2 + y**2)
 
-                        if distance < self.merge_distance:  # if the distance is less than merge_distance, append it
-                            if self.tracks[j].track_id not in self.tracks[i].merge_list and self.tracks[i].track_id != self.tracks[j].track_id:
+                            if distance < self.merge_distance:  # if the distance is less than merge_distance, append it
+                                if self.tracks[j].track_id not in self.tracks[i].merge_list and self.tracks[i].track_id != self.tracks[j].track_id:
 
-                                # A RECOMMENDATION
-                                # if needed, you might want to append self.tracks[j]'s merge_list items as well (if they exist)
-                                # basically tracks[i] will inherit the merged values of tracks[j]
-                                self.tracks[i].merge_list.append(self.tracks[j].track_id)  
-                                self.tracks[i].merge_time.append(track_one_clip.current_timestamp)
+                                    # A RECOMMENDATION
+                                    # if needed, you might want to append self.tracks[j]'s merge_list items as well (if they exist)
+                                    # basically tracks[i] will inherit the merged values of tracks[j]
+                                    self.tracks[i].merge_list.append(self.tracks[j].track_id)  
+                                    self.tracks[i].merge_time.append(track_one_clip.current_timestamp)
 
-                                if self.tracks[i].first_merge_time == -1 or self.tracks[i].attached_to_me == 0:
-                                    self.tracks[i].first_merge_time = track_one_clip.current_timestamp
+                                    if self.tracks[i].first_merge_time == -1 or self.tracks[i].attached_to_me == 0:
+                                        self.tracks[i].first_merge_time = track_one_clip.current_timestamp
 
-                                self.tracks[i].attached_to_me += 1  # increment attached_to_me, as we confirmed there was a merger
+                                    self.tracks[i].attached_to_me += 1  # increment attached_to_me, as we confirmed there was a merger
 
-                                print(f"MERGER: Ant {self.tracks[i].track_id} got bigger and Ant {self.tracks[j].track_id} got absorbed! "
-                                      "merge set", self.tracks[i].merge_list, "time", self.tracks[i].merge_time)
+                                    print(f"MERGER: Ant {self.tracks[i].track_id} got bigger and Ant {self.tracks[j].track_id} got absorbed! "
+                                        "merge set", self.tracks[i].merge_list, "time", self.tracks[i].merge_time)
+                        
 
 
             # detecting potential unmergers
