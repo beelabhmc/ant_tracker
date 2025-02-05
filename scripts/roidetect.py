@@ -4,13 +4,13 @@ import os
 
 import numpy as np
 import cv2
-# from numpy.lib.function_base import append
-# import sknw
-# from skimage.morphology import skeletonize
+from numpy.lib.function_base import append
+import sknw
+from skimage.morphology import skeletonize
 import matplotlib.pyplot as plt
 import matplotlib as mpl
 import networkx as nx
-# from sklearn.cluster import KMeans
+from sklearn.cluster import KMeans
 import copy
 from cv2 import aruco
 import csv
