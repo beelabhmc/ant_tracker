@@ -19,11 +19,6 @@ from PIL import Image
 
 import bbox
 
-# file = r"/Users/juliannelouie/Downloads/edge_labels.png"
-file = r"/Users/juliannelouie/Downloads/TestVideo-NoAnts-2023-06-30.mp4"
-# file = r"/Users/juliannelouie/Downloads/Test Video.MP4"
-outfile = r"/Users/juliannelouie/anttracking/ant_tracker/templates/coordinates_2025.txt"
-
 def create_aruco_coords(infile, outfile):
     """
     Inputs
@@ -43,13 +38,12 @@ def create_aruco_coords(infile, outfile):
         if not ret:
             raise ValueError('Frame not successfully read.')
         
-    # h, w = frame.shape
 
     # Initialize parameters for ARTag detection
-    # aruco_dict = aruco.Dictionary_get(aruco.DICT_4X4_100)
-    aruco_dict = cv2.aruco.getPredefinedDictionary(cv2.aruco.DICT_4X4_100)
-    # parameters = aruco.DetectorParameters_create()
-    parameters = cv2.aruco.DetectorParameters()
+    aruco_dict = aruco.Dictionary_get(aruco.DICT_4X4_100)
+    # aruco_dict = cv2.aruco.getPredefinedDictionary(cv2.aruco.DICT_4X4_100) <= newer cv2 version syntax
+    parameters = aruco.DetectorParameters_create()
+    # parameters = cv2.aruco.DetectorParameters() <= newer cv2 version syntax
     parameters.adaptiveThreshConstant = 20
     parameters.adaptiveThreshWinSizeMax = 20
     parameters.adaptiveThreshWinSizeStep = 6
@@ -63,10 +57,9 @@ def create_aruco_coords(infile, outfile):
 
     # Find ARTag coordinates in query image and reformat data to match reference coordinates
     # Detect the markers
-    corners, ids, rejectedImgPoints = detector.detectMarkers(frame)
-    # corners, ids, rejectedImgPoints = aruco.detectMarkers(frame, aruco_dict, parameters=parameters)
+    # corners, ids, rejectedImgPoints = detector.detectMarkers(frame) <= newer cv2 version syntax
+    corners, ids, rejectedImgPoints = aruco.detectMarkers(frame, aruco_dict, parameters=parameters)
     avg = [np.average(x, axis = 1) for x in corners]
-    # frame_markers = aruco.drawDetectedMarkers(frame.copy(), corners, ids, [0, 255, 0])
     flat_corners = [item for sublist in avg for item in sublist]
     flat_ids = [item for sublist in ids for item in sublist]
     pair = sorted(zip(flat_ids, flat_corners))
@@ -387,5 +380,5 @@ def main():
     bbox.save_rois(rois, args.outfile)
 
 if __name__ == '__main__':
-    create_aruco_coords(file, outfile)
-    # main()
+    # create_aruco_coords(file, outfile)
+    main()
