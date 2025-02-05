@@ -4,21 +4,80 @@ import os
 
 import numpy as np
 import cv2
-from numpy.lib.function_base import append
-import sknw
-from skimage.morphology import skeletonize
+# from numpy.lib.function_base import append
+# import sknw
+# from skimage.morphology import skeletonize
 import matplotlib.pyplot as plt
 import matplotlib as mpl
 import networkx as nx
-from sklearn.cluster import KMeans
+# from sklearn.cluster import KMeans
 import copy
 from cv2 import aruco
 import csv
 import argparse
+from PIL import Image
 
 import bbox
 
+# file = r"/Users/juliannelouie/Downloads/edge_labels.png"
+file = r"/Users/juliannelouie/Downloads/TestVideo-NoAnts-2023-06-30.mp4"
+# file = r"/Users/juliannelouie/Downloads/Test Video.MP4"
+outfile = r"/Users/juliannelouie/anttracking/ant_tracker/templates/coordinates_2025.txt"
 
+def create_aruco_coords(infile, outfile):
+    """
+    Inputs
+        infile  --  a picture or video file
+        outfile --  empty text file
+    Outputs
+        outfile -- text file with ARTag coordinates for reference image, used as points of reference to apply homography
+    """
+    try:
+        frame = Image.open(infile)
+        frame = np.array(frame)
+        
+    except IOError: 
+        print("Not an image, trying as a video file")
+        video = cv2.VideoCapture(infile)
+        ret, frame = video.read()
+        if not ret:
+            raise ValueError('Frame not successfully read.')
+        
+    # h, w = frame.shape
+
+    # Initialize parameters for ARTag detection
+    # aruco_dict = aruco.Dictionary_get(aruco.DICT_4X4_100)
+    aruco_dict = cv2.aruco.getPredefinedDictionary(cv2.aruco.DICT_4X4_100)
+    # parameters = aruco.DetectorParameters_create()
+    parameters = cv2.aruco.DetectorParameters()
+    parameters.adaptiveThreshConstant = 20
+    parameters.adaptiveThreshWinSizeMax = 20
+    parameters.adaptiveThreshWinSizeStep = 6
+    parameters.minMarkerPerimeterRate = .02
+    parameters.polygonalApproxAccuracyRate = .15
+    parameters.perspectiveRemovePixelPerCell = 10
+    parameters.perspectiveRemoveIgnoredMarginPerCell = .3
+    parameters.minDistanceToBorder = 0
+
+    detector = cv2.aruco.ArucoDetector(aruco_dict, parameters)
+
+    # Find ARTag coordinates in query image and reformat data to match reference coordinates
+    # Detect the markers
+    corners, ids, rejectedImgPoints = detector.detectMarkers(frame)
+    # corners, ids, rejectedImgPoints = aruco.detectMarkers(frame, aruco_dict, parameters=parameters)
+    avg = [np.average(x, axis = 1) for x in corners]
+    # frame_markers = aruco.drawDetectedMarkers(frame.copy(), corners, ids, [0, 255, 0])
+    flat_corners = [item for sublist in avg for item in sublist]
+    flat_ids = [item for sublist in ids for item in sublist]
+    pair = sorted(zip(flat_ids, flat_corners))
+
+    coords = np.array([x[1] for x in pair]).astype(int)
+    outfile = open(outfile, "w")
+    coords_str = '\n'.join('  '.join(map(str, row)) for row in coords)
+    outfile.write(coords_str)
+    return outfile
+
+    
 def warp(frame, coord1):
     """
     Inputs
@@ -267,6 +326,10 @@ def main():
     elif args.year == "2023":
         reference = np.array(np.loadtxt("templates/center_coordinates_2023.txt")).astype(int)  # Center coordinates. data depends on year
         csv_file = "templates/dictionary_2023.csv"
+    elif args.year == "2025":
+        reference = np.array(np.loadtxt("templates/center_coordinates_2021.txt")).astype(int)
+        csv_file = "templates/dictionary_2025.csv"
+        coord1 = "templates/tag_coordinates_2025.txt"
 
 
     Dict = {}
@@ -324,4 +387,5 @@ def main():
     bbox.save_rois(rois, args.outfile)
 
 if __name__ == '__main__':
-    main()
+    create_aruco_coords(file, outfile)
+    # main()
