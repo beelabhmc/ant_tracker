@@ -311,7 +311,7 @@ def main():
     gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
 
     # Load in relevant reference coordinates
-    coord1 = np.array(np.loadtxt("templates/tag_coordinates.txt")).astype(int)  # Aruco detection (preferably all 7 visible)
+    coord1 = np.array(np.loadtxt(f"templates/tag_coordinates_{args.year}.txt")).astype(int)  # Aruco detection (preferably all 7 visible)
 
     if args.year == "2021":
         reference = np.array(np.loadtxt("templates/center_coordinates_2021.txt")).astype(int)  # Center coordinates. data depends on year
@@ -320,9 +320,8 @@ def main():
         reference = np.array(np.loadtxt("templates/center_coordinates_2023.txt")).astype(int)  # Center coordinates. data depends on year
         csv_file = "templates/dictionary_2023.csv"
     elif args.year == "2025":
-        reference = np.array(np.loadtxt("templates/center_coordinates_2021.txt")).astype(int)
+        reference = np.array(np.loadtxt("templates/center_coordinates_2025.txt")).astype(int)
         csv_file = "templates/dictionary_2025.csv"
-        coord1 = "templates/tag_coordinates_2025.txt"
 
 
     Dict = {}
