@@ -5,6 +5,8 @@ If you're just interested in running the pipeline, look at [this page](https://g
 
 If you are setting up for the first time, look at [this page](https://docs.google.com/document/d/1vBJpCwjm6bfbJYo0IxgfqCFsbu47Me12t4APdEw7pwY/edit?usp=sharing)
 
+If you are running the pipeline on a new experiment setup, look at [this page](https://docs.google.com/document/d/1TstS0QiNDYHeQ5Qvds0TUfsVNtLij7jBM-cvmXcdhKY/edit?usp=sharing) to set up tag and center coordinates and generate contour images.
+
 ## Helpful Documentation
 If you need help understanding Snakemake and the snakefile, look at [this page](https://docs.google.com/document/d/18K1qKKSpdPqdQ-ddlEnm8RjRbvceNAT6yDO5jZh_WUE/edit?usp=sharing)
 
