@@ -1,15 +1,27 @@
 configfile: 'config.yaml'
+from ast import literal_eval
+
+# so that we can queue videos by listing them in config file
+videos = config["videos"]
+
+rule all:
+    input:
+        expand("output/{video}/edges.csv", video=videos),
+        expand("output/{video}/sorted.csv", video=videos),
+        expand("output/{video}/tracks.csv", video=videos)
+
+
 
 
 # The pipeline only works with mp4 files. If the input is a mov file, it converts it to mp4 and 
 # puts the new mp4 file into the input directory.
-rule convert_mov_to_mp4:
-    input:
-        'input/{video}.mov'
-    output:
-        'input/{video}.mp4'
-    shell:
-        'ffmpeg -i {input} -vcodec h264 -acodec mp2 {output}'
+#rule convert_mov_to_mp4:
+ #   input:
+  #      'input/{video}.mov'
+   # output:
+    #    'input/{video}.mp4'
+   # shell:
+    #    'ffmpeg -i {input} -vcodec h264 -acodec mp2 {output}'
 
 
 # Video shakes at the beginning and end, so we trim the first and last 5 seconds to ensure consistency.
