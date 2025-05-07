@@ -212,6 +212,25 @@ def contour(mask):
     return cont
 
 
+
+def drawCircles(cont, newpoints):
+    cont_with_circles = cont.copy()  # Copy of the tree image to draw on
+    if len(cont_with_circles.shape) == 2:  # If grayscale, convert to BGR
+        cont_with_circles = cv2.cvtColor(cont_with_circles, cv2.COLOR_GRAY2BGR)
+
+    h, w = cont_with_circles.shape[:2]
+    for point in newpoints:
+        if not (0 <= point[0] < h and 0 <= point[1] < w):
+            print(f"Out-of-bounds point: {point}")  # Debugging
+
+    for i in range(len(newpoints)):
+        cv2.circle(cont_with_circles, (newpoints[i, 1], newpoints[i, 0]), 40, (0, 0, 255), 2)  # Red circle
+
+    return cont_with_circles
+
+
+
+
 def vertices(cont, newpoints, Dict, Orientation):
     """
     Inputs
@@ -241,7 +260,11 @@ def vertices(cont, newpoints, Dict, Orientation):
 
         inter = cv2.bitwise_and(cont, circle)
         # cv2.imwrite('detect_images/bitwise_' + str(i) + '.png', inter)
+        # if cv2.findNonZero(inter) is None:
+        #     print(f"[WARNING] No intersection for ROI {i} (label {Dict[i]}), center = {newpoints[i]}")
+        #     continue
         index = np.array(cv2.findNonZero(inter))
+
         index = np.array([index[i][0] for i in range(len(index))])
         # At times one point of intersection will be detected as two closely positioned points.
         # Use k means to ensure we get the correct number of vertices.
@@ -267,10 +290,31 @@ def vertices(cont, newpoints, Dict, Orientation):
             roll = np.roll(roll, 2, axis = 0)
         conn.append(roll)
         print(i, Dict[i], len(poly))
-
+    # print(conn)
     conn = np.array(conn)
     
     return conn
+
+
+"""
+prints the (x, y) coordinates of each mouseclick
+
+to find center coordinates: click the center of each junction and then invert the x and y to get (y,x)
+
+Input:
+    event -- left mouse click
+    x -- x coordinate of where the mouse was placed on image
+    y -- y coordinate of where the mouse was placed on image
+    flag -- additional flags
+    param -- additional parameters
+Print:
+    "Coordinates: (x, y)"
+"""
+def get_coordinates(event, x, y, flags, param):
+    """Callback function to capture mouse click coordinates."""
+    if event == cv2.EVENT_LBUTTONDOWN:  # Correct function signature
+        print(f"Coordinates: ({x}, {y})")
+
 
 def main():
     arg_parser = argparse.ArgumentParser()
@@ -298,6 +342,7 @@ def main():
 
 
     args = arg_parser.parse_args()
+    print(args.year)
 
     # Read in first frame of video as an image
     if not os.path.isfile(args.video):
@@ -309,6 +354,11 @@ def main():
         arg_parser.error('The video only has {} frames.'.format(args.frame-1))
     
     gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+
+    # TESTING gray
+    # current_directory = os.getcwd()
+    # save_location = os.path.join(current_directory, "grey.png")
+    # cv2.imwrite(save_location, gray)
 
     # Load in relevant reference coordinates
     coord1 = np.array(np.loadtxt(f"templates/tag_coordinates_{args.year}.txt")).astype(int)  # Aruco detection (preferably all 7 visible)
@@ -330,7 +380,7 @@ def main():
     with open(csv_file, 'r') as file:
         reader = csv.reader(file)
 
-        # Skip the header
+        # Skip the headerscripts
         next(reader)
 
         # make Dict
@@ -339,9 +389,16 @@ def main():
             Orientation.append(tuple(row))
     
     M, result = warp(gray, coord1)
+
+    # TESTING result
+    # current_directory = os.getcwd()
+    # save_location = os.path.join(current_directory, "result.png")
+    # cv2.imwrite(save_location, result)
+
     frame_mask = mask(result)
     query = nodes(frame_mask)
     newpoints = centers(reference, query)
+  
 
     # Testing
     # print(newpoints)
@@ -358,9 +415,26 @@ def main():
     cv2.imwrite(save_location, cont)
 
 
+
     verts = vertices(cont, newpoints, Dict, Orientation)
 
+
+    # ## add circles onto the contour image
+    result = drawCircles(cont, newpoints)
+    image_path = os.path.join(current_directory, "cont_with_circles.png")
+    cv2.imwrite(image_path, result)
+
+
+
+    # ## outputs coordinates when you click on the image
+    # cv2.imshow("Image", frame) # frame
+    # cv2.setMouseCallback("Image", get_coordinates)
+    # cv2.waitKey(0)
+    # cv2.destoryAllWindows()
+    
+    
     # Undo transformation to get vertices coordinates in original frame
+    # print("starting to print verts")
     print(verts)
     pts2 = np.array(verts, np.float32)
     polys = np.array(cv2.perspectiveTransform(pts2, np.linalg.pinv(M))).astype(int)

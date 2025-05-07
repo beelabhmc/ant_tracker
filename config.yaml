@@ -1,4 +1,8 @@
 ---
+videos:
+    - 25-02-13_1524_SP011-010
+    # queue more videos here
+   
 INPUT_DIR: /biology/donaldson/ant_videos
 # The framerate to assume if given a .h264 file
 # Changed framerate from 32 to 24 (videos are in 24 fps)
@@ -16,7 +20,7 @@ croprot:
 
 roidetect:
     # Parameters used by the roidetect file
-    year: 2021      # The year the videos were taken
+    year: 2025      # The year the videos were taken
 
 tracks:
     # Parameters used by the ant tracking code (there's a lot of them)
