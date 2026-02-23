@@ -8,6 +8,20 @@ miniconda3/*
 tests/*
 nohup.out
 ?/*
+ml/ants.v2i.coco/*
+ml/trainedModels/*
+ml/testIM/*
+ml/result/*
+ml/natural_substrate/*
+ml/helper.py
+ml/project-1-at-2025-07-02-17-29-a8cd87b5/*
+ml/project-4-at-2025-07-29-20-09-65229e67/*
+ml/export_176945_project-176945-at-2025-07-30-22-46-72354786/*
+ml/Ant_dataset
+ml/ants.v2i.coco-20250708T213721Z-1-001
+ml/help.py
+ml/ffmpeg
+ThisOne.MP4
 
 out_test/
 out_test2
