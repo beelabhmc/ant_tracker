@@ -71,7 +71,7 @@ def draw_quadrant_arcs(frame, center, radius, north_angle_deg):
     ang_S = norm(ang_S)
     ang_W = norm(ang_W)
 
-    # Helper: draw an arc from start to start+90 (clockwise)
+    # Draw an arc from start to start+90 (clockwise)
     def draw_arc(start_deg, color):
         end_deg = (start_deg + 90) % 360
         # cv2.ellipse uses start/end angles in degrees. If end < start, split the arc.
@@ -177,9 +177,9 @@ if __name__ == "__main__":
     import os
 
     parser = argparse.ArgumentParser(description="Annotate video with quadrant arcs around a center point.")
-    parser.add_argument("video", nargs='?', default="/home/livia/AntTrack/ant_tracker/clip_10s.mp4",
+    parser.add_argument("video", nargs='?', default="/input/file/path.mp4",
                         help="Input video path")
-    parser.add_argument("out", nargs='?', default="/home/livia/AntTrack/ant_tracker/10s_clip_ants_annotated.mp4",
+    parser.add_argument("out", nargs='?', default="/output/file/path.mp4",
                         help="Output video path")
 
     parser.add_argument("--center", nargs=2, type=int, metavar=("CX", "CY"),
@@ -187,7 +187,7 @@ if __name__ == "__main__":
     parser.add_argument("--north", nargs=2, type=int, metavar=("NX", "NY"),
                         help="North point coordinates (x y). If provided together with --center, skips interactive calibration.")
     parser.add_argument("--radius", type=float, default=None,
-                        help=f"Optional radius to use instead of computing from center and north point. If omitted, uses DEFAULT_RADIUS={DEFAULT_RADIUS} px.")
+                        help=f"Optional radius to input. If omitted, uses DEFAULT_RADIUS={DEFAULT_RADIUS} px.")
 
     args = parser.parse_args()
 
