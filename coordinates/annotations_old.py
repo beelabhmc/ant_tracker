@@ -121,11 +121,10 @@ def annotate_video(video_path: str, out_path: str, radius: float = None):
     clicks = []
 
     show = first.copy()
-    win_name = "Calibrate (click center, then press 1-8 for direction)"
+    win_name = "Calibrate (click center, then north)"
     cv2.namedWindow(win_name)
     cv2.setMouseCallback(win_name, on_mouse)
 
-    selected_direction = None
     while True:
         temp = show.copy()
         # show clicked points as you go
@@ -133,67 +132,31 @@ def annotate_video(video_path: str, out_path: str, radius: float = None):
             cv2.circle(temp, (x, y), 6, (0, 0, 255), -1)
             cv2.putText(temp, f"{i+1}", (x+8, y-8), cv2.FONT_HERSHEY_SIMPLEX, 0.8, (0, 0, 255), 2)
 
-        # If user clicked a center, show the 8 predefined direction markers around that center
-        if len(clicks) >= 1:
-            cx, cy = clicks[0]
-            r = DEFAULT_RADIUS if radius is None else int(round(radius))
-            # 1 = North (top vertical), then clockwise (45 degree steps)
-            for k in range(8):
-                ang_deg = (270 + k * 45) % 360
-                rad = math.radians(ang_deg)
-                px = int(round(cx + r * math.cos(rad)))
-                py = int(round(cy + r * math.sin(rad)))
-                # darker marker color and clearer (dark purple) label for readability
-                marker_color = (0, 140, 0)  # darker green
-                label_color = (128, 0, 128)  # dark purple (B, G, R)
-                font_scale = 1.2
-                label_thickness = 3
-                cv2.circle(temp, (px, py), 6, marker_color, -1)
-
-                # Prepare label background (white rectangle) behind the larger label
-                label_text = f"{k+1}"
-                font = cv2.FONT_HERSHEY_SIMPLEX
-                (text_w, text_h), baseline = cv2.getTextSize(label_text, font, font_scale, label_thickness)
-                pad = 6
-                # text_org is bottom-left corner where text will be drawn
-                text_org = (px + 12, py - 12)
-                rect_tl = (text_org[0] - pad, text_org[1] - text_h - pad)
-                rect_br = (text_org[0] + text_w + pad, text_org[1] + baseline + pad)
-                # Draw filled white rectangle and then the label in dark purple
-                cv2.rectangle(temp, rect_tl, rect_br, (255, 255, 255), -1)
-                cv2.putText(temp, label_text, text_org, font, font_scale, label_color, label_thickness)
-
-            cv2.putText(temp, "Press number 1-8 to choose north direction (ESC to cancel)",
-                        (10, 20), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (255, 255, 255), 2)
-
         cv2.imshow(win_name, temp)
         key = cv2.waitKey(20) & 0xFF
 
-        # ESC to cancel
-        if key == 27:
+        if len(clicks) >= 2:
+            break
+        if key == 27:  # ESC
             cap.release()
             out.release()
             cv2.destroyAllWindows()
             return
 
-        # If a center was selected and user presses 1-8, choose that predefined direction
-        if len(clicks) >= 1 and key in (ord('1'), ord('2'), ord('3'), ord('4'), ord('5'), ord('6'), ord('7'), ord('8')):
-            sel = key - ord('1')  # 0..7
-            cx, cy = clicks[0]
-            radius_used = DEFAULT_RADIUS if radius is None else radius
-            north_angle = (270 + sel * 45) % 360
-            selected_direction = True
-            break
-
-        # Otherwise keep waiting for first click
-        # (ignore any additional mouse clicks beyond first)
-
     cv2.destroyAllWindows()
 
-    # At this point we have cx, cy, radius_used and north_angle
+    (cx, cy), (nx, ny) = clicks[0], clicks[1]
+    # Use provided radius (from CLI) if given, otherwise use the DEFAULT_RADIUS value.
+    if radius is None:
+        radius = DEFAULT_RADIUS
+    north_angle = angle_deg_from_center_to_point(cx, cy, nx, ny)
+
+    print(f"Center: ({cx},{cy}), North point: ({nx},{ny})")
+    print(f"Radius: {radius:.2f} px, North angle: {north_angle:.2f} deg (OpenCV angle convention)")
+
     # Annotate first frame and write it
     frame0 = first.copy()
-    draw_quadrant_arcs(frame0, (cx, cy), radius_used, north_angle)
+    draw_quadrant_arcs(frame0, (cx, cy), radius, north_angle)
     out.write(frame0)
 
     # Annotate the rest
@@ -201,7 +164,7 @@ def annotate_video(video_path: str, out_path: str, radius: float = None):
         ok, frame = cap.read()
         if not ok:
             break
-        draw_quadrant_arcs(frame, (cx, cy), radius_used, north_angle)
+        draw_quadrant_arcs(frame, (cx, cy), radius, north_angle)
         out.write(frame)
 
     cap.release()
