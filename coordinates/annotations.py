@@ -16,7 +16,7 @@ QUAD_COLORS = {
 THICKNESS = 4
 CENTER_DOT_RADIUS = 5
 # Default radius (pixels) used when a radius is not provided. Change as desired.
-DEFAULT_RADIUS = 500
+DEFAULT_RADIUS = 410
 
 # ----------------------------
 # Mouse click capture
@@ -163,7 +163,7 @@ def annotate_video(video_path: str, out_path: str, radius: float = None):
                 cv2.rectangle(temp, rect_tl, rect_br, (255, 255, 255), -1)
                 cv2.putText(temp, label_text, text_org, font, font_scale, label_color, label_thickness)
 
-            cv2.putText(temp, "Press number 1-8 to choose north direction (ESC to cancel)",
+            cv2.putText(temp, "Type number 1-8 on keyboard to choose north direction (ESC to cancel)",
                         (10, 20), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (255, 255, 255), 2)
 
         cv2.imshow(win_name, temp)
