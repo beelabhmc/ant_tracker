@@ -121,7 +121,7 @@ def annotate_video(video_path: str, out_path: str, radius: float = None):
     clicks = []
 
     show = first.copy()
-    win_name = "Calibrate (click center, then press 1-8 for direction)"
+    win_name = "Calibrate (click center, then type 1-8 for north direction)"
     cv2.namedWindow(win_name)
     cv2.setMouseCallback(win_name, on_mouse)
 
