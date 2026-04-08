@@ -304,6 +304,8 @@ def make_merge_vids(history_csv, video_source, annotated_video_source, result_pa
             unmerge_time = row.get('unmerge_time').split()
 
             id = row.get('id')
+            if len(merge_time) == 0 or len(unmerge_time) == 0:
+                continue  # <-- This was missing!
 
             if len(merge_time) > 0 and len(unmerge_time) > 0:
                 first_one = True
