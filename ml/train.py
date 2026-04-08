@@ -20,9 +20,11 @@ def get_model(num_classes):
 def load_data():
     # Load datasets
     total_dataset = get_coco_dataset(
-    # img_dir="/Users/pk_3/My_Documents/AntProjectSM2025/ant_tracker-1/ml/ants.v2i.coco/train",
-    # ann_file="/Users/pk_3/My_Documents/AntProjectSM2025/ant_tracker-1/ml/ants.v2i.coco/train/_annotations.coco.json"
-    # img_dir="/Users/pk_3/My_Documents/AntProjectSM2025/ant_tracker-1/ml/natural_substrate/train/images",
+        img_dir="/home/livia/Desktop/Seq0006Object21Image64/img",
+        ann_file="/home/livia/Desktop/Seq0006Object21Image64/annotations.coco.json"
+        # img_dir="/home/livia/Desktop/train",
+        # ann_file="/home/livia/Desktop/train/_annotations.coco.json"
+    )
     # ann_file="/Users/pk_3/My_Documents/AntProjectSM2025/ant_tracker-1/ml/natural_substrate/train/images/annotations.coco.json"
     # img_dir="/Users/pk_3/My_Documents/AntProjectSM2025/ant_tracker-1/ml/project-1-at-2025-07-02-17-29-a8cd87b5/images",
     # ann_file="/Users/pk_3/My_Documents/AntProjectSM2025/ant_tracker-1/ml/project-1-at-2025-07-02-17-29-a8cd87b5/result.json"
@@ -30,9 +32,9 @@ def load_data():
     # ann_file="/home/paulkim/Documents/BeeLabSM2025/ml-ant_tracker/ant_tracker/ml/Ant_dataset/OutdoorDataset/Seq0006Object21Image64/annotations.coco.json"
     # img_dir="/home/paulkim/Documents/BeeLabSM2025/ml-ant_tracker/ant_tracker/ml/ants.v2i.coco-20250708T213721Z-1-001/ants.v2i.coco/train",
     # ann_file="/home/paulkim/Documents/BeeLabSM2025/ml-ant_tracker/ant_tracker/ml/ants.v2i.coco-20250708T213721Z-1-001/ants.v2i.coco/train/_annotations.coco.json"
-        img_dir="/home/paulkim/Documents/BeeLabSM2025/ml-ant_tracker/ant_tracker/ml/export_176945_project-176945-at-2025-07-30-22-46-72354786/images",
-        ann_file="/home/paulkim/Documents/BeeLabSM2025/ml-ant_tracker/ant_tracker/ml/export_176945_project-176945-at-2025-07-30-22-46-72354786/cleanresult.json"
-    )
+    #     img_dir="/home/paulkim/Documents/BeeLabSM2025/ml-ant_tracker/ant_tracker/ml/export_176945_project-176945-at-2025-07-30-22-46-72354786/images",
+    #     ann_file="/home/paulkim/Documents/BeeLabSM2025/ml-ant_tracker/ant_tracker/ml/export_176945_project-176945-at-2025-07-30-22-46-72354786/cleanresult.json"
+    
 
     train_size = int(0.8 * len(total_dataset))
     val_size = len(total_dataset) - train_size
@@ -59,7 +61,7 @@ def objective(config):
 
     while True:
         train_one_epoch(model, optimizer, train_loader, device)
-        model_path = f"/home/paulkim/models/model.pth"
+        model_path = f"/home/livia/Desktop/model.pth"
         torch.save(model.state_dict(), model_path)
         print(f"Model saved: {model_path}")
         acc = evaluate_mAP(model, val_loader)

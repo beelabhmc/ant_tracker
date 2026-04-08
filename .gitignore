@@ -9,6 +9,11 @@ tests/*
 nohup.out
 ?/*
 ml/ants.v2i.coco/*
+ml/ants_v21_coco/*
+ml/export_176945_project-176945-at-2025-07-30-22-46-72354786/*
+ml/Seq0006Object21Image64/*
+ml/project-2-at-2026-03-13-18-47-03b7cba6/*
+ml/project-3-at-2026-03-13-18-57-9ddf8827/*
 ml/trainedModels/*
 ml/testIM/*
 ml/result/*
@@ -30,6 +35,9 @@ storage_test/
 *.pyc
 .ipynb_checkpoints/
 .snakemake/
+
+*.mp4
+*.MP4
 
 **/.DS_Store
 **/._.DS_Store

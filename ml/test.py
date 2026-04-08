@@ -77,7 +77,7 @@ def draw_boxes(image, prediction, fig_size=(10, 10)):
     filtered_boxes = nms_boxes[:, :4]
     
     # Set a threshold for showing boxes
-    threshold = 0.8
+    threshold = 0.4
     
     plt.figure(figsize=fig_size)
 
@@ -91,7 +91,7 @@ def draw_boxes(image, prediction, fig_size=(10, 10)):
             plt.text(x_min, y_min, f"{class_name} ({score:.2f})", color='r')
 
     plt.axis('off')
-    plt.savefig("ml/result/result2.png")
+    plt.savefig("ml/result/result7.png")
 
 if __name__ == "__main__":
     num_classes = 2 # Background + ant
@@ -99,11 +99,14 @@ if __name__ == "__main__":
     device = torch.device('cuda') if torch.cuda.is_available() else torch.device('cpu')
     # device = torch.device('cpu')
 
-    image_path = "/home/paulkim/Documents/BeeLabSM2025/ml-ant_tracker/ant_tracker/ml/testIM/frame0168.png"
+    # image_path = "/home/paulkim/Documents/BeeLabSM2025/ml-ant_tracker/ant_tracker/ml/testIM/frame0168.png"
+    image_path = "/home/livia/Desktop/Test1.png"
+
     image_tensor = prepare_image(image_path)
 
     model = get_model(num_classes)
-    model.load_state_dict(torch.load("/home/paulkim/Documents/BeeLabSM2025/ml-ant_tracker/ant_tracker/ml/trainedModels/model.pth"))
+    # model.load_state_dict(torch.load("/home/paulkim/Documents/BeeLabSM2025/ml-ant_tracker/ant_tracker/ml/trainedModels/model.pth"))
+    model.load_state_dict(torch.load("/home/livia/Desktop/model.pth"))
     model.to(device)
     model.eval() 
 
