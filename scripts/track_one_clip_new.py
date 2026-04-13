@@ -21,7 +21,14 @@ def trackOneClip(
     merge_distance,
     model_weights_path,
     model_device="cuda",
-    model_score_thresh=0.5,
+    model_score_thresh=0.75,
+    model_nms_iou=0.45,
+    model_max_detections=32,
+    model_min_box_area=None,
+    model_max_box_area=None,
+    model_motion_gate=True,
+    model_motion_pixel_thresh=18,
+    model_motion_min_fraction=0.02,
 ):
     cap = cv2.VideoCapture(source)  # create video reader object
 
@@ -42,6 +49,13 @@ def trackOneClip(
             weights_path=model_weights_path,
             device=model_device,
             score_thresh=model_score_thresh,
+            nms_iou=model_nms_iou,
+            max_detections=model_max_detections,
+            min_box_area=model_min_box_area,
+            max_box_area=model_max_box_area,
+            motion_gate=model_motion_gate,
+            motion_pixel_thresh=model_motion_pixel_thresh,
+            motion_min_fraction=model_motion_min_fraction,
         )
     )
 

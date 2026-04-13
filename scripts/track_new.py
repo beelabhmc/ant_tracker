@@ -95,11 +95,69 @@ def main():
         "--model-score-thresh",
         dest="model_score_thresh",
         type=float,
-        default=0.5,
-        help="Score threshold for ML detector (default 0.5).",
+        default=0.75,
+        help="Confidence threshold for kept boxes (default 0.75). Raise if you get too many false tracks.",
+    )
+    arg_parser.add_argument(
+        "--model-nms-iou",
+        dest="model_nms_iou",
+        type=float,
+        default=0.45,
+        help="Extra NMS IoU threshold on CPU after inference (default 0.45). Use -1 to disable.",
+    )
+    arg_parser.add_argument(
+        "--model-max-detections",
+        dest="model_max_detections",
+        type=int,
+        default=32,
+        help="Max boxes per frame after NMS (default 32). Use 0 for no limit.",
+    )
+    arg_parser.add_argument(
+        "--model-min-box-area",
+        dest="model_min_box_area",
+        type=int,
+        default=None,
+        help="Drop detections with box area smaller than this (pixels^2).",
+    )
+    arg_parser.add_argument(
+        "--model-max-box-area",
+        dest="model_max_box_area",
+        type=int,
+        default=None,
+        help="Drop detections with box area larger than this (pixels^2).",
+    )
+    arg_parser.add_argument(
+        "--model-motion-gate",
+        dest="model_motion_gate",
+        action="store_true",
+        default=True,
+        help="Enable previous-frame motion gating (default on; good for fixed cameras).",
+    )
+    arg_parser.add_argument(
+        "--no-model-motion-gate",
+        dest="model_motion_gate",
+        action="store_false",
+        help="Disable motion gating.",
+    )
+    arg_parser.add_argument(
+        "--model-motion-pixel-thresh",
+        dest="model_motion_pixel_thresh",
+        type=int,
+        default=18,
+        help="Pixel absdiff threshold for motion gating (0-255, default 18).",
+    )
+    arg_parser.add_argument(
+        "--model-motion-min-fraction",
+        dest="model_motion_min_fraction",
+        type=float,
+        default=0.02,
+        help="Min fraction of changed pixels inside a box (default 0.02).",
     )
 
     args = arg_parser.parse_args()
+
+    model_nms_iou = None if args.model_nms_iou < 0 else args.model_nms_iou
+    model_max_detections = None if args.model_max_detections == 0 else args.model_max_detections
 
     print("Tracking ants in", args.source)
     export = args.video_path is not None
@@ -119,6 +177,13 @@ def main():
         model_weights_path=args.model_weights_path,
         model_device=args.model_device,
         model_score_thresh=args.model_score_thresh,
+        model_nms_iou=model_nms_iou,
+        model_max_detections=model_max_detections,
+        model_min_box_area=args.model_min_box_area,
+        model_max_box_area=args.model_max_box_area,
+        model_motion_gate=args.model_motion_gate,
+        model_motion_pixel_thresh=args.model_motion_pixel_thresh,
+        model_motion_min_fraction=args.model_motion_min_fraction,
     )
 
     # makes the history csvs
