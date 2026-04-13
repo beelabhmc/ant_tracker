@@ -77,7 +77,7 @@ def objective(config):
 
     while True:
         train_one_epoch(model, optimizer, train_loader, device)
-        model_path = f"/home/livia/Desktop/model.pth"
+        model_path = f"/home/livia/Desktop/model_for_track.pth"
         torch.save(model.state_dict(), model_path)
         print(f"Model saved: {model_path}")
         acc = evaluate_mAP(model, val_loader)

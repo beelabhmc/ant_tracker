@@ -130,10 +130,10 @@ def load_data(
 
 
 def test_data_loading():
-    """
-    Test function to verify all datasets are loaded correctly.
-    Run this before training to ensure data is set up properly.
-    """
+    # """
+    # Test function to verify all datasets are loaded correctly.
+    # Run this before training to ensure data is set up properly.
+    # """
     print("=" * 60)
     print("TESTING DATA LOADING")
     print("=" * 60)
@@ -180,14 +180,18 @@ def test_data_loading():
     print("Testing train/val/test split:")
     print("-" * 60)
     
+    # Only project-3 is now the test set
     test_dirs = [
-        "project-2-at-2026-03-13-18-47-03b7cba6",
         "project-3-at-2026-03-13-18-57-9ddf8827",
     ]
     
     print(f"\nTest directories (will be used for test set):")
     for td in test_dirs:
         print(f"  - {td}")
+    
+    print(f"\nTraining directories (including project-2):")
+    print(f"  - project-2-at-2026-03-13-18-47-03b7cba6 (now in training)")
+    print(f"  - (all other datasets)")
     
     try:
         train_loader, val_loader, test_loader = load_data(
@@ -251,119 +255,83 @@ def test_data_loading():
 
 
 def objective(config):
-    try:
-        device = torch.device('cuda')
-        test_dirs = [
-            "project-2-at-2026-03-13-18-47-03b7cba6",
-            "project-3-at-2026-03-13-18-57-9ddf8827",
-        ]
-        train_loader, val_loader, test_loader = load_data(
-            test_dirs=test_dirs, exclude_test_from_train=True, batch_size=4
-        )
+    device = torch.device('cuda')
+    
+    # Only project-3 is now the test set
+    # project-2 will be included in training
+    test_dirs = [
+        "project-3-at-2026-03-13-18-57-9ddf8827",
+    ]
+    
+    train_loader, val_loader, test_loader = load_data(
+        test_dirs=test_dirs, exclude_test_from_train=True, batch_size=4
+    )
 
-        num_classes = 2
-        model = get_model(num_classes)
-        model.to(device)
+    num_classes = 2  # Background + ant
+    model = get_model(num_classes)
+    model.to(device)
 
-        optimizer = torch.optim.SGD(
-            model.parameters(),
-            lr=config["lr"],
-            momentum=config["momentum"],
-            weight_decay=config["weight_decay"],
-        )
+    optimizer = torch.optim.SGD(
+        model.parameters(),
+        lr=config["lr"],
+        momentum=config["momentum"],
+        weight_decay=config["weight_decay"],
+    )
 
-        epoch = 0
-        while True:
-            print(f"Starting epoch {epoch}")
-            train_one_epoch(model, optimizer, train_loader, device)
-            model_path = f"/home/livia/Desktop/model.pth"
-            torch.save(model.state_dict(), model_path)
-            print(f"Model saved: {model_path}")
-
-            try:
-                val_acc = evaluate_mAP(model, val_loader, iou_threshold=0.6, score_threshold=0.5)
-                if val_acc is None:
-                    print(f"Warning: evaluate_mAP returned None, using 0.0")
-                    val_acc = 0.0
-                elif isinstance(val_acc, float) and (val_acc != val_acc):
-                    print(f"Warning: evaluate_mAP returned NaN, using 0.0")
-                    val_acc = 0.0
-            except Exception as e:
-                print(f"Warning: evaluate_mAP failed: {e}")
-                traceback.print_exc()
-                val_acc = 0.0
-
-            print(f"Epoch {epoch} val_AP@0.6: {val_acc}")
-
-            metrics = {"val_AP": float(val_acc)}
-
-            if test_loader is not None:
-                try:
-                    test_acc = evaluate_mAP(model, test_loader, iou_threshold=0.6, score_threshold=0.5)
-                    if test_acc is not None and test_acc == test_acc:
-                        metrics["test_AP"] = float(test_acc)
-                        print(f"Epoch {epoch} test_AP@0.6: {test_acc}")
-                except Exception as e:
-                    print(f"Warning: test evaluation failed: {e}")
-
-            # Use tune.report with dictionary unpacking
-            tune.report(val_AP=metrics["val_AP"], **{k: v for k, v in metrics.items() if k != "val_AP"})
-            epoch += 1
-
-    except Exception as e:
-        print(f"ERROR in objective: {e}")
-        traceback.print_exc()
-        raise
+    while True:
+        train_one_epoch(model, optimizer, train_loader, device)
+        model_path = f"/home/livia/Desktop/model_updated.pth"
+        torch.save(model.state_dict(), model_path)
+        print(f"Model saved: {model_path}")
+        
+        # Evaluate on validation set
+        val_acc = evaluate_mAP(model, val_loader, iou_threshold=0.6, score_threshold=0.5)
+        
+        # Evaluate on test set if available
+        if test_loader is not None:
+            test_acc = evaluate_mAP(model, test_loader, iou_threshold=0.6, score_threshold=0.5)
+            tune.report({"val_AP": val_acc, "test_AP": test_acc})
+        else:
+            tune.report({"val_AP": val_acc})
 
 
 def train_one_epoch(model, optimizer, data_loader, device):
     model.train()
-    batch_idx = 0
     for images, targets in data_loader:
-        try:
-            images = [img.to(device) for img in images]
+        images = [img.to(device) for img in images]
 
-            processed_targets = []
-            valid_images = []
-            for i, target in enumerate(targets):
-                boxes = []
-                labels = []
-                for obj in target:
-                    bbox = obj["bbox"]
-                    x, y, w, h = bbox
+        processed_targets = []
+        valid_images = []
+        for i, target in enumerate(targets):
+            boxes = []
+            labels = []
+            for obj in target:
+                bbox = obj["bbox"]  # Format: [x, y, width, height]
+                x, y, w, h = bbox
 
-                    if w > 0 and h > 0:
-                        boxes.append([x, y, x + w, y + h])
-                        labels.append(obj["category_id"])
+                if w > 0 and h > 0:
+                    boxes.append([x, y, x + w, y + h])  # Convert to [x_min, y_min, x_max, y_max]
+                    labels.append(obj["category_id"])
 
-                if boxes:
-                    processed_target = {
-                        "boxes": torch.tensor(boxes, dtype=torch.float32).to(device),
-                        "labels": torch.tensor(labels, dtype=torch.int64).to(device),
-                    }
-                    processed_targets.append(processed_target)
-                    valid_images.append(images[i])
+            if boxes:
+                processed_target = {
+                    "boxes": torch.tensor(boxes, dtype=torch.float32).to(device),
+                    "labels": torch.tensor(labels, dtype=torch.int64).to(device),
+                }
+                processed_targets.append(processed_target)
+                valid_images.append(images[i])
 
-            if not processed_targets:
-                continue
+        if not processed_targets:
+            continue
 
-            images = valid_images
+        images = valid_images
 
-            loss_dict = model(images, processed_targets)
-            losses = sum(loss for loss in loss_dict.values())
+        loss_dict = model(images, processed_targets)
+        losses = sum(loss for loss in loss_dict.values())
 
-            optimizer.zero_grad()
-            losses.backward()
-            optimizer.step()
-
-            if batch_idx % 50 == 0:
-                print(f"  Batch {batch_idx}, loss={losses.item():.4f}")
-            batch_idx += 1
-
-        except Exception as e:
-            print(f"ERROR in train_one_epoch batch {batch_idx}: {e}")
-            traceback.print_exc()
-            raise
+        optimizer.zero_grad()
+        losses.backward()
+        optimizer.step()
 
 
 if __name__ == "__main__":
@@ -374,7 +342,7 @@ if __name__ == "__main__":
         success = test_data_loading()
         sys.exit(0 if success else 1)
     
-    # Normal training
+    # Normal training with Ray Tune
     search_space = {
         "lr": tune.loguniform(1e-5, 1e-1),
         "momentum": tune.uniform(0.0, 0.99),
@@ -390,22 +358,11 @@ if __name__ == "__main__":
             metric="val_AP",
             mode="max",
             search_alg=algo,
-            num_samples=10,
         ),
         run_config=tune.RunConfig(
             stop={"training_iteration": 5},
-            verbose=2,
         ),
         param_space=search_space,
     )
     results = tuner.fit()
-
-    try:
-        best_result = results.get_best_result(metric="val_AP", mode="max", filter_nan_and_inf=False)
-        print("Best config is:", best_result.config)
-        print("Best val_AP@0.6:", best_result.metrics.get("val_AP"))
-    except RuntimeError as e:
-        print(f"Could not get best result: {e}")
-        print("All results:")
-        for result in results:
-            print(f"  Config: {result.config}, Metrics: {result.metrics}")
+    print("Best config is:", results.get_best_result().config)

@@ -28,8 +28,13 @@ def _build_fasterrcnn_resnet50_fpn_v2(num_classes: int) -> torch.nn.Module:
 class MLDetectorConfig:
     weights_path: str
     device: str = "cuda"  # "cpu", "cuda", "mps"
+<<<<<<< HEAD
     score_thresh: float = 0.75
     ant_class_id: int = 1  # TorchVision Faster R-CNN: 0=background, 1=first object class
+=======
+    score_thresh: float = 0.4
+    ant_class_id: int = 1  # background=0, ant=1
+>>>>>>> 6cf8f94 (testing files)
     num_classes: int = 2
     # Extra post-processing — the tracker expects a small, clean set of points per frame.
     # Without this, a noisy model can emit hundreds of boxes and break Hungarian matching.

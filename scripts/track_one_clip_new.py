@@ -4,7 +4,11 @@
 import cv2
 from ml_detector import MLDetector, MLDetectorConfig
 from tracker_new import Tracker
+<<<<<<< HEAD
 import tracker_new as tracker
+=======
+import tracker_new
+>>>>>>> 6cf8f94 (testing files)
 import csv
 import os
 from math import floor, ceil
@@ -21,6 +25,7 @@ def trackOneClip(
     merge_distance,
     model_weights_path,
     model_device="cuda",
+<<<<<<< HEAD
     model_score_thresh=0.75,
     model_nms_iou=0.45,
     model_max_detections=32,
@@ -29,6 +34,9 @@ def trackOneClip(
     model_motion_gate=True,
     model_motion_pixel_thresh=18,
     model_motion_min_fraction=0.02,
+=======
+    model_score_thresh=0.4,
+>>>>>>> 6cf8f94 (testing files)
 ):
     cap = cv2.VideoCapture(source)  # create video reader object
 
@@ -341,7 +349,9 @@ def make_merge_vids(history_csv, video_source, annotated_video_source, result_pa
             merge_time = row.get("merge_time").split()
             unmerge_time = row.get("unmerge_time").split()
 
-            id = row.get("id")
+            id = row.get('id')
+            if len(merge_time) == 0 or len(unmerge_time) == 0:
+                continue  # <-- This was missing!
 
             if len(merge_time) > 0 and len(unmerge_time) > 0:
                 first_one = True

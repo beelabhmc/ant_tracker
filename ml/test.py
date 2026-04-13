@@ -91,7 +91,7 @@ def draw_boxes(image, prediction, fig_size=(10, 10)):
             plt.text(x_min, y_min, f"{class_name} ({score:.2f})", color='r')
 
     plt.axis('off')
-    plt.savefig("ml/result/result7.png")
+    plt.savefig("ml/result/result8.png")
 
 if __name__ == "__main__":
     num_classes = 2 # Background + ant
@@ -106,7 +106,7 @@ if __name__ == "__main__":
 
     model = get_model(num_classes)
     # model.load_state_dict(torch.load("/home/paulkim/Documents/BeeLabSM2025/ml-ant_tracker/ant_tracker/ml/trainedModels/model.pth"))
-    model.load_state_dict(torch.load("/home/livia/Desktop/model.pth"))
+    model.load_state_dict(torch.load("/home/livia/Desktop/model_for_track.pth"))
     model.to(device)
     model.eval() 
 
