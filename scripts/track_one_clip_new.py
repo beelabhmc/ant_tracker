@@ -3,8 +3,8 @@
 
 import cv2
 from ml_detector import MLDetector, MLDetectorConfig
-from tracker import Tracker
-import tracker
+from tracker_new import Tracker
+import tracker_new as tracker
 import csv
 import os
 from math import floor, ceil
