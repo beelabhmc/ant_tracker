@@ -4,6 +4,9 @@ from math import sin, cos, ceil
 import os
 import os.path
 from concurrent.futures import ProcessPoolExecutor
+import numpy as np
+import os
+import csv
 
 import metadata
 import bbox
@@ -81,7 +84,36 @@ def main():
                                  'default 1. If multiple cores are specified, '
                                  'then multiple crops will be done in '
                                  'parallel.')
-    Dict = {0:42, 1:122, 2:121, 3:41, 4:12, 5:40, 6:112, 7:8, 8:11, 9:6, 10:10, 11:4, 12:111, 13:2, 14:60, 15:0, 16:1, 17:3, 18:20, 19:7, 20:5, 21:211, 22:31, 23:21, 24:22, 25:30, 26:50, 27:212, 28:222, 29:221, 30:32}
+    arg_parser.add_argument('-y', '--year',
+                            dest='year',
+                            type=str,
+                            help='The year the video was taken',
+                           )
+
+    args = arg_parser.parse_args()
+
+    if args.year == "2021":
+        reference = np.array(np.loadtxt("templates/center_coordinates_2021.txt")).astype(int)  # Center coordinates. data depends on year
+        csv_file = "templates/dictionary_2021.csv"
+    elif args.year == "2023":
+        reference = np.array(np.loadtxt("templates/center_coordinates_2023.txt")).astype(int)  # Center coordinates. data depends on year
+        csv_file = "templates/dictionary_2023.csv"
+    elif args.year == "2025":
+        reference = np.array(np.loadtxt("templates/center_coordinates_2025.txt")).astype(int)
+        csv_file = "templates/dictionary_2025.csv"
+
+    Dict = {}
+
+    with open(csv_file, 'r') as file:
+        reader = csv.reader(file)
+
+        # Skip the headerscripts
+        next(reader)
+
+        # make Dict
+        for index, row in enumerate(reader):
+            Dict[int(index)] = int(row[0])
+
     args = arg_parser.parse_args()
     crop_video(Dict, args.video, args.out_dir, bbox.read_bboxes(args.boxes),
                cores=args.cores)

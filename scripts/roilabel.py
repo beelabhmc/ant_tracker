@@ -98,6 +98,8 @@ def main():
         csv_file = "templates/dictionary_2021.csv"
     elif args.year == "2023":
         csv_file = "templates/dictionary_2023.csv"
+    elif args.year == "2025":
+        csv_file = "templates/dictionary_2025.csv"
 
     Dict = {}
 
@@ -115,4 +117,3 @@ def main():
 
 if __name__ == '__main__':
     main()
-

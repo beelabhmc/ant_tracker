@@ -8,6 +8,7 @@ miniconda3/*
 tests/*
 nohup.out
 ?/*
+logs/
 
 out_test/
 out_test2
