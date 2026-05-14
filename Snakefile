@@ -9,6 +9,8 @@ rule all:
         expand("output/{video}/edges.csv", video=videos),
         expand("output/{video}/sorted.csv", video=videos),
         expand("output/{video}/tracks.csv", video=videos)
+        # Can help ensure roi labeling is done correctly
+        # expand("output/{video}/labels.png", video=videos)
 
 
 
@@ -87,8 +89,8 @@ checkpoint croprotate:
     priority: 20
     threads: config['croprot']['cores']
     shell:
-        'python scripts/croprotate.py -c %d {input[0]} {output} {input[1]}' \
-            % config['croprot']['cores']
+        'python scripts/croprotate.py -c %d {input[0]} {output} {input[1]} -y %d' \
+            % (config['croprot']['cores'], config['roidetect']['year'])
 
 
 def track_input(wildcards):
@@ -120,6 +122,8 @@ rule track:
         'intermediate/full_annotation/{video}/{split}/ROI_{roi}.mp4'
     shell:
         'python scripts/track.py {{input}} {{output[0]}} {{output[1]}} -m {} -c {} -g {} -it {} -d {} '
+        # The following can run the script without full anotation files
+        #'python scripts/track.py {{input}} {{output[0]}} -m {} -c {} -g {} -it {} -d {} '
         '-cto {} -ctt {} -cas {} -tt {} -dm {} -tdt {} -ttl {} -nac {} -eb {} -md {}' \
         .format(*(config['tracks'][x]
                   for x in ['min-blob', 'count-warning-threshold',
@@ -193,7 +197,7 @@ rule edge_from_tracks:
     output:
         'output/{video}/edges.csv'
     shell:
-        'python scripts/edgefromtrack.py {input[0]} {output} {input[1]}'
+        'python scripts/edgefromtrack.py {input[0]} {output} {input[1]} -y ' + str(config["roidetect"]["year"])
 
 
 # draws the regions of interest onto a frame of the video. 

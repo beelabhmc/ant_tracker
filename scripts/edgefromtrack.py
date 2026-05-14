@@ -3,6 +3,7 @@ import argparse
 import re
 import math
 import numpy as np
+import csv
 
 import bbox
 
@@ -106,11 +107,38 @@ def main():
     arg_parser.add_argument('roifile',
                             type=str,
                             help='The file from which to load the ROIs.')
-    args = arg_parser.parse_args()
-    rois = bbox.read_bboxes(args.roifile)
-    Dict = {42:0, 122:1, 121:2, 41:3, 12:4, 40:5, 112:6, 8:7, 11:8, 6:9, 10:10, 4:11, 111:12, 2:13, 60:14, 0:15, 1:16, 3:17, 20:18, 7:19, 5:20, 211:21, 31:22, 21:23, 22:24, 30:25, 50:26, 212:27, 222:28, 221:29, 32:30}
-    convert(args.infile, args.outfile, rois, Dict)
+    arg_parser.add_argument('-y', '--year',
+                            dest='year',
+                            type=str,
+                            help='The year the video was taken',
+                           )
 
+    args = arg_parser.parse_args()
+
+    if args.year == "2021":
+        reference = np.array(np.loadtxt("templates/center_coordinates_2021.txt")).astype(int)  # Center coordinates. data depends on year
+        csv_file = "templates/dictionary_2021.csv"
+    elif args.year == "2023":
+        reference = np.array(np.loadtxt("templates/center_coordinates_2023.txt")).astype(int)  # Center coordinates. data depends on year
+        csv_file = "templates/dictionary_2023.csv"
+    elif args.year == "2025":
+        reference = np.array(np.loadtxt("templates/center_coordinates_2025.txt")).astype(int)
+        csv_file = "templates/dictionary_2025.csv"
+
+    Dict = {}
+
+    with open(csv_file, 'r') as file:
+        reader = csv.reader(file)
+
+        # Skip the headerscripts
+        next(reader)
+
+        # make Dict
+        for index, row in enumerate(reader):
+            Dict[int(row[0])] = index
+    rois = bbox.read_bboxes(args.roifile)
+
+    convert(args.infile, args.outfile, rois, Dict)
 if __name__ == '__main__':
     main()
 

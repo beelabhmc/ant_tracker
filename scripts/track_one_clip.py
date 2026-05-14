@@ -238,9 +238,10 @@ def trackOneClip(
                                 break
                             if k == 27:
                                 break
+                video_writer_full.write(frame)  # save frame into video writer
         
         frame_counter += 1  # an advancement of a frame
-        video_writer_full.write(frame)  # save frame into video writer
+        
 
 
     cap.release()  # releases video reader

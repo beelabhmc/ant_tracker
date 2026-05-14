@@ -41,9 +41,7 @@ def create_aruco_coords(infile, outfile):
 
     # Initialize parameters for ARTag detection
     aruco_dict = aruco.Dictionary_get(aruco.DICT_4X4_100)
-    # aruco_dict = cv2.aruco.getPredefinedDictionary(cv2.aruco.DICT_4X4_100) <= newer cv2 version syntax
     parameters = aruco.DetectorParameters_create()
-    # parameters = cv2.aruco.DetectorParameters() <= newer cv2 version syntax
     parameters.adaptiveThreshConstant = 20
     parameters.adaptiveThreshWinSizeMax = 20
     parameters.adaptiveThreshWinSizeStep = 6
@@ -57,7 +55,6 @@ def create_aruco_coords(infile, outfile):
 
     # Find ARTag coordinates in query image and reformat data to match reference coordinates
     # Detect the markers
-    # corners, ids, rejectedImgPoints = detector.detectMarkers(frame) <= newer cv2 version syntax
     corners, ids, rejectedImgPoints = aruco.detectMarkers(frame, aruco_dict, parameters=parameters)
     avg = [np.average(x, axis = 1) for x in corners]
     flat_corners = [item for sublist in avg for item in sublist]
@@ -83,8 +80,8 @@ def warp(frame, coord1):
     h, w = frame.shape
 
     # Initialize parameters for ARTag detection
-    aruco_dict = aruco.Dictionary_get(aruco.DICT_4X4_100)
-    parameters = aruco.DetectorParameters_create()
+    aruco_dict = aruco.getPredefinedDictionary(aruco.DICT_4X4_100)
+    parameters = aruco.DetectorParameters()
     parameters.adaptiveThreshConstant = 20
     parameters.adaptiveThreshWinSizeMax = 20
     parameters.adaptiveThreshWinSizeStep = 6
@@ -95,7 +92,8 @@ def warp(frame, coord1):
     parameters.minDistanceToBorder = 0
 
     # Find ARTag coordinates in query image and reformat data to match reference coordinates
-    corners, ids, rejectedImgPoints = aruco.detectMarkers(frame, aruco_dict, parameters=parameters)
+    detector = aruco.ArucoDetector(aruco_dict, parameters)
+    corners, ids, rejectedImgPoints = detector.detectMarkers(frame)
     avg = [np.average(x, axis = 1) for x in corners]
     frame_markers = aruco.drawDetectedMarkers(frame.copy(), corners, ids, [0, 255, 0])
     flat_corners = [item for sublist in avg for item in sublist]
@@ -130,8 +128,9 @@ def mask(frame):
         mask -- thresholded query image keeping only bright sections in the image, to isolate the tree
             structure from the background
     """
-    thresh = 160 # Might need to adjust this number if lighting conditions call for it (lower for dimmer arenas)
+    thresh = 170 # Might need to adjust this number if lighting conditions call for it (lower for dimmer arenas)
     _, th1 = cv2.threshold(frame,thresh,255,cv2.THRESH_BINARY)
+
 
     # Clean up mask with morphological operations
     open_kernel = np.ones((8, 8), np.uint8)
@@ -205,10 +204,6 @@ def contour(mask):
     contours = max(contours, key=cv2.contourArea)
     cv2.drawContours(cont, contours, -1, [255, 255, 255])
 
-    # Dilate the contours to make the lines thicker
-    # kernel = np.ones((3, 3), np.uint8)
-    # cont = cv2.dilate(cont, kernel, iterations=1)
-
     return cont
 
 
@@ -241,7 +236,6 @@ def vertices(cont, newpoints, Dict, Orientation):
         verts -- vertices of each roi, consistently ordered
     """
     conn = []
-    
 
     for i in range(len(newpoints)):
         cont_test = cont.copy()
@@ -274,6 +268,13 @@ def vertices(cont, newpoints, Dict, Orientation):
         poly = cv2.convexHull(centers)
         poly = np.array([x[0] for x in poly])
 
+        ## Catch polygons with less than 6 vertices
+        num_vertices = len(poly)
+        print(num_vertices)
+        if num_vertices != 6:
+            print(poly)
+            print(i, Dict[i], len(poly))
+
         # Find largest edge defined by the vertices, and reorder vertices so that edge is first
         d = np.diff(poly, axis=0, append=poly[0:1])
         segdists = np.sqrt((d ** 2).sum(axis=1))
@@ -285,13 +286,15 @@ def vertices(cont, newpoints, Dict, Orientation):
         for tag, ori in Orientation:
             if ori == "R":
                 right_set.add(int(tag))
+        
 
         if Dict[i] in right_set:
             roll = np.roll(roll, 2, axis = 0)
         conn.append(roll)
-        print(i, Dict[i], len(poly))
+        # print(i, Dict[i], len(poly))
     # print(conn)
     conn = np.array(conn)
+    print("Polygons: ", len(conn))
     
     return conn
 
@@ -340,9 +343,16 @@ def main():
                             help='The year the video was taken',
                            )
 
+    # Parsing for video name (used to save contour images)
+    args = arg_parser.parse_args()
+
+    video_name = os.path.splitext(os.path.basename(args.video))[0]
+    output_dir = os.path.join("output", video_name)
+    os.makedirs(output_dir, exist_ok=True)
+    
+
 
     args = arg_parser.parse_args()
-    print(args.year)
 
     # Read in first frame of video as an image
     if not os.path.isfile(args.video):
@@ -354,11 +364,6 @@ def main():
         arg_parser.error('The video only has {} frames.'.format(args.frame-1))
     
     gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-
-    # TESTING gray
-    # current_directory = os.getcwd()
-    # save_location = os.path.join(current_directory, "grey.png")
-    # cv2.imwrite(save_location, gray)
 
     # Load in relevant reference coordinates
     coord1 = np.array(np.loadtxt(f"templates/tag_coordinates_{args.year}.txt")).astype(int)  # Aruco detection (preferably all 7 visible)
@@ -390,68 +395,37 @@ def main():
     
     M, result = warp(gray, coord1)
 
-    # TESTING result
-    # current_directory = os.getcwd()
-    # save_location = os.path.join(current_directory, "result.png")
-    # cv2.imwrite(save_location, result)
-
     frame_mask = mask(result)
     query = nodes(frame_mask)
     newpoints = centers(reference, query)
-  
 
-    # Testing
-    # print(newpoints)
-    # for i in range(len(newpoints)):
-    #         cv2.circle(result,(newpoints[i][1],newpoints[i][0]),3,[255,0,0],3)
-    # plt.imshow(result)
-    # plt.show()
 
     cont = contour(frame_mask)
 
-    # contour picture testing
-    current_directory = os.getcwd()
-    save_location = os.path.join(current_directory, "contour.png")
-    cv2.imwrite(save_location, cont)
+    contour_path = os.path.join(output_dir, "contour.png")
+    cv2.imwrite(contour_path, cont)
 
 
+
+ 
+    # add circles onto the contour image
+    result = drawCircles(cont, newpoints)
+    circles_path = os.path.join(output_dir, "cont_with_circles.png")
+    cv2.imwrite(circles_path, result)
 
     verts = vertices(cont, newpoints, Dict, Orientation)
 
-
-    # ## add circles onto the contour image
-    result = drawCircles(cont, newpoints)
-    image_path = os.path.join(current_directory, "cont_with_circles.png")
-    cv2.imwrite(image_path, result)
-
-
-
-    # ## outputs coordinates when you click on the image
-    # cv2.imshow("Image", frame) # frame
-    # cv2.setMouseCallback("Image", get_coordinates)
-    # cv2.waitKey(0)
-    # cv2.destoryAllWindows()
     
     
     # Undo transformation to get vertices coordinates in original frame
-    # print("starting to print verts")
-    print(verts)
     pts2 = np.array(verts, np.float32)
     polys = np.array(cv2.perspectiveTransform(pts2, np.linalg.pinv(M))).astype(int)
 
-
-    # Testing
-    # print(polys)
-    # for i in range(len(polys)):
-    #     for j in range(6):
-    #         cv2.circle(frame,(polys[i][j][0],polys[i][j][1]),3,[255,0,0],3)
-    # plt.imshow(frame)
-    # plt.show()
 
     # Save vertices to outfile
     rois = [bbox.BBox.from_verts(poly, 3) for poly in polys]
     bbox.save_rois(rois, args.outfile)
 
+    print('reached')
 if __name__ == '__main__':
-    # create_aruco_coords(file, outfile)
     main()
