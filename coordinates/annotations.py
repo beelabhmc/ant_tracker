@@ -2,6 +2,8 @@ import cv2
 import numpy as np
 import math
 from pathlib import Path
+import json
+import os
 
 # ----------------------------
 # Config (edit if you want)
@@ -189,6 +191,17 @@ def annotate_video(video_path: str, out_path: str, radius: float = None):
         # (ignore any additional mouse clicks beyond first)
 
     cv2.destroyAllWindows()
+
+    json_path = os.path.splittext(args.video)[0] + "_circle.json"
+    circle_data = {
+        "center": {cx, cy},
+        "radius": radius_used,
+        "north_angle": north_angle
+    }
+
+    with open(json_path, "w") as f:
+        json.dump(circle_data, f, indent=2)
+    print(f"saved circle data to ", json_path)
 
     # At this point we have cx, cy, radius_used and north_angle
     # Annotate first frame and write it
