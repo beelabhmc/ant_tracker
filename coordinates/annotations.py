@@ -192,16 +192,16 @@ def annotate_video(video_path: str, out_path: str, radius: float = None):
 
     cv2.destroyAllWindows()
 
-    json_path = os.path.splittext(args.video)[0] + "_circle.json"
+    json_path = os.path.splitext(args.video)[0] + "_circle.json"
     circle_data = {
-        "center": {cx, cy},
+        "center": {"x": cx, "y":cy},
         "radius": radius_used,
         "north_angle": north_angle
     }
 
     with open(json_path, "w") as f:
         json.dump(circle_data, f, indent=2)
-    print(f"saved circle data to ", json_path)
+    print(f"saved circle data to {json_path}")
 
     # At this point we have cx, cy, radius_used and north_angle
     # Annotate first frame and write it
